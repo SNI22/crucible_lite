@@ -118,7 +118,14 @@ implausible signal.
 
 ### Amendment 7 — Calibration Discipline
 *Traces to: Article I*
-*Status: PROPOSED — ratify before any threshold is introduced in firmware*
+*Status: RATIFIED 2026-05-15 (Case 1 — see `case_law.md`)*
+
+**Project-specific implementation note (ratified with Amendment 7 by Case 1):**
+This project has no firmware source files. The documentation format below is
+implemented as a JSON record header field (`"CURVE_FIT — derived from ..."`)
+in the per-channel calibration JSON specified by Bill 0002, Part 6.2. The
+physical-derivation, primitive-trace, and value-with-unit content is preserved
+in that field; only the carrier (JSON vs C comment) differs.
 
 One new calibration constant may be introduced per algorithmic iteration. Every
 calibration constant must be documented with its physical derivation before the
@@ -316,7 +323,7 @@ and the published benchmark comparison loses physical traceability.
 | 4 | Three-Strike Escalation Rule | RATIFIED 2026-05-15 | Article II |
 | 5 | Simulation is the Hardware Proxy | PROPOSED | Article I + II |
 | 6 | Signal Plot Mandate | PROPOSED | Article I + II |
-| 7 | Calibration Discipline | PROPOSED | Article I |
+| 7 | Calibration Discipline | RATIFIED 2026-05-15 | Article I |
 | 8 | Algorithm Search Honesty | PROPOSED | Article I + II |
 | 9 | Hardware Optimization Transparency | PROPOSED | Article II |
 | 10 | Interim Results and Decision Logging | PROPOSED | Article II |
