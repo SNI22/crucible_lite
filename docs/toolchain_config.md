@@ -26,7 +26,10 @@ MCU:      STM32F103C8T6, ARM Cortex-M3, 72 MHz, 64 KB flash / 20 KB SRAM, LQFP-4
 Sensors:  PVDF + proof-mass cantilever (off-board, via H1 1×2 header).
           Mounting per ~/Documents/piezo_circuit/SENSOR_MOUNTING.md —
           full-area epoxy to ceramic tile floor; ≤ 3 m max range.
-External: Raspberry Pi 5 (Linux host running detection algorithm and CSV capture);
+External: Linux PC with conda (development host for this loop — running receiver.py
+          and detection algorithm; this is the machine the Crucible session runs on).
+          Raspberry Pi 5 deferred to a future stage (Stage 4 — Host Integration) for
+          eventual deployment; not in scope for Stage 0–3 this loop.
           ST-Link V2 or J-Link SWD probe;
           USB-UART adapter (CH340 on Alientek "Warship" board if used, or external).
 Notes:    Scope-reduced pass — only P1 (floor acceleration) implemented.
@@ -39,8 +42,10 @@ Notes:    Scope-reduced pass — only P1 (floor acceleration) implemented.
 
           Alternative signal path (contingency, not current build):
           Tap the analog output of the OP07 final gain stage (test header H3/H4)
-          directly into a Raspberry Pi ADC hat (e.g., ADS1263 high-precision hat).
-          The STM32 MCU then becomes inactive — the Pi 5 does sampling and analysis.
+          directly into an external high-precision ADC reachable from the host
+          (e.g., USB ADC dongle for the Linux PC this loop; Pi-mounted ADC hat
+          later if/when deployment moves to Pi 5).
+          The STM32 MCU then becomes inactive — the host PC does sampling and analysis.
           Useful escape valve if the STM32 onboard ADC's ~47.6 kS/s + 12-bit
           resolution proves inadequate (noise floor, dynamic range, or aliasing on
           tile floors). Prior repo's ~/Documents/piezo_circuit/raspberry_pi/ folder
@@ -82,9 +87,11 @@ Build:          Keil MDK-ARM (free size-limited edition; image < 32 KB)
                   baked into main.c — see Hardware Notes for fix plan
 Flash:          ST-Link V2 SWD (primary) via Keil µVision built-in flasher
                 Alternative: UART bootloader via BOOT0 = HIGH on H15 header +
-                             `stm32flash` on Pi 5 host
+                             `stm32flash` on the Linux PC host
 Serial monitor: ~/Documents/piezo_circuit/receiver/receiver.py
-                  PC-side capture (CSV write + key-tag events) on Pi 5 host
+                  PC-side capture (CSV write + key-tag events) on the Linux PC
+                  development host (conda env — package versions pinned at
+                  /toolchain scaffold)
                   Formats supported: FireWater (ASCII), JustFloat (binary), RawData
                   Baud: 115200 (firmware USART1 default)
                   CSV schema: sample_index,value,event
@@ -92,7 +99,8 @@ Serial monitor: ~/Documents/piezo_circuit/receiver/receiver.py
                              OR direct USB-UART (CH340)
                 Alternative for quick checks: minicom -b 115200 -o -D /dev/ttyUSB0
 Wireless recv:  N/A — STM32F103 has no onboard wireless
-                Alerts: routed via Pi 5 host (network/SMS/etc., implementation TBD)
+                Alerts: routed via the development host (network/SMS/etc.,
+                  implementation TBD; Pi 5 takes this role at Stage 4)
                 WiFi sensing module (P3): deferred to a future stage gate
 Simulation:     ~/Documents/piezo_circuit/analysis/floor_sim.py
                   OpenSeesPy Kirchhoff plate model with `bathroom` preset
@@ -171,16 +179,18 @@ scale:  > [comma-separated scale factors — e.g., "1, 1, 0.1, 0.1, 1, 1"]
 | CMSIS Core (Cortex-M3) | per Alientek Warship template (to verify) | Vendored at `~/Documents/piezo_circuit/PVDF压电采集资料/采集代码/CORE/` | ARM Cortex-M3 core abstraction, startup, `system_stm32f10x.c` | — |
 | OLED SSD1306 driver | local (author-written) | `~/Documents/piezo_circuit/PVDF压电采集资料/采集代码/HARDWARE/OLED/` | I2C OLED waveform / voltage display | Two drivers coexist (`OLED_I2C` + `OLED0561`); `main.c` calls both Init paths |
 
-### Host-side (Pi 5, Python — versions TBD, pin at `/toolchain scaffold`)
+### Host-side (Linux PC, conda env `piezo_reader` — verified at /session 0 init)
 
 | Library | Version | Source | Purpose | Known issues |
 |---------|---------|--------|---------|--------------|
-| numpy | TBD | PyPI | Numerical arrays for analysis and simulation | — |
-| scipy | TBD | PyPI | Signal processing (filters, FFT, envelope) | — |
-| matplotlib | TBD | PyPI | Plotting (plotter agent uses `Agg` backend) | — |
-| pyserial | TBD | PyPI | `receiver.py` serial bridge | — |
-| GUI framework | TBD — confirm by reading `receiver.py` (PyQt5 or tkinter) | PyPI / system | `receiver.py` interactive GUI | — |
-| openseespy | TBD | PyPI | Kirchhoff plate floor simulator (`floor_sim.py`) | — |
+| Python | 3.14.3 | conda | Runtime | — |
+| numpy | 2.4.3 | PyPI | Numerical arrays for analysis and simulation | — |
+| scipy | 1.17.1 | PyPI | Signal processing (filters, FFT, envelope) | — |
+| matplotlib | 3.10.8 | PyPI | Plotting (plotter agent uses `Agg` backend) | — |
+| pyserial | 3.5 | PyPI | `receiver.py` serial bridge | — |
+| PyQt5 | 5.15.11 | PyPI | `receiver.py` interactive GUI | — |
+| pyqtgraph | 0.14.0 | PyPI | `receiver.py` live plot | — |
+| openseespy | **NOT INSTALLED** | PyPI | Kirchhoff plate floor simulator (`floor_sim.py`) | Required for Stage 1; install before opening Stage 1 |
 
 ---
 
@@ -214,14 +224,15 @@ Stage 4    — Host Integration:      NOT STARTED
 The framework default Stage 0 assumes four sequential flashable test programs
 (counter → sensor readout → algorithm-on-MCU over USB → algorithm-on-MCU over
 wireless). This project's architecture does not fit that model: the MCU
-performs sampling + UART streaming only, and the algorithm runs on the Pi 5
-host. The protocol below is the adapted Stage 0 for piezo_fall; it preserves
+performs sampling + UART streaming only, and the algorithm runs on the
+Linux PC host (this loop; Pi 5 takes this role at Stage 4 later).
+The protocol below is the adapted Stage 0 for piezo_fall; it preserves
 the intent of the framework's gates (prove the entire pipeline works before
 algorithm development) while matching the actual hardware.
 
 | Gate | Test | Pass criterion |
 |------|------|----------------|
-| **0.1** | **MCU alive.** Power the STM32 (custom PCB or Alientek Warship dev board), connect transport (USB-UART or HC-05/06 BT-serial bridge) to the Pi 5 / laptop receiver, run `receiver.py`. | Continuous UART data stream visible in receiver.py at 115200 baud; no resets across a 60-second observation window. |
+| **0.1** | **MCU alive.** Power the STM32 (custom PCB or Alientek Warship dev board), connect transport (USB-UART or HC-05/06 BT-serial bridge) to the Linux PC receiver, run `receiver.py`. | Continuous UART data stream visible in receiver.py at 115200 baud; no resets across a 60-second observation window. |
 | **0.2a** | **ADC plausibility.** With piezo sensor connected, observe the live receiver.py trace at rest, then tap the floor 30 cm from the sensor. | Quiet baseline near ADC count 1890 (DC zero-code, may vary per board ±100) ; clear transient spike clearly above baseline on tap. |
 | **0.2b** | **Streaming rate verification.** Capture a 10-second receiver.py session at rest. Count sample rows in the resulting CSV. | ≥ 10,000 sample rows (≥ 1 kHz × 10 s) — matches Amendment 1's "≥ 1 kHz piezo" clause. Significantly fewer rows is a HARD FAIL — either flash modified firmware that streams at ≥ 1 kHz, or open an Amendment 3 Bill for an alternative signal path. Record the actual measured rate in `device_context.md` Test Results table. |
 | **0.3** | **Receiver capture end-to-end.** Capture a 30-second receiver.py session; key-tag one "step" event with SPACE while tapping near the sensor. | Valid CSV with `sample_index,value,event` schema; the tagged event row exists at a sample index close to the actual tap (within receiver.py's documented tag latency). |
