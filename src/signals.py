@@ -83,6 +83,66 @@ IR_DURATION_S = 1.5
 # half-wavelength (~10-20 cm for first modes).
 IR_GRID_M = 0.05
 
+# PVDF + proof-mass cantilever transfer function parameters (primitive P1).
+# Calibrated to MiniSense 100 datasheet (Measurement Specialties,
+# part 1005939-1, datasheet Rev 1 2009-05-12):
+#   - Resonance frequency: 75 Hz
+#   - Voltage sensitivity baseline (below resonance): 1.1 V/g
+#   - Voltage sensitivity at resonance: 6 V/g
+#   - Peak gain / baseline = 6 / 1.1 = 5.45
+#   - For a 2nd-order base-excited system, peak gain at resonance =
+#     1/(2*zeta), so zeta = 1/(2*5.45) = 0.092
+#   - Upper limiting frequency (+3 dB): 42 Hz (matches f_n*sqrt(1-2*zeta^2))
+# Inertial mass: 0.3 g; charge sensitivity 260 pC/g.
+CANTILEVER_FN_HZ = 75.0
+CANTILEVER_ZETA = 0.092
+
+# Low-frequency roll-off from sensor's source impedance and external bias
+# resistor. MiniSense 100 source impedance ~650 MOhm at 1 Hz; combined with
+# the STM32 PCB's 100 MOhm bias resistor (R48 in toolchain_config.md
+# Hardware), the datasheet gives a -3 dB Lower Limiting Frequency of 6.5 Hz.
+# Implemented as 1st-order RC high-pass below.
+SENSOR_LLF_HZ = 6.5
+
+
+def apply_sensor_model(floor_accel, fs=FS_HZ,
+                       f_n_hz=CANTILEVER_FN_HZ,
+                       zeta=CANTILEVER_ZETA):
+    """Apply PVDF + proof-mass cantilever transduction. Primitive P1.
+
+    Transforms floor acceleration (m/s^2) at the piezo location into a
+    signal proportional to PVDF charge (i.e., proportional to the
+    proof-mass relative displacement that strains the PVDF film).
+
+    Transfer function from floor acceleration A(omega) to relative
+    displacement Z(omega):
+        Z(jw) = -A(jw) / (omega_n^2 - omega^2 + 2j*zeta*omega_n*omega)
+
+    Three frequency regimes (with default f_n=300 Hz, zeta=0.05):
+      - omega << omega_n (below ~100 Hz): Z ~ A/omega_n^2 (small but
+        flat in acceleration; fall events and slump signals get
+        attenuated relative to nearby-resonance content)
+      - omega ~ omega_n (200-500 Hz): Z amplified by Q = 1/(2*zeta) = 10
+        (resonance peak; shower band 100-800 Hz overlaps this region
+        and gets BOOSTED -- this is the sim-to-real concern)
+      - omega >> omega_n (above ~500 Hz): -40 dB/decade rolloff
+        (very high frequencies attenuated)
+
+    Article I trace: f_n range 200-500 Hz from PVDF+mass literature
+    (SENSOR_MOUNTING.md cantilever design guide). zeta = 0.05 from
+    unloaded PVDF cantilever data. Output units are arbitrary
+    (proportional to PVDF charge after the charge amp); algorithm uses
+    scale-invariant features so absolute calibration is deferred.
+    """
+    n = len(floor_accel)
+    freqs = np.fft.rfftfreq(n, 1.0 / fs)
+    omega = 2.0 * np.pi * freqs
+    omega_n = 2.0 * np.pi * f_n_hz
+    # Cantilever transfer function (base-excited 2nd-order system)
+    H = -1.0 / (omega_n ** 2 - omega ** 2 + 2j * zeta * omega_n * omega)
+    Y = np.fft.rfft(floor_accel) * H
+    return np.fft.irfft(Y, n)
+
 
 # ─── Data structures ───────────────────────────────────────────────────
 
@@ -526,7 +586,7 @@ PROFILES = {
 # ─── Main entry point ──────────────────────────────────────────────────
 
 def generate(profile, duration_s=DEFAULT_DURATION_S, seed=0, fs=FS_HZ,
-             event_override=None, geometry=None):
+             event_override=None, geometry=None, apply_sensor=True):
     """Generate one trace for `profile`. Returns (samples in m/s², GroundTruth).
 
     geometry: if None, picked deterministically from GEOMETRY_DISTRIBUTION
@@ -600,6 +660,13 @@ def generate(profile, duration_s=DEFAULT_DURATION_S, seed=0, fs=FS_HZ,
 
         if impacts and event_onset_s is None:
             event_onset_s = min(imp.time_s for imp in impacts)
+
+    # Apply PVDF+cantilever sensor model (primitive P1 transduction).
+    # Set apply_sensor=False to bypass for debugging / raw floor accel.
+    if apply_sensor:
+        samples = apply_sensor_model(samples, fs=fs)
+        caveats.append(
+            f'sensor model applied: PVDF+cantilever f_n={CANTILEVER_FN_HZ}Hz zeta={CANTILEVER_ZETA}')
 
     gt = GroundTruth(
         profile=profile, cls=recipe.cls,
