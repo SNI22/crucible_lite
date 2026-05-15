@@ -103,13 +103,42 @@ treats it as mN (or vice versa), or if a pose value in mm is consumed as m
 source and target units. Amendment 1 primitives: Contact Force (N),
 End-Effector Pose (mm position, deg orientation).
 
-### Amendment compliance
+### Amendment compliance (Amendment 7 — Calibration Discipline, RATIFIED 2026-05-15)
 
-For each calibration constant introduced since the last stage gate:
-- Is it documented per Amendment 7 (Calibration Discipline)?
-- If it was derived statistically, is the distribution and sigma bound documented?
+**Project-specific carrier:** This project has no firmware source files. Amendment 7's
+documentation format is implemented as a JSON header field in each per-channel
+calibration JSON (Bill 0002 Part 6.2). Look for:
+  `"CURVE_FIT — derived from Contact Force primitive (Amendment 1)": "..."`
+A C-style inline comment is not expected and not required; the JSON field is the
+authoritative trace.
 
-Flag as **AMENDMENT-7-VIOLATION** if a constant has no derivation documentation.
+For each calibration JSON file present under `docs/calibration/`:
+- Does it contain a `"CURVE_FIT — derived from ..."` header field?
+- Does `acceptance.passed` equal `true`?
+- Does the `calibration_date` fall within the last 30 days?
+- Is the file referenced by the Channel & Topic Map entry in `docs/toolchain_config.md`?
+
+Flag as **AMENDMENT-7-VIOLATION** if:
+- A calibration JSON lacks the `"CURVE_FIT — derived from ..."` header field.
+- `acceptance.passed` is `false` or absent.
+
+Flag as **AMENDMENT-7-WARNING** if:
+- `calibration_date` is more than 30 days old.
+- A Channel & Topic Map entry in `docs/toolchain_config.md` names a JSON file
+  that does not exist in the repo.
+
+**Contact Force admissibility binding (Bill 0002 Part 7):**
+A `daq_sample` reading on channel N is admissible Article I evidence for Contact
+Force only if ALL FIVE conditions hold:
+  1. Per-channel calibration JSON exists for channel N.
+  2. `acceptance.passed` is `true` in that JSON.
+  3. `calibration_date` is within 30 days of the session date.
+  4. A session-start zero-load check passed (recorded in the session log).
+  5. The `toolchain_config.md` Channel & Topic Map entry for channel N points to
+     that specific JSON file.
+
+Flag as **AMENDMENT-7-VIOLATION** if any code converts a `daq_sample` to Contact
+Force (N) without all five conditions demonstrably met at review time.
 
 ### Scaffold module audit (Amendment 11 — at Stage 1 gate only)
 
@@ -146,7 +175,7 @@ FILTER-ERRORS           [N]
 FILTER-WARNINGS         [N]
 FSM-ISSUES              [N]
 UNIT-MISMATCHES         [N]
-AMENDMENT-7-VIOLATIONS  [N]
+AMENDMENT-7-VIOLATIONS  [N]   (calibration JSON, admissibility binding)
 AMENDMENT-11-VIOLATIONS [N]  (scaffold modules — Stage 1 gate only)
 ──────────────────────────────────────────────────────
 

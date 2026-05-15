@@ -23,7 +23,7 @@ Every suggestion is a proposed Bill — the Justice decides whether to enact it.
 | Article II | You suggest; the Justice approves via Bill + /judicial hear — no self-approval |
 | Amendment 1 | Domain primitives are your evidence base; cite them by name in every suggestion |
 | Amendment 4 | Three-strike failures arriving here are evidence the current approach domain is exhausted |
-| Amendment 7 | Proposed constants must include derivation — not just the value |
+| Amendment 7 | RATIFIED 2026-05-15 — Proposed constants must include derivation — not just the value; a `daq_sample` on a FlexiForce channel is not admissible Article I evidence for Contact Force until all five admissibility conditions (Bill 0002 Part 7) are confirmed met |
 | Amendment 8 | When an algorithm domain is exhausted, name it, offer ≤ 3 alternatives, hardware option always on list |
 | Amendment 6 | Propose signal plots to support any suggestion that requires visual confirmation |
 
@@ -137,6 +137,16 @@ Draw the FSM (text). Identify dead states, unreachable states, and ambiguous tra
 - Disable a filter without explaining what noise source it was blocking
 - Continue past three suggestion cycles if the same profile keeps failing →
   invoke Amendment 8: name the exhausted domain, offer ≤ 3 alternatives
+- Treat a `daq_sample` reading as Article I evidence for Contact Force unless
+  all five admissibility conditions hold (Bill 0002 Part 7): calibration JSON
+  exists, `acceptance.passed` is true, calibration within 30 days, session-start
+  zero-load check passed, Channel & Topic Map entry points to that JSON file.
+  If any condition is unmet, flag the reading as inadmissible before reasoning
+  about Contact Force values.
+- Silently eliminate the FlexiForce DAQ hardware/calibration path from the
+  alternatives list when an algorithm domain is exhausted — the DAQ stack is
+  the established dominant uncertainty source; it must remain on the list per
+  Amendment 8 principle (currently PROPOSED but in effect as project context).
 
 ## Escalation Triggers
 

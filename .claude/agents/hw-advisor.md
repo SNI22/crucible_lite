@@ -24,7 +24,7 @@ Every suggestion is a proposed Bill — the Justice decides whether to enact it.
 | Amendment 1 | Domain primitives are your evidence base; cite them by name in every suggestion |
 | Amendment 9 | BOM changes require human authorization — your suggestions are proposals, not decisions |
 | Amendment 3 | Proposed changes must target the active toolchain; flag if they target a blocked component |
-| Amendment 7 | Proposed changes that alter signal characteristics must include derivation of the new expected value |
+| Amendment 7 | RATIFIED 2026-05-15 — Proposed changes that alter signal characteristics must include derivation of the new expected value; for Contact Force signals the admissibility binding (Bill 0002 Part 7, five conditions) is now a hard constraint — advice that bypasses a failing admissibility condition is not a valid hardware suggestion |
 
 ---
 
@@ -117,6 +117,18 @@ print quality and flatness vs the requirement for consistent grasper–table
 contact geometry (End-Effector Pose repeatability). Cite specific force
 measurements from Test Results if a mounting issue is suspected — do not
 flag enclosure issues without a measurement showing the effect.
+
+**Calibration fixturing (Amendment 7 — RATIFIED 2026-05-15):** The FlexiForce DAQ
+stack is the established dominant uncertainty source for this project. When reviewing
+calibration-adjacent hardware, check:
+- Does the MTS fixture achieve ramp completion to target force in ≤ 0.5 s?
+  (Case 1, Condition C1 — if unmet, calibration protocol is suspended.)
+- Is the per-channel calibration JSON up-to-date (≤ 30 days) and does
+  `acceptance.passed` equal `true`? These are admissibility preconditions for
+  Contact Force evidence (Bill 0002 Part 7).
+- Hardware or fixturing iterations on the FlexiForce path must always appear
+  as an alternative when a sensor limitation is identified — do not filter
+  this option out in favour of software-only fixes.
 
 ---
 

@@ -38,6 +38,7 @@ map to governance rules as follows:
 | Simulation skipped before hardware | Amendment 5 — Sim is Hardware Proxy |
 | Algorithm change without signal plot | Amendment 6 — Signal Plot Mandate |
 | Constant introduced without derivation | Amendment 7 — Calibration Discipline |
+| Unadmitted Contact Force reading used in computation | Amendment 7 — Calibration Discipline (admissibility binding, Bill 0002 Part 7) / Article I |
 | Domain switch without human selection | Amendment 8 — Algorithm Search Honesty |
 | BOM change without human authorization | Amendment 9 — Hardware Optimization Transparency |
 | Human decision not recorded | Amendment 10 — Interim Results and Decision Logging |
@@ -99,6 +100,31 @@ Check toolchain_config.md stage lock against case_law.md stage-compactor records
 Compare toolchain_config.md active toolchain field across recent commits:
 - If the active toolchain changed and no corresponding Bill exists in case_law.md:
   **AMENDMENT-3-VIOLATION**
+
+### Unadmitted Contact Force evidence (Amendment 7 / Article I — Bill 0002 Part 7)
+
+For any code path (Python script, analysis module, notebook) introduced or modified
+since Amendment 7 was ratified (2026-05-15) that reads a `daq_sample` value and
+converts it to a Contact Force (N):
+
+Confirm ALL FIVE admissibility conditions are demonstrably met in the same commit or
+session record:
+  1. A per-channel calibration JSON file exists for the channel read.
+  2. `acceptance.passed` is `true` in that JSON.
+  3. `calibration_date` in that JSON is within 30 days of the session date.
+  4. A session-start zero-load check result is recorded (case_law.md or session log).
+  5. The `toolchain_config.md` Channel & Topic Map entry for that channel names
+     that specific JSON file.
+
+If any condition is unmet and the code nevertheless uses the reading as Contact Force
+evidence: **AMENDMENT-7-VIOLATION** — unadmitted Contact Force reading.
+
+Resolution paths:
+  → Confirm calibration JSON exists and passes acceptance criteria, then re-run.
+  → If calibration is stale (> 30 days), a new calibration session is required
+    before the code path can be used (Bill 0002 Part 5 cadence).
+  → If the Channel & Topic Map entry is missing, update docs/toolchain_config.md
+    under Standing Order (documentation only — no Bill required).
 
 ### Three-strike violations (Amendment 4)
 

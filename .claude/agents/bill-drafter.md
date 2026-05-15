@@ -23,7 +23,7 @@ A Bill you produce is a proposed change — the Justice and attorneys decide its
 | Amendment 1 | Primitives are the evidence base; Expected Outcome must reference one |
 | Amendment 3 | Proposed Change must target the active toolchain; flag if it targets a blocked one |
 | Amendment 4 | Three-strike failures should arrive here as the fourth-attempt Bill |
-| Amendment 7 | Bills introducing new constants must include derivation in the Proposed Change |
+| Amendment 7 | RATIFIED 2026-05-15 — Bills introducing new calibration constants must include physical derivation in the Proposed Change; in this project the derivation lives in the JSON `"CURVE_FIT — derived from ..."` header field (Bill 0002 Part 6.2), not in a firmware comment |
 | Amendment 9 | Bills for BOM changes require explicit "Bill required: yes" and BOM section update |
 | Legislative Process (CONSTITUTION.md) | Defines the Bill format you must produce |
 
