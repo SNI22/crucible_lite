@@ -19,44 +19,106 @@ Evidence: —
 ## Hardware
 
 ```
-Board:    > [board model — e.g., "Seeed XIAO nRF52840 Sense 102010448"]
-MCU:      > [MCU — e.g., "nRF52840, ARM Cortex-M4F, 64 MHz"]
-Sensors:  > [sensors — e.g., "LSM6DS3TR-C IMU, I2C 0x6A"]
-External: > [debug probes, PPK2, oscilloscope, etc. — or "none"]
-Notes:    > [variant notes — e.g., "Must be Sense variant — on-board IMU only on Sense"]
+Board:    Custom STM32F103 PVDF Signal Conditioning PCB (revision 2023-02-20)
+          Schematic: ~/Documents/piezo_circuit/PVDF压电采集资料/PVDF压电采集系统资料/
+                     Schematic_PVDF压电信号调理系统_2023-02-20.pdf
+MCU:      STM32F103C8T6, ARM Cortex-M3, 72 MHz, 64 KB flash / 20 KB SRAM, LQFP-48
+Sensors:  PVDF + proof-mass cantilever (off-board, via H1 1×2 header).
+          Mounting per ~/Documents/piezo_circuit/SENSOR_MOUNTING.md —
+          full-area epoxy to ceramic tile floor; ≤ 3 m max range.
+External: Raspberry Pi 5 (Linux host running detection algorithm and CSV capture);
+          ST-Link V2 or J-Link SWD probe;
+          USB-UART adapter (CH340 on Alientek "Warship" board if used, or external).
+Notes:    Scope-reduced pass — only P1 (floor acceleration) implemented.
+          P2 (microphone) and P3 (WiFi sensing) deferred to a future stage gate.
+          Two known Article I violations carried forward from prior firmware:
+            (1) `accur = 0.015295` (18× analog gain) baked in — needs Bill for
+                boot-time self-calibration
+            (2) `ADC offset = 1890` (DC zero-code) baked in — same fix
+          HCNR200-500E linear optocoupler in BOM but not in current build.
+
+          Alternative signal path (contingency, not current build):
+          Tap the analog output of the OP07 final gain stage (test header H3/H4)
+          directly into a Raspberry Pi ADC hat (e.g., ADS1263 high-precision hat).
+          The STM32 MCU then becomes inactive — the Pi 5 does sampling and analysis.
+          Useful escape valve if the STM32 onboard ADC's ~47.6 kS/s + 12-bit
+          resolution proves inadequate (noise floor, dynamic range, or aliasing on
+          tile floors). Prior repo's ~/Documents/piezo_circuit/raspberry_pi/ folder
+          attempted ADS1263 at 7200 SPS → decimated to 5000 SPS but was abandoned
+          due to DOA hat hardware; a replacement hat would resurrect this path.
+          Switching to this path is a Bill-level change (Amendment 3) — not allowed
+          mid-stage.
 ```
 
 ---
 
 ## Pin Map
 
-| Signal | Arduino pin | nRF52840 port/pin | Function | Caution |
-|--------|-------------|-------------------|----------|---------|
-| > [signal] | > [pin] | > [port/pin] | > [function] | > [caution or "—"] |
+| Signal | STM32 pin | Port/pin | Function | Caution |
+|--------|-----------|----------|----------|---------|
+| Piezo_ADC | PA6 | ADC1_IN6 | Analog input from OP07 U9 output (post-conditioning) | Sampled at 47.6 kS/s, 239.5-cycle sample time, DMA1 Ch1 |
+| Dout_Trigger | PB15 | EXTI15 | LM311 comparator output (event trigger) | Threshold set by RP5 trim — record current setting in calibration log |
+| UART1_TX | PA9 | USART1 TX | UART to host @ 115200 baud | Wired to H15 header and CH340 if Warship board used |
+| UART1_RX | PA10 | USART1 RX | UART from host @ 115200 baud | Currently unused in main loop |
+| OLED_SCL | PB6 | I2C1 SCL | OLED SSD1306 clock | 5.1 kΩ pull-up to 3.3 V (R58) |
+| OLED_SDA | PB7 | I2C1 SDA | OLED SSD1306 data | 5.1 kΩ pull-up to 3.3 V (R59) |
+| XTAL_IN | OSC_IN | — | 8 MHz HSE crystal X2 | 22 pF load caps C11/C12 |
+| XTAL_OUT | OSC_OUT | — | 8 MHz HSE crystal X2 | — |
+| RESET | NRST | — | Reset button | Pull-up R12 10 kΩ |
+| BOOT0 | BOOT0 | — | Bootloader select on H15 header | Tied LOW for normal boot |
+| Debug_GPIO | PA11, PA2, PA3, PA4 | GPIO | Header H6 (general I/O) | Currently unused |
 
 ---
 
 ## Active Firmware Toolchain
 
 ```
-Build:          > [FQBN or build system — e.g., "arduino:mbed_nano:nano33ble" or "Zephyr / PlatformIO"]
-Flash:          > [flash method — e.g., "UF2 drag-drop" or "J-Link SWD"]
-Serial monitor: > [serial monitor — e.g., "minicom 115200 8N1" or "python -m serial.tools.miniterm"]
-Wireless recv:  > [BLE receiver script — e.g., "python crucible/transport/ble.py --device MyDevice"]
-Simulation:     > [sim framework — e.g., "Renode 1.16 via crucible.sim.renode.RenoneBridge"]
+Build:          Keil MDK-ARM (free size-limited edition; image < 32 KB)
+                Project: ~/Documents/piezo_circuit/PVDF压电采集资料/采集代码/USER/Template.uvprojx
+                Library: ST Standard Peripheral Library (SPL, vendored — not HAL/CubeMX)
+                Build host: Windows laptop (Keil is Windows-only; no Linux/CLI build path)
+                Status: firmware frozen for this stage gate — no active development
+                Known Article I violations: `accur = 0.015295` and `ADC offset = 1890`
+                  baked into main.c — see Hardware Notes for fix plan
+Flash:          ST-Link V2 SWD (primary) via Keil µVision built-in flasher
+                Alternative: UART bootloader via BOOT0 = HIGH on H15 header +
+                             `stm32flash` on Pi 5 host
+Serial monitor: ~/Documents/piezo_circuit/receiver/receiver.py
+                  PC-side capture (CSV write + key-tag events) on Pi 5 host
+                  Formats supported: FireWater (ASCII), JustFloat (binary), RawData
+                  Baud: 115200 (firmware USART1 default)
+                  CSV schema: sample_index,value,event
+                  Transport: Bluetooth-serial bridge (HC-05/06 SPP module on USART1)
+                             OR direct USB-UART (CH340)
+                Alternative for quick checks: minicom -b 115200 -o -D /dev/ttyUSB0
+Wireless recv:  N/A — STM32F103 has no onboard wireless
+                Alerts: routed via Pi 5 host (network/SMS/etc., implementation TBD)
+                WiFi sensing module (P3): deferred to a future stage gate
+Simulation:     ~/Documents/piezo_circuit/analysis/floor_sim.py
+                  OpenSeesPy Kirchhoff plate model with `bathroom` preset
+                  Emits CSV in same sample_index,value,event format as receiver.py
+                  Enables signal-only Stage 1 simulation path (no firmware-in-loop required)
+                Signal-only path is the primary Stage 1 simulator.
+                Renode-based firmware-in-loop simulation: not configured (STM32F103
+                  is Renode-supported but not wired up here; defer unless needed).
 ```
 
 ---
 
 ## Blocked Toolchains
 
-> [Record blocked toolchain layers here as they are blocked by `/toolchain block`.]
-> Format: `- [date] BLOCKED [layer]: [tool] — [reason citing failure mode]`
->
-> Example:
-> - 2026-01-15 BLOCKED build: Zephyr/PlatformIO — Three-strike failure on IMU I2C init.
->   IMU read returns all zeros on UARTE0. Evidence: smoke_test_2_imu_fail.log.
->   Blocked by Amendment 4 (Three-Strike Rule). Unblock requires Judicial Hearing.
+None.
+
+**Project cost constraint** (not a block, a guideline for advisors and Bill drafters):
+This pass operates on the existing PVDF + STM32F103 PCB hardware. Any proposed
+hardware addition that requires a new component purchase, a new PCB spin, or a
+new MCU (e.g., MLX thermal camera, dedicated audio codec board, dual-MCU architecture)
+is "too costly" for this stage and must be raised as a Bill with explicit cost
+justification before procurement. The hw-advisor and bill-drafter must flag any
+suggestion that would breach this constraint.
+
+This is not a formal `/toolchain block` — it is a budget gate. A future Bill may
+relax it for a specific component without requiring a Judicial Hearing.
 
 ---
 
@@ -98,11 +160,27 @@ scale:  > [comma-separated scale factors — e.g., "1, 1, 0.1, 0.1, 1, 1"]
 
 ## Library Manifest
 
-> One entry per firmware library. Use `/toolchain add lib` to add entries.
+> Use `/toolchain add lib` to add entries. Host-side Python versions pinned at
+> `/toolchain scaffold` (when `src/` modules are generated).
+
+### Firmware-side (Keil MDK, vendored — no package manager)
 
 | Library | Version | Source | Purpose | Known issues |
 |---------|---------|--------|---------|--------------|
-| > [name] | > [version — pin exactly] | > [source] | > [purpose] | > [issues or "—"] |
+| STM32F10x_StdPeriph_Lib | V3.5.0 (ST Standard Peripheral Library) | Vendored at `~/Documents/piezo_circuit/PVDF压电采集资料/采集代码/STM32F10x_FWLib/` | Low-level peripheral access (ADC, DMA, USART, GPIO, RCC) — predates HAL/Cube | Deprecated by ST since 2014; long-term Bill candidate to migrate to HAL/LL |
+| CMSIS Core (Cortex-M3) | per Alientek Warship template (to verify) | Vendored at `~/Documents/piezo_circuit/PVDF压电采集资料/采集代码/CORE/` | ARM Cortex-M3 core abstraction, startup, `system_stm32f10x.c` | — |
+| OLED SSD1306 driver | local (author-written) | `~/Documents/piezo_circuit/PVDF压电采集资料/采集代码/HARDWARE/OLED/` | I2C OLED waveform / voltage display | Two drivers coexist (`OLED_I2C` + `OLED0561`); `main.c` calls both Init paths |
+
+### Host-side (Pi 5, Python — versions TBD, pin at `/toolchain scaffold`)
+
+| Library | Version | Source | Purpose | Known issues |
+|---------|---------|--------|---------|--------------|
+| numpy | TBD | PyPI | Numerical arrays for analysis and simulation | — |
+| scipy | TBD | PyPI | Signal processing (filters, FFT, envelope) | — |
+| matplotlib | TBD | PyPI | Plotting (plotter agent uses `Agg` backend) | — |
+| pyserial | TBD | PyPI | `receiver.py` serial bridge | — |
+| GUI framework | TBD — confirm by reading `receiver.py` (PyQt5 or tkinter) | PyPI / system | `receiver.py` interactive GUI | — |
+| openseespy | TBD | PyPI | Kirchhoff plate floor simulator (`floor_sim.py`) | — |
 
 ---
 
@@ -110,16 +188,18 @@ scale:  > [comma-separated scale factors — e.g., "1, 1, 0.1, 0.1, 1, 1"]
 
 > One entry per git repository in use. Use `/toolchain add repo` to add entries.
 
-| Repo | Branch | Purpose | Notes |
-|------|--------|---------|-------|
-| > [path or URL] | > [branch] | > [purpose] | > [access notes or "—"] |
+| Repo | Path | Remote | Branch | Purpose | Access |
+|------|------|--------|--------|---------|--------|
+| piezo_fall | /home/sni22/crucible/piezo_fall | (TBD — no remote configured yet) | master | This project — Crucible-governed fall detection | read+write |
+| piezo_circuit | /home/sni22/Documents/piezo_circuit | git@github.com:SNI22/piezo-circuit.git | main | Prior fall-detection work — reference for STM32 firmware (Keil), custom PCB schematics, `receiver.py`, `analysis/floor_sim.py`, sensor-mounting protocol, feature dictionary, prior test data | **read-only** — agents in this project may not commit to this repo |
+| crucible-core | /home/sni22/crucible/core | (no remote) | master | Crucible governance framework template — source of CONSTITUTION.md / amendments.md / agent definitions for this project | **read-only** |
 
 ---
 
 ## Stage Status
 
 ```
-Spec Gate  — Device Specification:  NOT STARTED
+Spec Gate  — Device Specification:  CLOSED 2026-05-15 (Amendment 1 ratified, commit e06398e)
 Stage 0    — HIL Toolchain Lock:    NOT STARTED
 Stage 1    — Simulation:            NOT STARTED
 Stage 2    — Firmware Integration:  NOT STARTED
