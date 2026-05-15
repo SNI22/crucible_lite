@@ -210,12 +210,50 @@ scale:  > [comma-separated scale factors — e.g., "1, 1, 0.1, 0.1, 1, 1"]
 
 ```
 Spec Gate  — Device Specification:  CLOSED 2026-05-15 (Amendment 1 ratified, commit e06398e)
-Stage 0    — HIL Toolchain Lock:    OPEN — adapted protocol (see below)
-Stage 1    — Simulation:            NOT STARTED
-Stage 2    — Firmware Integration:  NOT STARTED
+Stage 0    — HIL Toolchain Lock:    PENDING-WITH-OPEN-FINDINGS 2026-05-15
+                                    (Justice declaration; see Stage 0 Ruling below)
+Stage 1    — Simulation:            OPEN — Path A only (signal-only Python)
+Stage 2    — Firmware Integration:  BLOCKED on FW-IDENTITY-UNRESOLVED
 Stage 3    — Field Test:            NOT STARTED
 Stage 4    — Host Integration:      NOT STARTED
 ```
+
+### Stage 0 Ruling — Justice declaration, 2026-05-15
+
+Stage 0 is marked PENDING (not formally CLOSED) and Stage 1 Path A is
+authorized to proceed under Article II Justice authority. Three open
+findings are recorded for future audit:
+
+- **FW-IDENTITY-UNRESOLVED.** The STM32 `main.c` in
+  `~/Documents/piezo_circuit/PVDF压电采集资料/采集代码/USER/main.c`
+  (the toolchain-registered firmware) never calls `uart_init(115200)`
+  and contains no `printf` / `USART_SendData` calls. It cannot produce
+  the UART stream that `receiver.py` captured into the prior repo's
+  CSVs. The active streaming firmware lives elsewhere — most likely a
+  modified `main.c` on the user's Windows laptop (Keil host). Locating
+  and reading that firmware is deferred to Stage 2 entry; Path A
+  simulation in Stage 1 does not require it.
+
+- **SAMPLE-RATE-UNMEASURED.** Amendment 1 specifies "≥ 1 kHz piezo"
+  but no empirical measurement of the firmware's actual UART
+  streaming rate has been recorded. Resolution deferred to Stage 2.
+
+- **BT-BRIDGE-HYPOTHESIS-REJECTED.** Investigated and rejected: an
+  HC-05/06 Bluetooth-serial bridge is passive transport — it cannot
+  generate UART data on its own; the MCU firmware must still call
+  `USART_SendData` (or equivalent). Recorded here so future agents do
+  not re-investigate this dead end.
+
+**Authorized work this loop:** Stage 1 Path A (signal-only Python
+simulation: `floor_sim.py` → `src/signals.py` → `src/algorithm.py` →
+metrics, validated against pass/fail threshold).
+
+**Blocked work this loop:** Path B (Renode firmware-in-loop), Stage 2
+(firmware integration), `/toolchain scaffold` (requires
+`## Firmware UART Format` which requires firmware identity).
+
+A future stage gate may upgrade Stage 0 to CLOSED once the three
+findings are resolved.
 
 ---
 
