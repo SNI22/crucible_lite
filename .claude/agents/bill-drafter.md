@@ -71,6 +71,12 @@ or this Bill will be blocked at debate."
 **Measurable outcome gate**
 The Expected Outcome must state a change in a domain primitive (from Amendment 1),
 in the unit of that primitive. "Improved performance" is not accepted.
+Valid primitives for this project (Amendment 1 — ratified 2026-05-15):
+  P1 — Floor acceleration (m/s²) — piezo PVDF+mass cantilever, ≥ 1 kHz
+  P2 — Acoustic pressure (Pa or PCM count) — microphone, broadband + speech-band
+  P3 — Human room occupancy (boolean ± confidence) — WiFi sensing module
+An Expected Outcome that cannot be expressed in m/s², Pa/PCM count, or occupancy
+boolean/confidence does not trace to a primitive and fails this gate.
 
 **Scope gate**
 The Proposed Change must name specific files, functions, or parameter values.

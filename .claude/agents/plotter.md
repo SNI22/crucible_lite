@@ -45,7 +45,11 @@ Trigger conditions:
 
 - Always use `crucible.signal.plot` functions or `matplotlib` with `Agg` backend
   (headless — no display required)
-- Always label axes with physical units (m/s², dps, ms, %)
+- Always label axes with physical units. For this project the valid primitive units are:
+    P1 (floor acceleration): m/s²
+    P2 (acoustic pressure): Pa or 16-bit PCM count (label which)
+    P3 (human room occupancy): boolean (0/1) or confidence (0–1)
+  Time axes: ms or s.
 - Always annotate threshold lines with their constitutional source
   (e.g. "threshold — Amendment N" or "Case YYYY-MM-DD ruling")
 - Always save at dpi=150 minimum

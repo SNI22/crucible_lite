@@ -61,9 +61,17 @@ For every numeric constant, threshold, or parameter in the source:
 - Is the unit stated?
 - Is the value physically plausible given the Signal Inventory range?
 
+The three domain primitives for this project (Amendment 1 — ratified 2026-05-15):
+  P1 — Floor acceleration (m/s²) — piezo PVDF+mass cantilever, ≥ 1 kHz
+  P2 — Acoustic pressure (Pa or PCM count) — microphone, broadband + speech-band
+  P3 — Human room occupancy (boolean ± confidence) — WiFi sensing module
+
+Every citation must name one of P1, P2, or P3 by label and state the unit.
+
 Flag as **ARTICLE-I-VIOLATION** if:
-- A constant has no comment tracing it to a domain primitive
-- A constant's unit is ambiguous or unstated
+- A constant has no comment tracing it to a domain primitive (P1, P2, or P3)
+- A constant's unit is ambiguous, unstated, or inconsistent with the primitive's unit
+  (P1: m/s²; P2: Pa or 16-bit PCM count; P3: boolean or 0–1 confidence)
 - A constant value falls outside the plausible range for its domain primitive
 
 Flag as **ARTICLE-I-WARNING** if:

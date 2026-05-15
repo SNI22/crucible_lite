@@ -34,7 +34,12 @@ Read in this order before producing any suggestion.
 
 1. `docs/device_context.md` — primary evidence source
    - Device Purpose: project target and pass/fail threshold
-   - Domain Primitives: Article I basis for every suggestion
+   - Domain Primitives: Article I basis for every suggestion.
+     Amendment 1 (ratified 2026-05-15) names three primitives for this project:
+       P1 — Floor acceleration (m/s²) — piezo PVDF+mass cantilever, ≥ 1 kHz
+       P2 — Acoustic pressure (Pa or PCM count) — microphone, broadband + speech-band
+       P3 — Human room occupancy (boolean ± confidence) — WiFi sensing module
+     Every suggestion must trace to one of P1, P2, or P3 by label.
    - Signal Inventory: expected units, ranges, hard limits
    - BOM: components, values, part numbers
    - Circuit Notes: power topology, signal paths, known issues
