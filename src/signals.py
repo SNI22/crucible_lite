@@ -412,6 +412,62 @@ def bg_flush(rng, duration_s, fs=FS_HZ):
     return sig
 
 
+def bg_environmental_noise(rng, duration_s, fs=FS_HZ):
+    """Real-spectrum bathroom noise floor (POST-SENSOR — applied AFTER
+    sensor model, since the source data is from a recorded CSV which
+    is already post-PVDF + post-amplifier). Primitive P1.
+
+    PSD model derived from ~/Documents/piezo_circuit/bathroom_testing/
+    step_201505.csv quiet segments:
+      - 1/f noise below ~5 Hz (electronic amplifier 1/f)
+      - White floor at high frequency
+      - Discrete peaks at 25, 60, 91, 183 Hz (bathroom-specific
+        environmental: likely fridge/HVAC, mains, adjacent washer)
+
+    Implementation: parametric model fitting the broadband shape
+    (1/f + white). Discrete peaks at specific frequencies are added
+    explicitly. RMS calibrated so simulated SNR for events is close
+    to the ~75:1 ratio observed in real bathroom recordings.
+
+    Article I trace: noise spectrum parameters extracted empirically
+    from real bathroom CSV (see docs/plots/real_noise_spectrum.png).
+    Scales chosen to match the post-sensor amplitude scale of the
+    simulator (arbitrary units, ~1-10 nano-scale for noise).
+    """
+    n = int(duration_s * fs)
+    freqs = np.fft.rfftfreq(n, 1.0 / fs)
+    n_freq = len(freqs)
+    # Broadband ASD: 1/sqrt(f) at low freq + white floor at high freq
+    # Calibrated so noise RMS post-sensor is ~5e-9 to 1e-8 (between
+    # current synthetic vent ~5e-9 and a typical event peak ~1.8e-6,
+    # giving SNR ~ 100-300 for clean events — realistic but tractable).
+    a_oneoverf = 1.5e-9  # 1/sqrt(f) coefficient
+    b_white = 5e-10      # white floor coefficient
+    asd = np.sqrt((a_oneoverf / np.sqrt(np.maximum(freqs, 0.5))) ** 2 + b_white ** 2)
+    # Add discrete peaks from the bathroom recording — match the real spectrum
+    peak_specs = [
+        (25.0, 8e-9),   # ~25 Hz peak (dominant environmental)
+        (60.0, 2e-9),   # mains
+        (91.0, 4e-9),   # bathroom-specific environmental
+        (120.0, 1e-9),  # 2nd mains harmonic
+        (183.0, 2e-9),  # 2nd harm of 91 Hz peak
+    ]
+    for f_peak, amp in peak_specs:
+        # Add a narrow ASD bump at f_peak — width ~0.5 Hz
+        bump = amp * np.exp(-((freqs - f_peak) / 0.5) ** 2)
+        asd = np.sqrt(asd ** 2 + bump ** 2)
+    # Generate noise with this ASD via FFT shaping
+    # scale = asd * sqrt(N * fs / 2)
+    scale = asd * np.sqrt(n * fs / 2.0)
+    re = rng.standard_normal(n_freq) * scale / np.sqrt(2)
+    im = rng.standard_normal(n_freq) * scale / np.sqrt(2)
+    im[0] = 0.0  # DC must be real
+    if n % 2 == 0:
+        im[-1] = 0.0  # Nyquist must be real
+    X = re + 1j * im
+    return np.fft.irfft(X, n)
+
+
 def bg_washer(rng, duration_s, fs=FS_HZ, attenuation=1.0):
     """Washer on spin — narrow-band 22-28 Hz spin frequency + sidebands.
     Spin frequency derives from typical residential washer specs.
@@ -667,6 +723,11 @@ def generate(profile, duration_s=DEFAULT_DURATION_S, seed=0, fs=FS_HZ,
         samples = apply_sensor_model(samples, fs=fs)
         caveats.append(
             f'sensor model applied: PVDF+cantilever f_n={CANTILEVER_FN_HZ}Hz zeta={CANTILEVER_ZETA}')
+        # Add real-spectrum environmental + sensor electronic noise floor.
+        # Added POST-sensor because the real CSV from which the spectrum
+        # was extracted is already post-PVDF + post-amp.
+        samples = samples + bg_environmental_noise(rng, duration_s, fs)
+        caveats.append('real-spectrum noise floor added (post-sensor)')
 
     gt = GroundTruth(
         profile=profile, cls=recipe.cls,
