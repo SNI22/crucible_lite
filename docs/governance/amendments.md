@@ -11,6 +11,61 @@ mandate, statistical derivation rules, etc.) are added after Amendment 1 is rati
 
 ---
 
+## Amendment 1 — Domain Primitives (piezo_fall)
+*Traces to: Article I*
+*Status: RATIFIED — 2026-05-15*
+
+**Governing rule:** Every threshold, filter cutoff, FSM transition, and
+algorithm parameter in this project must trace to one of the following
+three domain primitives. A parameter that cannot be so traced is a guess
+and is not permitted.
+
+**Domain primitives:**
+
+1. **Floor acceleration** (m/s²) — inertial response of the bathroom floor
+   to mechanical events on it. Measured via piezo (PVDF + proof-mass
+   cantilever) at ≥ 1 kHz.
+
+2. **Acoustic pressure** (Pa, or normalized PCM count) — sound pressure in
+   the bathroom air; broadband channel for environment classification
+   (shower / flush / drain false-alarm suppression) and speech-band
+   channel for verbal-response detection ("yes / no / help" after the
+   post-detection prompt). Measured via microphone.
+
+3. **Human room occupancy** (boolean, with optional confidence) —
+   presence of a human body in the monitored room. Measured via WiFi
+   sensing module.
+
+**Physical justification:** The device's purpose is to detect an elderly
+person's fall in a bathroom and prompt for confirmation before escalating.
+The hardest case is a slow controlled descent ("slump") at up to 3 m range
+on tile floor, in the presence of plumbing-induced floor vibration. No
+single sensor can disambiguate these scenarios:
+
+- Floor acceleration alone cannot reject a shower-running false positive
+  whose vibration spectrum may overlap a slow fall.
+- Acoustic pressure alone cannot detect a silent slow slump.
+- Occupancy alone cannot distinguish a fall from someone standing still.
+
+Each primitive captures a physically distinct quantity; the fall-detection
+decision derives from their joint state. Removing any of the three creates
+an ambiguity class the device cannot resolve. The microphone's broadband
+and speech-band channels are both derived from the same primitive
+(acoustic pressure) and therefore count as one primitive, not two.
+
+**Constraint on future amendments:** All future project amendments must
+cite at least one of P1 / P2 / P3 as the physical basis for any threshold,
+gain, cutoff, or transition condition they introduce.
+
+**Failure mode without it:** Parameters set by intuition or by fitting
+to data with no traceable physical basis. Article I unenforceable. The
+repeated failure mode of the prior non-Crucible iteration of this project
+— magic constants like `accur = 0.015295` and `ADC offset = 1890` baked
+into firmware with no per-unit calibration and no primitive trace —
+would recur in this project.
+
+---
+
 ## Mandatory Framework Amendments
 
 These three must be ratified before /session 0 on any Crucible project.

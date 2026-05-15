@@ -17,15 +17,79 @@ Updated after: every field test session, every BOM revision, every schematic cha
 
 ## Device Purpose
 
-> [One paragraph. State what the device measures or controls, who or what depends
-> on its output, and the cost of the two failure modes (false positive and false negative).
-> Every hw-advisor suggestion and every attorney argument must be grounded in this
-> statement. Delete this placeholder and write the real purpose before Stage 0.]
+This device detects falls of an elderly person in a bathroom by sensing floor
+vibration, then prompts the user to confirm whether help is needed. If no
+"no" response is received within a fixed timeout, the device escalates to an
+external channel (caregiver / family / emergency services — escalation
+transport is out of scope for this project). The dependency chain is:
+floor-vibration event → on-device fall classification → user prompt →
+verbal/manual acknowledgment or escalation. A false positive prompts the
+elderly user unnecessarily (recoverable annoyance, budgeted at ≤ 1 per
+7 days). A false negative leaves an injured or unconscious person on the
+bathroom floor with no alarm — the catastrophic failure the device exists
+to prevent.
 
-**Domain primitives** (traces to Article I):
-1. [Primitive 1] ([unit]) — [one-line physical description]
-2. [Primitive 2] ([unit]) — [one-line physical description]
-3. [Primitive 3] ([unit]) — [optional]
+**Project target:** Detect a fall of an elderly person on a bathroom-tile
+floor at up to 3 m range, including the slow-controlled-descent (slump)
+case, while rejecting heavy footsteps, dropped objects, and bathroom
+plumbing vibration (shower / flush / drain).
+
+**Pass/fail threshold:**
+- Sensitivity ≥ 95 % of real falls detected within 30 s of fall onset,
+  covering fast falls, slow slumps, and falls at the 3 m far-range case.
+- False positive rate ≤ 1 alarm per 7 days of typical bathroom use.
+- Detection latency: alarm prompt fires within 30 s of fall onset.
+
+**Domain primitives** (traces to Article I — ratified by Amendment 1):
+1. **Floor acceleration** (m/s²) — inertial response of the bathroom floor
+   to mechanical events on it.
+   Measured via: piezo (PVDF + proof-mass cantilever) at ≥ 1 kHz.
+2. **Acoustic pressure** (Pa, or normalized) — sound pressure in the
+   bathroom air, both broadband (environment classification) and
+   speech-band (verbal-response detection).
+   Measured via: microphone (digital I2S MEMS recommended; pinned at
+   `/toolchain init`).
+3. **Human room occupancy** (boolean, with optional confidence) — whether
+   a human body is present in the monitored room.
+   Measured via: WiFi sensing module (output interface pinned at
+   `/toolchain init`).
+
+**Operating envelope:**
+- **Normal:** ceramic / porcelain tile floor, PVDF+mass cantilever
+  epoxied across full base footprint, ≤ 3 m max fall range, 15–30 °C,
+  30–95 %RH, mains-powered, always-on 24/7.
+- **Worst-case (still in-scope):** active shower running, toilet flush +
+  tap running, neighbor footsteps through shared wall/floor, door slammed,
+  brief second-person presence (helper / delivery), bath mat partially
+  covering the floor, splash on enclosure (splash-rated, not submerged).
+- **Out-of-scope:** outdoor / submerged deployment; multi-person
+  bathrooms; floors over springy subfloor (joist over basement);
+  carpet / soft flooring; rugs covering the device; detection of falls
+  outside the monitored room; whole-house single-device monitoring.
+
+---
+
+## Signal Inventory
+
+| Signal | Physical quantity | Unit | Normal range | Hard limits | Sample rate | Primitive |
+|--------|------------------|------|--------------|-------------|-------------|-----------|
+| Piezo (PVDF+mass) | Floor acceleration | m/s² (derived from V via charge-amp transfer function) | ±0.5 g typical bathroom activity | clip at front-end rail (≈ ±5 V at ADC input) | 1 kHz baseline; ≥ 2 kHz stretch via external ADC | P1 |
+| Microphone — broadband channel | Acoustic pressure | Pa (or 16-bit PCM count) | 30–80 dB SPL room ambient | clip at digital full-scale | 8–16 kHz (TBD at /toolchain init) | P2 |
+| Microphone — speech-band channel | Acoustic pressure (300–3400 Hz) | Pa (or 16-bit PCM count) | response-time speech bursts | clip at digital full-scale | derived from broadband channel | P2 |
+| WiFi sensing | Human room occupancy | boolean (+ optional confidence 0–1) | 0 or 1 with confidence ≥ 0.7 stable | sensor-not-responding watchdog | event-driven or 1 Hz poll (TBD) | P3 |
+
+**Stretch / cost-gated sensors (deferred to /toolchain init decision):**
+- PIR — only if WiFi-sensing presence proves unreliable in bathroom RF environment
+- IMU on device housing — only if device housing itself gets bumped causing piezo false positives
+- MLX thermal — likely too expensive; skip
+
+**Pre-existing assets carried in from `~/Documents/piezo_circuit/`:**
+- Charge-amplifier front-end (CA3140 or MAX44248, 100 MΩ ∥ 10 nF feedback)
+- Sensor-mounting protocol (`SENSOR_MOUNTING.md` — PVDF+mass cantilever, full-area epoxy)
+- Walk-vs-fall characterization protocol (`WALK_VS_FALL_PROTOCOL.md`)
+- Feature dictionary (peak, energy, duration, spectral centroid, band ratios, decay shape, multi-peak count, footstep cadence) — pending augmentation with a slump-rumble feature
+- ESP32-S3 host-streaming firmware (5 kHz reference; will be adapted to project firmware)
+- Bedroom + livingroom test data; **bathroom fall data does not yet exist** and is a Stage 1 data-collection requirement
 
 ---
 
