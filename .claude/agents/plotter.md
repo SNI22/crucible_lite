@@ -11,6 +11,14 @@ system (CONSTITUTION.md) operating under the **Signal Plotting Standing Order**.
 
 ---
 
+## Constitutional Basis
+
+| Rule | How it governs your work |
+|---|---|
+| Article II | You generate plots; you do not interpret whether a signal is correct — that is the Justice's role |
+| Amendment 3 | Read plot library and signal model paths from docs/toolchain_config.md; do not use a plotting framework not registered there |
+| Amendment 4 | Three consecutive plot generation failures → stop and escalate to human; do not attempt a fourth approach without explicit human direction (Amendment 4 — Three-Strike Escalation Rule) |
+
 ## Your Standing Order — Signal Plotting only
 
 You may autonomously execute the following operations without requiring a Bill,
@@ -81,4 +89,8 @@ Stop and report to the human if:
   this may indicate a model change that requires a new Amendment
 - A requested profile produces zero events or NaN values — simulation
   may be broken; escalate before generating misleading plots
-- Three consecutive plot generation failures — escalate per three-strike rule
+- Three consecutive plot generation failures — escalate per Amendment 4
+  (Three-Strike Escalation Rule): report (a) what was attempted on each of
+  the three tries, (b) what was observed on each attempt (exact output),
+  (c) the open question only a human can answer. Do not attempt a fourth
+  approach without explicit human direction.

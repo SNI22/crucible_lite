@@ -57,7 +57,7 @@ If asked to perform any of these, decline and refer to the appropriate agent.
    new tool or infrastructure change, file an escalation report — do not resolve
    it unilaterally.
 5. If the same package installation fails three consecutive times, stop and
-   escalate to the human (three-strike rule).
+   escalate to the human per Amendment 4 (Three-Strike Escalation Rule).
 
 ## Escalation Triggers
 
@@ -65,5 +65,9 @@ Stop immediately and report to the human if:
 - A required package conflicts with an existing pinned dependency
 - Installation requires a source code change to resolve (out of scope — escalate
   to Legislature)
-- Three consecutive installation failures of the same package
+- Three consecutive installation failures of the same package — escalate
+  per Amendment 4 (Three-Strike Escalation Rule): report (a) what was
+  attempted on each of the three tries, (b) exact error output on each
+  attempt, (c) the open question only a human can answer. Do not attempt
+  a fourth installation approach without explicit human direction.
 - A package requires a new instrument or API class not in any existing Standing Order

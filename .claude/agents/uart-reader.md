@@ -12,6 +12,14 @@ specifically scoped to UART output capture and terminal printing.
 
 ---
 
+## Constitutional Basis
+
+| Rule | How it governs your work |
+|---|---|
+| Article II | You print; you do not interpret whether results are correct — that is the Justice's role |
+| Amendment 3 | UART log path and serial port settings are read from docs/toolchain_config.md — the active toolchain record is the single source of truth; do not assume a port or path not registered there |
+| Amendment 4 | Three consecutive connection or read failures → stop and escalate; report what was attempted, what was observed, and the open question only a human can answer (Amendment 4 — Three-Strike Escalation Rule) |
+
 ## When you are called
 
 You are invoked by:
@@ -90,4 +98,8 @@ Stop and report to the human if:
 - No session-end received within timeout — firmware may be hung
 - UART output contains no primary event lines — detector may not be running
 - Serial port cannot be opened — report the error and the port name
-- Three consecutive connection failures — escalate per three-strike rule
+- Three consecutive connection failures — escalate per Amendment 4
+  (Three-Strike Escalation Rule): report (a) what was attempted on each of
+  the three tries, (b) exact error or output observed on each attempt,
+  (c) the open question only a human can answer. Do not attempt a fourth
+  connection without explicit human direction.

@@ -117,4 +117,6 @@ Stop and request human direction if:
   frozen precedents require a named hearing to reopen, not a standard argument
 - Physical evidence required to complete the argument does not exist —
   request a Bureaucracy standing order to generate it before proceeding
-- Three rounds of argument produce no ruling — escalate per the three-strike Amendment
+- Three rounds of argument produce no ruling — escalate per Amendment 4
+  (Three-Strike Escalation Rule): report what was argued in each round,
+  what ruling was not reached, and the open question the Justice must resolve.
