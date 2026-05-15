@@ -686,15 +686,36 @@ def generate(profile, duration_s=DEFAULT_DURATION_S, seed=0, fs=FS_HZ,
     impacts = []
 
     if event_override is not None:
+        # Load real-data pulse. The CSV is in raw receiver.py units (volts
+        # post-firmware, assuming firmware accur=0.015295). To compare in
+        # the simulator's post-sensor scale, multiply by a calibration
+        # factor REAL_TO_SIM_SCALE that matches the noise-floor RMS of
+        # the real CSV's quiet periods to the simulator's noise-floor RMS.
+        # Real quiet RMS measured = 0.00133 (volts post-firmware).
+        # Sim noise floor RMS = ~1.43e-8 (arbitrary units, post-sensor).
+        # Scale = sim_rms / real_rms = 1.43e-8 / 0.00133 ≈ 1.08e-5
+        # (Primitive P1; SAMPLE-RATE-UNMEASURED finding still applies)
+        REAL_TO_SIM_SCALE = 1.08e-5
         pulse = load_pulse_csv(event_override)
         source = f'real_csv:{event_override}'
-        caveats.append('Real-data pulse: sample rate assumed 1 kHz (SAMPLE-RATE-UNMEASURED)')
+        caveats.append(
+            f'Real-data pulse: scaled by {REAL_TO_SIM_SCALE:.2e} to sim units; '
+            f'sample rate assumed 1 kHz (SAMPLE-RATE-UNMEASURED)')
         onset_sample = int(DEFAULT_EVENT_ONSET_S * fs)
         end_sample = min(onset_sample + len(pulse), n)
-        peak = np.max(np.abs(pulse)) + 1e-12
-        # Normalize real pulse to ~0.5 m/s² peak — primitive P1 typical event scale
-        pulse = pulse / peak * 0.5
-        samples[onset_sample:end_sample] += pulse[:end_sample - onset_sample]
+        # Apply REAL-TO-SIM amplitude calibration only — preserves the
+        # real pulse's relative amplitudes, no peak-normalization
+        scaled_pulse = pulse * REAL_TO_SIM_SCALE
+        # Real pulse is ALREADY post-sensor (recorded from real sensor),
+        # so we should NOT apply our sensor model to it. Inject AFTER
+        # the simulator's sensor model. We do this by adding it to the
+        # samples array post-sensor — but the apply_sensor block hasn't
+        # run yet at this point. Solution: stash the real pulse to add
+        # in a post-sensor stage below.
+        # For now we add to pre-sensor samples, then mark to skip sensor
+        # on this portion. Pragmatic: subtract impact of sensor model
+        # later by adding the pulse AFTER apply_sensor. Track via a flag.
+        samples[onset_sample:end_sample] += scaled_pulse[:end_sample - onset_sample]
         event_onset_s = DEFAULT_EVENT_ONSET_S
     else:
         if recipe.slump_fn is not None:
@@ -720,9 +741,29 @@ def generate(profile, duration_s=DEFAULT_DURATION_S, seed=0, fs=FS_HZ,
     # Apply PVDF+cantilever sensor model (primitive P1 transduction).
     # Set apply_sensor=False to bypass for debugging / raw floor accel.
     if apply_sensor:
-        samples = apply_sensor_model(samples, fs=fs)
-        caveats.append(
-            f'sensor model applied: PVDF+cantilever f_n={CANTILEVER_FN_HZ}Hz zeta={CANTILEVER_ZETA}')
+        if event_override is not None:
+            # Real pulse is already post-sensor (it was recorded from a
+            # real sensor). Apply sensor model only to the BACKGROUND
+            # portion (everything except the injected real pulse).
+            # Strategy: temporarily separate them, apply sensor to bg,
+            # then re-add the real pulse.
+            onset_sample = int(DEFAULT_EVENT_ONSET_S * fs)
+            real_pulse_len = int(len(load_pulse_csv(event_override)))
+            real_pulse_len = min(real_pulse_len, n - onset_sample)
+            real_segment = samples[onset_sample:onset_sample + real_pulse_len].copy()
+            # Zero out the real pulse region, sensor-model the bg, add real back
+            samples_bg = samples.copy()
+            samples_bg[onset_sample:onset_sample + real_pulse_len] -= real_segment
+            samples_bg = apply_sensor_model(samples_bg, fs=fs)
+            samples = samples_bg
+            # Reinject the (un-sensor-modeled) real pulse at the same offset
+            samples[onset_sample:onset_sample + real_pulse_len] += real_segment
+            caveats.append(
+                f'sensor model applied to background only; real pulse passed through unchanged')
+        else:
+            samples = apply_sensor_model(samples, fs=fs)
+            caveats.append(
+                f'sensor model applied: PVDF+cantilever f_n={CANTILEVER_FN_HZ}Hz zeta={CANTILEVER_ZETA}')
         # Add real-spectrum environmental + sensor electronic noise floor.
         # Added POST-sensor because the real CSV from which the spectrum
         # was extracted is already post-PVDF + post-amp.
