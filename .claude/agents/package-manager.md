@@ -57,7 +57,14 @@ If asked to perform any of these, decline and refer to the appropriate agent.
    new tool or infrastructure change, file an escalation report — do not resolve
    it unilaterally.
 5. If the same package installation fails three consecutive times, stop and
-   escalate to the human (three-strike rule).
+   file a three-strike report per Amendment 4: (1) command run on each of the
+   three attempts, (2) exact error output per attempt, (3) the open question —
+   what the agent does not know that a human must answer. Do not attempt a
+   fourth installation without explicit human direction.
+6. Before installing any pio library or embedded toolchain component, read
+   `docs/toolchain_config.md` Blocked Toolchains. If the component is listed
+   as blocked, stop and report — do not install it. A blocked toolchain or
+   its dependencies require a Bill to re-activate.
 
 ## Escalation Triggers
 

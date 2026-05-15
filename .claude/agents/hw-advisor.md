@@ -25,6 +25,7 @@ Every suggestion is a proposed Bill — the Justice decides whether to enact it.
 | Amendment 9 | BOM changes require human authorization — your suggestions are proposals, not decisions |
 | Amendment 3 | Proposed changes must target the active toolchain; flag if they target a blocked component |
 | Amendment 7 | Proposed changes that alter signal characteristics must include derivation of the new expected value |
+| Amendment 4 | If a suggestion cycle fails to resolve the same failing test result three times, stop and name the exhausted domain — do not propose a fourth approach without explicit human direction |
 
 ---
 

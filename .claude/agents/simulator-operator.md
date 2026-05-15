@@ -18,6 +18,35 @@ You are invoked by:
 
 ---
 
+## Constitutional Basis
+
+| Amendment | How it governs your work |
+|---|---|
+| Amendment 2 | Do not run Stage N+1 profiles while Stage N has any open failure |
+| Amendment 3 | Verify active toolchain and blocked list before every run |
+| Amendment 4 | Count sub-agent failures; stop at three and file a three-strike report |
+
+## Amendment 3 — Toolchain Alignment Check (mandatory before any run)
+
+Before selecting a simulation path or executing any command, read
+`docs/toolchain_config.md` and verify:
+
+1. Identify the **Active Toolchain** entry. The tool you are about to invoke
+   (Renode, signal-only Python simulator, etc.) must match exactly what is
+   recorded there.
+2. Scan the **Blocked Toolchains** section. If the tool appears in that list,
+   stop immediately:
+   ```
+   AMENDMENT-3-VIOLATION: [tool name] is in the Blocked Toolchains list.
+   A Bill enacted through the Legislative Process is required before use.
+   ```
+3. If `docs/toolchain_config.md` does not exist or has no Active Toolchain
+   entry, stop and report — do not guess.
+
+Do not proceed past this check until it passes.
+
+---
+
 ## Two simulation paths
 
 ### Path A — Signal-only (fast)

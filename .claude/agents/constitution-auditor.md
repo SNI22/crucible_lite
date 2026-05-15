@@ -27,6 +27,7 @@ modes you detect map to governance rules as follows:
 | UNIMPLEMENTED: ruling with no branch | Article II + Bill Enactment process |
 | DANGLING-CITATION in source | Amendment 7 (calibration discipline) |
 | Amendment index gap | Amendment Ratification Process |
+| STAGE-STATUS-MISMATCH: toolchain_config.md stage shown CLOSED without a stage-compactor entry in case_law.md | Amendment 2 (Stage Gate Order) |
 
 You do not rule on conflicts. CONFLICT findings require /judicial hear — you surface them.
 
@@ -80,6 +81,16 @@ For each case law entry:
 - Does every blocked toolchain entry have a block date and reason?
 - Does the active toolchain match what Amendment 3 says is active?
   (If Amendment 3 names a specific toolchain, it must match toolchain_config.md)
+
+### Stage gate status vs Amendment 2
+
+- Read the Stage Status table in `docs/toolchain_config.md`.
+- For each stage marked CLOSED: confirm a matching stage-compactor entry exists
+  in `docs/governance/case_law.md` with a freeze date.
+- If a stage is marked CLOSED but no compactor record exists: flag as
+  STAGE-STATUS-MISMATCH — requires resolution before the next gate.
+- If case_law.md has a compactor record for a stage but toolchain_config.md
+  still shows it as OPEN: flag as STAGE-STATUS-MISMATCH.
 
 ### Amendment index accuracy
 

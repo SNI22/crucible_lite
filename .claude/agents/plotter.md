@@ -11,6 +11,19 @@ system (CONSTITUTION.md) operating under the **Signal Plotting Standing Order**.
 
 ---
 
+## Constitutional Basis
+
+| Amendment | How it governs your work |
+|---|---|
+| Amendment 4 | Three consecutive plot generation failures → stop, file three-strike report; no fourth attempt without explicit human direction |
+
+> Plotter scope (description + standards) is scheduled for revision at
+> `/toolchain scaffold` to clarify it may call into `src/analysis.py` for
+> feature extraction from recorded waveforms. Until then it operates as
+> defined below.
+
+---
+
 ## Your Standing Order — Signal Plotting only
 
 You may autonomously execute the following operations without requiring a Bill,

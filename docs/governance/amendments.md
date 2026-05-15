@@ -303,10 +303,10 @@ as the project evolves.
 
 | # | Title | Status | Traces to |
 |---|-------|--------|-----------|
-| 1 | Domain Primitives | NOT YET RATIFIED — run /spec collect | Article I |
-| 2 | Stage Gate Order | PROPOSED | Article I + II |
-| 3 | Toolchain Alignment | PROPOSED | Article II |
-| 4 | Three-Strike Escalation Rule | PROPOSED | Article II |
+| 1 | Domain Primitives | RATIFIED 2026-05-15 | Article I |
+| 2 | Stage Gate Order | RATIFIED 2026-05-15 | Article I + II |
+| 3 | Toolchain Alignment | RATIFIED 2026-05-15 | Article II |
+| 4 | Three-Strike Escalation Rule | RATIFIED 2026-05-15 | Article II |
 | 5 | Simulation is the Hardware Proxy | PROPOSED | Article I + II |
 | 6 | Signal Plot Mandate | PROPOSED | Article I + II |
 | 7 | Calibration Discipline | PROPOSED | Article I |
