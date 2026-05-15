@@ -93,6 +93,59 @@ plumbing vibration (shower / flush / drain).
 
 ---
 
+## Simulation Profile Catalog
+
+> Locked at Stage 1 entry (2026-05-15). Each profile is a composite of one
+> always-on background source (ventilator) plus optional plumbing/noise
+> sources plus an optional event. Used by `src/signals.py::generate(profile, ...)`
+> to produce labeled sensor traces for the detector under test.
+> Background sources: `vent_humming` is always injected (always-on bathroom
+> exhaust fan, ~50–60 Hz motor + harmonics). Other sources documented per profile.
+
+### Class breakdown
+
+| Class | Algorithm output | Purpose |
+|-------|------------------|---------|
+| **noise** | not-fall | Continuous/ambient sources, no discrete event. Tests baseline sensitivity. |
+| **confuser** | not-fall | Discrete events that look fall-like but aren't. Tests discrimination logic. |
+| **fall** | fall | The positive case. Tests sensitivity. |
+
+### Profiles
+
+| # | Profile | Class | Composition |
+|---|---------|-------|-------------|
+| 1 | `noise_vent` | noise | vent only |
+| 2 | `noise_shower` | noise | vent + shower (continuous water-on-tile, ~3 min) |
+| 3 | `noise_flush` | noise | vent + toilet-flush transient (~30 s) |
+| 4 | `noise_washer_local` | noise | vent + washing machine on spin in same unit (direct floor coupling) |
+| 5 | `noise_washer_neighbor` | noise | vent + neighbor's washer (through-wall + shared-floor attenuation) |
+| 6 | `confuser_step` | confuser | vent + far step at 3 m (Case 2: far step ≈ close fall amplitude) |
+| 7 | `confuser_drop_phone` | confuser | vent + light rigid drop (~200 g phone) |
+| 8 | `confuser_drop_heavy` | confuser | vent + heavy rigid drop (~600 g hair dryer / electric razor) |
+| 9 | `confuser_drop_glass` | confuser | vent + brittle multi-impact drop (~200 g cosmetic glass) |
+| 10 | `fall_fast` | fall | vent + fast fall at 3 m (200 J effective floor impact) |
+| 11 | `fall_slump` | fall | vent + shower + slow slump at 3 m (worst case: slump + plumbing FP + far range) |
+
+### Evaluation metrics
+
+| Metric | Source | Target |
+|--------|--------|--------|
+| Sensitivity | fraction of class `fall` correctly classified as fall | ≥ 95 % |
+| FP rate on noise | fraction of class `noise` incorrectly classified as fall | ~ 0 % (easy) |
+| FP rate on confuser | fraction of class `confuser` incorrectly classified as fall | drives ≤ 1/week target |
+| Detection latency | fall-onset → classification | ≤ 30 s |
+
+### Unmodeled scenarios (deferred — known gaps)
+
+Recorded here so future agents do not re-investigate without authorization:
+toilet-seat slam, elderly-style step (current `confuser_step` uses 70 kg
+adult heel-strike), fall-with-grab-bar-support (partial controlled descent),
+pet activity, adjacent-room footsteps, fall-onto-bath-mat (damped) vs
+fall-onto-bare-tile. Add as Bill-level scope expansion if Stage 1 fails to
+achieve target metrics on the locked catalog above.
+
+---
+
 ## Bill of Materials (BOM)
 
 > Component-level record. Every component that touches a domain primitive must be here.
