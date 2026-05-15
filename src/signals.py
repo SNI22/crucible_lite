@@ -54,12 +54,24 @@ DEFAULT_DURATION_S = 30.0
 # stillness gate (5 s requirement) plus headroom. Traces to P1 latency target.
 DEFAULT_EVENT_ONSET_S = 10.0
 
-# Slab and sensor — primitive P1 spatial domain
-# Bathroom preset from floor_sim: 2 m × 2 m, ceramic-on-concrete
-SLAB = floor_sim.PRESETS['bathroom']
-# Piezo at (0.5, 0.5) m — quarter-corner placement, asymmetric so spatial
-# response varies meaningfully across the slab. P1 sensor location.
-PIEZO_XY = (0.5, 0.5)
+# Bathroom geometry registry — primitive P1 spatial domain.
+# Per user direction: focus on bathroom (medium) and bathroom_small;
+# bathroom_large is reserved for later if needed.
+GEOMETRIES = {
+    'small':  floor_sim.PRESETS['bathroom_small'],  # 1.5 × 1.5 m, 12 cm concrete
+    'medium': floor_sim.PRESETS['bathroom'],        # 2.0 × 2.0 m, 15 cm concrete
+}
+# Per-seed geometry distribution: 1/2 small, 1/2 medium.
+# Order matters — seed % len(GEOMETRY_DISTRIBUTION) picks the geometry.
+GEOMETRY_DISTRIBUTION = ['small', 'medium']
+
+# Piezo placement: scaled to quarter-corner per geometry. Reason: simply-
+# supported boundaries (floor_sim preset) force mode shapes to zero at the
+# walls. Quarter-corner (~25% of slab dim from each wall) is the practical
+# sweet spot — corner-region, but mode-shape product is ~50% of max so
+# the sensor remains usefully sensitive. Primitive P1 sensor location.
+def piezo_xy_for(geom):
+    return (0.25 * geom.Lx, 0.25 * geom.Ly)
 
 # Impulse response duration: 1.5 s post-impact. Derived from longest
 # expected decay tau (~500 ms for low-frequency soft-tissue impacts per
@@ -110,29 +122,28 @@ def _quantize_xy(xy):
 IR_REF_DURATION_S = 0.005
 
 
-def _get_impulse_response(source_xy, fs=FS_HZ):
+def _get_impulse_response(source_xy, geometry='medium', fs=FS_HZ):
     # True per-Newton impulse response h(t) recovered via Wiener
     # deconvolution from a 5 ms half-sine FEA reference. Primitive P1.
-    # Wiener deconvolution: H = (G·X*) / (|X|² + ε)
-    key = _quantize_xy(source_xy)
+    # Cache keyed by (geometry, quantized_xy) so different bathroom sizes
+    # don't collide in the cache.
+    geom = GEOMETRIES[geometry]
+    sensor_xy = piezo_xy_for(geom)
+    key = (geometry, _quantize_xy(source_xy))
     if key not in _IR_CACHE:
-        # FEA response to a known wide-pulse input — primitive P1
         ref_impact = floor_sim.ImpactSpec(
             peak_force_N=1.0, duration_s=IR_REF_DURATION_S, t_start=0.0,
         )
         result = floor_sim.simulate(
-            slab=SLAB, impact=ref_impact,
-            source_xy=key, sensor_xy=PIEZO_XY,
+            slab=geom, impact=ref_impact,
+            source_xy=key[1], sensor_xy=sensor_xy,
             fs=fs, duration=IR_DURATION_S,
         )
         g = result.accel
-        # Build the same reference pulse in our sample grid
         x_ref = _force_half_sine(1.0, IR_REF_DURATION_S, fs=fs)
         n = len(g)
-        # Spectral deconvolution: pad x_ref to length n, FFT both, recover h
         X = np.fft.rfft(x_ref, n)
         G = np.fft.rfft(g, n)
-        # Wiener regularization (epsilon as fraction of max |X|²)
         eps = 1e-6 * np.max(np.abs(X) ** 2)
         H = (G * np.conj(X)) / (np.abs(X) ** 2 + eps)
         h = np.fft.irfft(H, n)
@@ -147,40 +158,54 @@ def _force_half_sine(force_N, duration_s, fs=FS_HZ):
     return force_N * np.sin(np.pi * t / duration_s)
 
 
-def impact_to_signal(impact, fs=FS_HZ):
+def impact_to_signal(impact, geometry='medium', fs=FS_HZ):
     # Sensor waveform from one Impact — convolve true IR with force (P1).
     # h has units (m/s²) per (sample of N), so conv(force_in_N, h) gives m/s²
-    h = _get_impulse_response(impact.xy, fs=fs)
+    h = _get_impulse_response(impact.xy, geometry=geometry, fs=fs)
     force = _force_half_sine(impact.force_N, impact.duration_s, fs=fs)
     return np.convolve(force, h, mode='full')
 
 
 # ─── Event trajectory generators (P1 spatial sources) ──────────────────
 
-def walking_trajectory(start_xy, end_xy,
-                       speed_mps=1.0, cadence_hz=1.8,
+def walking_trajectory(start_xy, end_xy, *,
+                       cadence_hz=1.7,
+                       stride_length_m=0.6,
                        t_start=0.0,
                        force_range_N=(600.0, 900.0),
                        duration_s=0.030,
                        rng=None):
-    """Footstep sequence from start to end. Forces traces to Cavanagh &
-    Lafortune 1980 (peak force ~1.1× body weight ≈ 770-910 N for 70 kg).
-    Cadence 1.5-2.0 Hz derives from elderly gait literature (primitive P1).
-    Position jitter ±3 cm derives from natural footfall scatter.
+    """Footstep sequence from start_xy toward end_xy with physically
+    constrained stride length. Forces trace to Cavanagh & Lafortune 1980
+    (~1.1x body weight, primitive P1). Stride 0.5-0.7 m for elderly
+    (literature average ~0.6 m). Cadence 1.4-2.0 Hz. Position jitter
+    +/-3 cm for natural footfall scatter.
+    Step count = floor(distance / stride_length) + 1, NOT
+    speed * duration — this prevents physically unrealistic spacing.
     """
     if rng is None:
         rng = np.random.default_rng()
+    # Constrain stride to physical range per primitive P1 gait literature
+    stride_length_m = max(0.4, min(0.8, stride_length_m))
     dx = end_xy[0] - start_xy[0]
     dy = end_xy[1] - start_xy[1]
     distance_m = math.hypot(dx, dy)
-    traversal_s = distance_m / speed_mps if distance_m > 0 else 0.5
-    n_steps = max(1, int(round(traversal_s * cadence_hz)))
+    if distance_m > 0:
+        # Unit direction vector — primitive P1 spatial domain
+        ux = dx / distance_m
+        uy = dy / distance_m
+    else:
+        ux = uy = 0.0
+    n_steps = max(1, int(distance_m / stride_length_m) + 1)
+    step_period_s = 1.0 / cadence_hz
     impacts = []
     for i in range(n_steps):
-        frac = i / max(1, n_steps - 1) if n_steps > 1 else 0.0
-        xy = (start_xy[0] + frac * dx + rng.uniform(-0.03, 0.03),
-              start_xy[1] + frac * dy + rng.uniform(-0.03, 0.03))
-        t = t_start + i / cadence_hz
+        step_distance = i * stride_length_m
+        if step_distance > distance_m + 0.5 * stride_length_m:
+            break
+        xy = (start_xy[0] + ux * step_distance + rng.uniform(-0.03, 0.03),
+              start_xy[1] + uy * step_distance + rng.uniform(-0.03, 0.03))
+        t = t_start + i * step_period_s
         force = rng.uniform(*force_range_N)
         impacts.append(Impact(xy=xy, time_s=t, force_N=force, duration_s=duration_s))
     return impacts
@@ -370,56 +395,108 @@ class ProfileRecipe:
     slump_fn: object | None = None
 
 
-def _walking_into_bathroom(rng):
-    # Far step starting ~1.5 m away, walking toward sensor (P1 trajectory)
-    end_xy = (rng.uniform(0.4, 0.7), rng.uniform(0.4, 0.7))
-    start_xy = (rng.uniform(1.6, 1.9), rng.uniform(0.5, 1.5))
+def _walking_into_bathroom(rng, geom):
+    # Walking from far wall (~95% slab) toward sensor (~25% slab). P1.
+    end_xy = (rng.uniform(0.20, 0.35) * geom.Lx, rng.uniform(0.20, 0.35) * geom.Ly)
+    start_xy = (rng.uniform(0.80, 0.95) * geom.Lx, rng.uniform(0.30, 0.70) * geom.Ly)
     return walking_trajectory(
         start_xy=start_xy, end_xy=end_xy,
-        speed_mps=rng.uniform(0.8, 1.2),
+        stride_length_m=rng.uniform(0.5, 0.7),
         cadence_hz=rng.uniform(1.5, 2.0),
         t_start=rng.uniform(5.0, 10.0),
         rng=rng,
     )
 
 
-def _fall_fast_far(rng):
-    # Fall at far corner of slab — primitive P1 spatial test
-    center = (rng.uniform(1.4, 1.8), rng.uniform(1.4, 1.8))
+def _fall_after_walk(rng, geom):
+    # Composite: person walks into bathroom and then falls. Primitive P1.
+    end_xy = (rng.uniform(0.50, 0.80) * geom.Lx, rng.uniform(0.50, 0.80) * geom.Ly)
+    start_xy = (rng.uniform(0.85, 0.95) * geom.Lx, rng.uniform(0.20, 0.35) * geom.Ly)
+    walking = walking_trajectory(
+        start_xy=start_xy, end_xy=end_xy,
+        stride_length_m=rng.uniform(0.5, 0.7),
+        cadence_hz=rng.uniform(1.5, 2.0),
+        t_start=rng.uniform(3.0, 5.0),
+        rng=rng,
+    )
+    if walking:
+        last_t = walking[-1].time_s
+        last_xy = walking[-1].xy
+    else:
+        last_t = 5.0
+        last_xy = end_xy
+    # Fall at last footstep + small offset, after 0.3-0.7 s
+    fall_center = (last_xy[0] + rng.uniform(-0.2, 0.2),
+                   last_xy[1] + rng.uniform(-0.2, 0.2))
+    falling = fall_trajectory(
+        center_xy=fall_center, n_impacts=3,
+        t_start=last_t + rng.uniform(0.3, 0.7),
+        rng=rng,
+    )
+    return walking + falling
+
+
+def _walk_in_out(rng, geom):
+    # Composite: person walks IN, pauses, walks OUT. Primitive P1.
+    pause_duration_s = rng.uniform(5.0, 10.0)
+    mid_xy = (rng.uniform(0.40, 0.60) * geom.Lx, rng.uniform(0.40, 0.60) * geom.Ly)
+    in_start = (rng.uniform(0.85, 0.95) * geom.Lx, rng.uniform(0.20, 0.35) * geom.Ly)
+    out_end = (rng.uniform(0.85, 0.95) * geom.Lx, rng.uniform(0.20, 0.35) * geom.Ly)
+    walk_in = walking_trajectory(
+        start_xy=in_start, end_xy=mid_xy,
+        stride_length_m=rng.uniform(0.5, 0.7),
+        cadence_hz=rng.uniform(1.5, 2.0),
+        t_start=rng.uniform(3.0, 4.0),
+        rng=rng,
+    )
+    last_in_t = walk_in[-1].time_s if walk_in else 5.0
+    walk_out = walking_trajectory(
+        start_xy=mid_xy, end_xy=out_end,
+        stride_length_m=rng.uniform(0.5, 0.7),
+        cadence_hz=rng.uniform(1.5, 2.0),
+        t_start=last_in_t + pause_duration_s,
+        rng=rng,
+    )
+    return walk_in + walk_out
+
+
+def _fall_fast_far(rng, geom):
+    # Fall at far corner (~70-90% of slab dim). Primitive P1.
+    center = (rng.uniform(0.70, 0.90) * geom.Lx, rng.uniform(0.70, 0.90) * geom.Ly)
     return fall_trajectory(
         center_xy=center, n_impacts=3,
         t_start=DEFAULT_EVENT_ONSET_S, rng=rng,
     )
 
 
-def _slump_far(rng):
-    # Slow slump at far corner — Q3 worst case, primitive P1
-    center = (rng.uniform(1.4, 1.8), rng.uniform(1.4, 1.8))
+def _slump_far(rng, geom):
+    # Slump at far corner — primitive P1
+    center = (rng.uniform(0.70, 0.90) * geom.Lx, rng.uniform(0.70, 0.90) * geom.Ly)
     slide_dur = rng.uniform(2.0, 3.5)
     t_start = DEFAULT_EVENT_ONSET_S
     friction, impacts = slump_signal(t_start, slide_dur, center, rng)
     return friction, t_start, impacts
 
 
-def _drop_phone(rng):
-    # 200 g phone from 1 m — primitive P1
-    xy = (rng.uniform(0.4, 1.6), rng.uniform(0.4, 1.6))
+def _drop_phone(rng, geom):
+    # 200 g phone from 1 m, anywhere on slab. Primitive P1.
+    xy = (rng.uniform(0.20, 0.80) * geom.Lx, rng.uniform(0.20, 0.80) * geom.Ly)
     return drop_trajectory(xy=xy, mass_kg=0.20, height_m=1.0,
                             t_start=DEFAULT_EVENT_ONSET_S,
                             contact_duration_s=0.004, rng=rng)
 
 
-def _drop_heavy(rng):
-    # 600 g hair dryer from 0.8 m — primitive P1
-    xy = (rng.uniform(0.4, 1.6), rng.uniform(0.4, 1.6))
+def _drop_heavy(rng, geom):
+    # 600 g hair dryer from 0.8 m. Primitive P1.
+    xy = (rng.uniform(0.20, 0.80) * geom.Lx, rng.uniform(0.20, 0.80) * geom.Ly)
     return drop_trajectory(xy=xy, mass_kg=0.60, height_m=0.8,
                             t_start=DEFAULT_EVENT_ONSET_S,
                             contact_duration_s=0.008, rng=rng)
 
 
-def _drop_glass(rng):
-    # 200 g brittle glass from 1.2 m, multi-impact (P1 fragments)
-    xy = (rng.uniform(0.4, 1.6), rng.uniform(0.4, 1.6))
+def _drop_glass(rng, geom):
+    # 200 g brittle glass from 1.2 m, multi-impact. Primitive P1.
+    xy = (rng.uniform(0.20, 0.80) * geom.Lx, rng.uniform(0.20, 0.80) * geom.Ly)
     return drop_trajectory(xy=xy, mass_kg=0.20, height_m=1.2,
                             t_start=DEFAULT_EVENT_ONSET_S,
                             contact_duration_s=0.003, rng=rng,
@@ -427,34 +504,47 @@ def _drop_glass(rng):
 
 
 PROFILES = {
-    'noise_vent':            ProfileRecipe('noise', ['vent'], lambda rng: []),
-    'noise_shower':          ProfileRecipe('noise', ['vent', 'shower'], lambda rng: []),
-    'noise_flush':           ProfileRecipe('noise', ['vent', 'flush'], lambda rng: []),
-    'noise_washer_local':    ProfileRecipe('noise', ['vent', 'washer_local'], lambda rng: []),
-    'noise_washer_neighbor': ProfileRecipe('noise', ['vent', 'washer_neighbor'], lambda rng: []),
+    'noise_vent':            ProfileRecipe('noise', ['vent'], lambda rng, geom: []),
+    'noise_shower':          ProfileRecipe('noise', ['vent', 'shower'], lambda rng, geom: []),
+    'noise_flush':           ProfileRecipe('noise', ['vent', 'flush'], lambda rng, geom: []),
+    'noise_washer_local':    ProfileRecipe('noise', ['vent', 'washer_local'], lambda rng, geom: []),
+    'noise_washer_neighbor': ProfileRecipe('noise', ['vent', 'washer_neighbor'], lambda rng, geom: []),
     'confuser_step':         ProfileRecipe('confuser', ['vent'], _walking_into_bathroom),
     'confuser_drop_phone':   ProfileRecipe('confuser', ['vent'], _drop_phone),
     'confuser_drop_heavy':   ProfileRecipe('confuser', ['vent'], _drop_heavy),
     'confuser_drop_glass':   ProfileRecipe('confuser', ['vent'], _drop_glass),
     'fall_fast':             ProfileRecipe('fall', ['vent'], _fall_fast_far),
     'fall_slump':            ProfileRecipe('fall', ['vent', 'shower'],
-                                            lambda rng: [],
+                                            lambda rng, geom: [],
                                             slump_fn=_slump_far),
+    # Composite profiles — multi-event sessions. Primitive P1.
+    'fall_after_walk':       ProfileRecipe('fall', ['vent'], _fall_after_walk),
+    'walk_in_out':           ProfileRecipe('confuser', ['vent'], _walk_in_out),
 }
 
 
 # ─── Main entry point ──────────────────────────────────────────────────
 
 def generate(profile, duration_s=DEFAULT_DURATION_S, seed=0, fs=FS_HZ,
-             event_override=None):
-    """Generate one trace for `profile`. Returns (samples in m/s², GroundTruth)."""
+             event_override=None, geometry=None):
+    """Generate one trace for `profile`. Returns (samples in m/s², GroundTruth).
+
+    geometry: if None, picked deterministically from GEOMETRY_DISTRIBUTION
+        using seed % len(distribution). Set explicitly to 'small' or
+        'medium' to force a specific bathroom geometry.
+    """
     if profile not in PROFILES:
         raise KeyError(f"Unknown profile {profile!r}. Available: {sorted(PROFILES.keys())}")
     recipe = PROFILES[profile]
     rng = np.random.default_rng(seed)
+    # Geometry selection — deterministic per seed for reproducibility
+    if geometry is None:
+        geometry = GEOMETRY_DISTRIBUTION[seed % len(GEOMETRY_DISTRIBUTION)]
+    geom = GEOMETRIES[geometry]
     n = int(duration_s * fs)
     samples = np.zeros(n)
     caveats = []
+    caveats.append(f'geometry: {geometry} ({geom.Lx}x{geom.Ly} m)')
 
     # Backgrounds (synthetic — primitive P1 floor acceleration in m/s²)
     for bg_name in recipe.bg_sources:
@@ -492,16 +582,16 @@ def generate(profile, duration_s=DEFAULT_DURATION_S, seed=0, fs=FS_HZ,
         event_onset_s = DEFAULT_EVENT_ONSET_S
     else:
         if recipe.slump_fn is not None:
-            friction, friction_t, slump_impacts = recipe.slump_fn(rng)
+            friction, friction_t, slump_impacts = recipe.slump_fn(rng, geom)
             f_onset = int(friction_t * fs)
             f_end = min(f_onset + len(friction), n)
             samples[f_onset:f_end] += friction[:f_end - f_onset]
             impacts.extend(slump_impacts)
             event_onset_s = friction_t
-        impacts.extend(recipe.events_fn(rng))
+        impacts.extend(recipe.events_fn(rng, geom))
 
         for imp in impacts:
-            wf = impact_to_signal(imp, fs=fs)
+            wf = impact_to_signal(imp, geometry=geometry, fs=fs)
             inj = int(imp.time_s * fs)
             end = min(inj + len(wf), n)
             if inj < 0 or inj >= n:
