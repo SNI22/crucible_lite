@@ -21,7 +21,7 @@ then remove the PROPOSED prefix to ratify.
 
 ### Amendment 2 — Stage Gate Order
 *Traces to: Article I + II*
-*Status: PROPOSED — ratify by removing this line*
+*Status: RATIFIED 2026-05-15*
 
 Development proceeds through exactly these stages in order, and no stage begins
 until the previous stage's exit criteria are explicitly confirmed by the human:
@@ -41,7 +41,7 @@ not a debugging tool.
 
 ### Amendment 3 — Toolchain Alignment
 *Traces to: Article II*
-*Status: PROPOSED — ratify by removing this line*
+*Status: RATIFIED 2026-05-15*
 
 Every agent working on this project must operate within the toolchain that is currently
 active and recorded in `docs/toolchain_config.md`. No agent may introduce a new
@@ -59,7 +59,7 @@ recorded in toolchain_config.md with a date and reason.
 
 ### Amendment 4 — Three-Strike Escalation Rule
 *Traces to: Article II*
-*Status: PROPOSED — ratify by removing this line*
+*Status: RATIFIED 2026-05-15*
 
 If a simulation, unit test, hardware smoke test, or iterative fix process fails to meet
 exit criteria within three attempts, the agent must stop, report the full status to the
@@ -311,9 +311,9 @@ and the published benchmark comparison loses physical traceability.
 | # | Title | Status | Traces to |
 |---|-------|--------|-----------|
 | 1 | Domain Primitives | RATIFIED 2026-05-14 | Article I |
-| 2 | Stage Gate Order | PROPOSED | Article I + II |
-| 3 | Toolchain Alignment | PROPOSED | Article II |
-| 4 | Three-Strike Escalation Rule | PROPOSED | Article II |
+| 2 | Stage Gate Order | RATIFIED 2026-05-15 | Article I + II |
+| 3 | Toolchain Alignment | RATIFIED 2026-05-15 | Article II |
+| 4 | Three-Strike Escalation Rule | RATIFIED 2026-05-15 | Article II |
 | 5 | Simulation is the Hardware Proxy | PROPOSED | Article I + II |
 | 6 | Signal Plot Mandate | PROPOSED | Article I + II |
 | 7 | Calibration Discipline | PROPOSED | Article I |
