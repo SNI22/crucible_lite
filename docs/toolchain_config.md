@@ -200,12 +200,40 @@ scale:  > [comma-separated scale factors — e.g., "1, 1, 0.1, 0.1, 1, 1"]
 
 ```
 Spec Gate  — Device Specification:  CLOSED 2026-05-15 (Amendment 1 ratified, commit e06398e)
-Stage 0    — HIL Toolchain Lock:    NOT STARTED
+Stage 0    — HIL Toolchain Lock:    OPEN — adapted protocol (see below)
 Stage 1    — Simulation:            NOT STARTED
 Stage 2    — Firmware Integration:  NOT STARTED
 Stage 3    — Field Test:            NOT STARTED
 Stage 4    — Host Integration:      NOT STARTED
 ```
+
+---
+
+## Stage 0 — Adapted HIL Toolchain Lock Protocol
+
+The framework default Stage 0 assumes four sequential flashable test programs
+(counter → sensor readout → algorithm-on-MCU over USB → algorithm-on-MCU over
+wireless). This project's architecture does not fit that model: the MCU
+performs sampling + UART streaming only, and the algorithm runs on the Pi 5
+host. The protocol below is the adapted Stage 0 for piezo_fall; it preserves
+the intent of the framework's gates (prove the entire pipeline works before
+algorithm development) while matching the actual hardware.
+
+| Gate | Test | Pass criterion |
+|------|------|----------------|
+| **0.1** | **MCU alive.** Power the STM32 (custom PCB or Alientek Warship dev board), connect transport (USB-UART or HC-05/06 BT-serial bridge) to the Pi 5 / laptop receiver, run `receiver.py`. | Continuous UART data stream visible in receiver.py at 115200 baud; no resets across a 60-second observation window. |
+| **0.2a** | **ADC plausibility.** With piezo sensor connected, observe the live receiver.py trace at rest, then tap the floor 30 cm from the sensor. | Quiet baseline near ADC count 1890 (DC zero-code, may vary per board ±100) ; clear transient spike clearly above baseline on tap. |
+| **0.2b** | **Streaming rate verification.** Capture a 10-second receiver.py session at rest. Count sample rows in the resulting CSV. | ≥ 10,000 sample rows (≥ 1 kHz × 10 s) — matches Amendment 1's "≥ 1 kHz piezo" clause. Significantly fewer rows is a HARD FAIL — either flash modified firmware that streams at ≥ 1 kHz, or open an Amendment 3 Bill for an alternative signal path. Record the actual measured rate in `device_context.md` Test Results table. |
+| **0.3** | **Receiver capture end-to-end.** Capture a 30-second receiver.py session; key-tag one "step" event with SPACE while tapping near the sensor. | Valid CSV with `sample_index,value,event` schema; the tagged event row exists at a sample index close to the actual tap (within receiver.py's documented tag latency). |
+| **0.4** | **Wireless / transport check.** If the deployment uses an HC-05/06 BT-serial bridge, repeat gate 0.1 over BT instead of USB and confirm receiver.py captures equivalently. If deployment is USB-only, explicitly record that and skip this gate. | BT capture matches USB capture in format and continuity for ≥ 60 s, OR explicit "BT not in deployment scope — USB-only" record in Test Results table. |
+
+**Procedure for each gate:** human executes the hardware action; the result
+is recorded in `docs/device_context.md` Test Results table by the human; the
+session orchestrator confirms recorded pass/fail and gates the next test.
+
+**[JUSTICE GATE S0]** All four gates pass + records committed → invoke
+`stage-compactor` to close Stage 0 → run `/toolchain lock` to stamp the
+config as Stage 0 validated.
 
 ---
 
