@@ -7,11 +7,11 @@ Subcommands:
   bill <problem description>                    — produce a complete, debate-ready Bill
 
 Examples:
-  /judicial hear "step trigger" "acc-primary peak" vs "gyr-primary push-off crossing"
-  /judicial hear "BLE MTU vs USB CDC" "BLE NUS primary — matches production path" vs "USB CDC primary — deterministic"
-  /judicial hear "Arduino vs Zephyr re-evaluation" "unblock Zephyr — new overlay evidence" vs "keep Arduino — block stands"
-  /judicial bill step detection fails on stairs — acc_filt peak delayed by 80ms under sigmoid loading
-  /judicial bill replace soft TPU enclosure — heel-strike transient attenuated below detection threshold
+  /judicial hear "contact force threshold" "A301-1 array sum governs admissibility" vs "Franka F_ext governs admissibility"
+  /judicial hear "approach z-offset sweep range" "extend sweep to +5 mm above nominal" vs "keep sweep at ±3 mm nominal"
+  /judicial hear "toolchain re-evaluation" "unblock ROS2 control — new driver evidence" vs "keep current driver — block stands"
+  /judicial bill z-axis tolerance measurement inconsistent — table-foot array centroid drifts under static load between trials
+  /judicial bill A301-25 finger-pad saturation at 30 N transient — substitute higher-range sensor at pinch line
 
 If no subcommand given, print this usage and stop.
 
@@ -48,7 +48,7 @@ Evidence base to read before arguing:
   docs/toolchain_config.md               — active hardware, pin map, blocked toolchains, repo registry
 
 Evidence commands available during this hearing:
-  /plot evidence signal <profile>         — IMU signal plot
+  /plot evidence signal <profile>         — contact force / pose signal plot
   /plot evidence sim <profile>            — full simulation evidence (UART + signal)
   /plot evidence uart <log_path>          — UART session output from Renode log
 ══════════════════════════════════════════════════════════════

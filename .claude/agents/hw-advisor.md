@@ -109,9 +109,14 @@ present, current budget consistent with measured current. Flag if any sensor
 reports init failure that may be power-related.
 
 ### enclosure — Mechanical review
-Check: sensor mounting rigidity vs signal amplitude requirements, strap or
-fixture attenuation visible in field vs bench comparison, IP rating vs
-operating environment from device_context.md.
+Check: sensor mounting rigidity of the A301-1 table-foot array and A301-25
+finger-pad pair vs the expected Contact Force amplitude range (0–15 N table
+array sum, 0–30 N transient finger-pad); fixture compliance or creep that
+could attenuate or shift Contact Force readings between trials; test-bench
+print quality and flatness vs the requirement for consistent grasper–table
+contact geometry (End-Effector Pose repeatability). Cite specific force
+measurements from Test Results if a mounting issue is suspected — do not
+flag enclosure issues without a measurement showing the effect.
 
 ---
 

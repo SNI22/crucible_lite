@@ -45,7 +45,10 @@ Trigger conditions:
 
 - Always use `crucible.signal.plot` functions or `matplotlib` with `Agg` backend
   (headless — no display required)
-- Always label axes with physical units (m/s², dps, ms, %)
+- Always label axes with physical units drawn from the ratified Amendment 1
+  primitives: Contact Force (N) for force channels, End-Effector Pose
+  (mm for position, deg for orientation) for pose channels. Generic
+  time axes use ms or s. Do not use units from a prior project domain.
 - Always annotate threshold lines with their constitutional source
   (e.g. "threshold — Amendment N" or "Case YYYY-MM-DD ruling")
 - Always save at dpi=150 minimum

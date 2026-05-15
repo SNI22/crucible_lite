@@ -91,7 +91,9 @@ The command that invoked you specifies a focus: `detect`, `filter`, `segment`,
 List every FSM transition guard. For each failing profile, trace the signal through
 each guard in order. Identify the first guard that fails to fire or fires incorrectly.
 State the signal value at the moment of failure vs the guard threshold.
-Key question: is the trigger tied to a universal physical event or a terrain-specific signal shape?
+Key question: does the trigger condition trace to Contact Force (N) or
+End-Effector Pose (mm/deg) as defined in Amendment 1, or is it derived from
+an unmeasured proxy?
 
 ### filter — Filter chain analysis
 List all filters (type, cutoff, order, signal). For each: what does it pass, what does it remove?
@@ -99,24 +101,30 @@ Check: LP cutoff above artifact frequency, HP cutoff above signal fundamental, o
 transition bands, unfiltered DC path to algorithm.
 
 ### segment — Phase segmentation analysis
-List every phase boundary condition. For each failing profile, trace through segmentation:
-does stance start/end at the correct physical event? How does boundary drift affect metric computation?
+List every phase boundary condition (e.g. approach → contact → grasp → lift).
+For each failing profile, trace through segmentation: does the phase boundary correspond
+to a physical event traceable to Contact Force or End-Effector Pose? How does boundary
+drift affect metric computation (z-axis tolerance, peak grasp force, etc.)?
 
 ### metric — Derived metric analysis
-List every derived metric. Identify error propagation: if a phase boundary shifts N ms,
-how much does the primary metric change? Check for sign errors, unit errors, and metric
+List every derived metric (z-axis tolerance, angular tolerance, max surface-contact force,
+peak grasp contact force, min contact force for grasp). Identify error propagation:
+if a phase boundary shifts N ms, how much does the primary metric change?
+Check for sign errors, unit errors (N vs mN, mm vs m, deg vs rad), and metric
 instability under worst-case profiles.
 
 ### fsm — State machine structural analysis
 Draw the FSM (text). Identify dead states, unreachable states, and ambiguous transitions
 (two guards simultaneously true from the same state).
 
-### Terrain-agnostic detection procedure (when focus = detect or none)
+### Contact-force and pose grounding procedure (when focus = detect or none)
 1. Profile matrix: detection rate and metric error per profile
 2. Identify failing profiles
 3. Trace trigger through signal on each failing profile
-4. Find the universal physical event (present on all terrain)
-5. Propose trigger grounded in that event
+4. Confirm the trigger corresponds to a physical event measurable by:
+   - Contact Force: Tekscan A301-1 table-foot array, Franka F_ext, or A301-25 finger-pad pair
+   - End-Effector Pose: Franka FCI achieved-pose stream + table-zero calibration record
+5. Propose trigger grounded in that measurement source
 6. Verify proposal does not degrade any passing profile
 
 ---

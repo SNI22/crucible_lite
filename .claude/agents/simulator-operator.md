@@ -201,8 +201,8 @@ Print after all profiles and sub-agents complete:
 SIMULATION RUN — [date]
 Path: [Signal-only / Renode / Both]
 ─────────────────────────────────────────────────────────────────────────
-Profile       Steps   Primary metric     [metric 2]    Status
-<profile>     N       [value + unit]     [value]       PASS/FAIL
+Profile       Steps   Contact Force (N)   EE Pose (mm/deg)   Status
+<profile>     N       [value + unit]      [value + unit]     PASS/FAIL
 ─────────────────────────────────────────────────────────────────────────
 Pass criteria: [from project's stage-gate Amendment]
 ─────────────────────────────────────────────────────────────────────────

@@ -97,8 +97,11 @@ For every variable that crosses a function boundary:
 - Is the unit consistent between caller and callee?
 - Does the function multiply/divide by a conversion factor without documenting why?
 
-Flag as **UNIT-MISMATCH** if caller passes m/s² and callee treats it as g (or vice versa),
-or if a conversion factor appears without a comment naming source and target units.
+Flag as **UNIT-MISMATCH** if caller passes a Contact Force value in N and callee
+treats it as mN (or vice versa), or if a pose value in mm is consumed as m
+(or deg as rad), or if any conversion factor appears without a comment naming
+source and target units. Amendment 1 primitives: Contact Force (N),
+End-Effector Pose (mm position, deg orientation).
 
 ### Amendment compliance
 

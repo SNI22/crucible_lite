@@ -80,11 +80,11 @@ ELF: [path]
 Pass/fail threshold: [from docs/device_context.md]
 ══════════════════════════════════════════════════════
 
-Profile            Primary metric       vs threshold    Result
-──────────────────────────────────────────────────────────────
-[profile name]     [value] [unit]       [±N from thr]   PASS
-[profile name]     [value] [unit]       [±N from thr]   FAIL
-[profile name]     [error description]  —               ERROR
+Profile            Metric (primitive)         vs threshold    Result
+──────────────────────────────────────────────────────────────────────
+[profile name]     [value] [N or mm or deg]   [±N from thr]   PASS
+[profile name]     [value] [N or mm or deg]   [±N from thr]   FAIL
+[profile name]     [error description]        —               ERROR
 ──────────────────────────────────────────────────────────────
 
 Summary: [N] PASS  [N] FAIL  [N] ERROR  of [total] profiles
@@ -94,8 +94,9 @@ Summary: [N] PASS  [N] FAIL  [N] ERROR  of [total] profiles
   All profiles within threshold. Stage gate criteria met for Stage [N].
 
 [If any FAIL]:
-  ⚠  [N] profile(s) failed. Stage gate BLOCKED.
-  Run /advisor sw to investigate signal-level root cause.
+  [N] profile(s) failed. Stage gate BLOCKED.
+  Run /advisor sw to investigate signal-level root cause
+  (specify focus: detect, filter, segment, metric, or fsm).
   Three consecutive failures on any profile → /judicial hear required (Amendment 4).
 
 [If any ERROR]:
