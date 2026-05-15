@@ -1,0 +1,2 @@
+- [Project comparison framing](project_comparison_framing.md) — soft vs rigid grasper comparison is a parameter-space mapping, not fixed-condition success-rate
+- [DAQ capacity pending](daq_capacity_pending.md) — 8-ch DAQ has 1 free channel; 5 incoming A301-25 need a wiring decision before use
