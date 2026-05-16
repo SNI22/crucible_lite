@@ -2,7 +2,7 @@
 
 **Proposed by:** human engineer + spec-collector (drafted with assistance)
 **Date:** 2026-05-16
-**Status:** DRAFT — awaiting Judicial Hearing
+**Status:** ENACTED (with modification) — see Case 1 ruling in case_law.md, 2026-05-16
 **Traces to:** Article I
 
 ---

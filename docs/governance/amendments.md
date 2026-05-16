@@ -24,7 +24,13 @@ and is not permitted.
 
 1. **Floor acceleration** (m/s²) — inertial response of the bathroom floor
    to mechanical events on it. Measured via piezo (PVDF + proof-mass
-   cantilever) at ≥ 1 kHz.
+   cantilever) at **≥ 1.5 kHz**. Every recorded CSV from this project
+   MUST include three metadata fields: `int_mark` (firmware streaming
+   delay-selector value), `transport` ("usb-uart" or "bt-spp" or
+   equivalent), and `measured_rate_hz` (samples ÷ wall-clock recording
+   duration). CSVs missing any of these three fields are NOT admissible
+   as Article I evidence in any future Judicial Hearing.
+   [Revised 2026-05-16 by Case 1 ruling on Bill 001.]
 
 2. **Acoustic pressure** (Pa, or normalized PCM count) — sound pressure in
    the bathroom air; broadband channel for environment classification
