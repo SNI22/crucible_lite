@@ -293,6 +293,38 @@ def extract_features(samples: np.ndarray, event: CandidateEvent,
                                         distance=peak_distance)
     multi_peak_count = int(len(peaks))
 
+    # NEW FEATURES (all scale-invariant or ratio-based for cross-bathroom generalization).
+    # Article I: each traces to P1 (floor acceleration) via energy / RMS / band integrals.
+
+    # Pre-event RMS (1 s before event onset). Baseline activity level.
+    fs_val = fs  # alias
+    pre_start = max(0, int(event.onset_s * fs_val) - fs_val)
+    pre_end = max(0, int(event.onset_s * fs_val))
+    if pre_end > pre_start + 10:
+        pre_event_rms = float(np.sqrt(np.mean(samples[pre_start:pre_end] ** 2)))
+    else:
+        pre_event_rms = 0.0
+
+    # Post-event RMS (1 s after event end). Stillness measure.
+    post_start = min(len(samples), int(event.end_s * fs_val))
+    post_end = min(len(samples), post_start + fs_val)
+    if post_end > post_start + 10:
+        post_event_rms = float(np.sqrt(np.mean(samples[post_start:post_end] ** 2)))
+    else:
+        post_event_rms = 0.0
+
+    # Pre/post ratio: <1 indicates stillness (fall-like); ~1 or >1 indicates continued activity.
+    post_pre_rms_ratio = post_event_rms / (pre_event_rms + 1e-12)
+
+    # Energy band fractions. Falls live 5-30 Hz (soft tissue contact),
+    # drops live 100-300 Hz (rigid impact). Per FALL_DETECTION_DESIGN.md Appendix A §6.
+    low_band_mask = (freqs >= 5) & (freqs <= 30)
+    mid_band_mask = (freqs > 30) & (freqs <= 100)
+    high_band_mask = (freqs > 100) & (freqs <= 300)
+    total_psd_safe = total_psd  # already computed above
+    low_band_energy_frac = float(np.sum(psd[low_band_mask]) / total_psd_safe)
+    high_band_energy_frac = float(np.sum(psd[high_band_mask]) / total_psd_safe)
+
     return {
         'peak_amp': peak_amp,
         'total_energy': total_energy,
@@ -300,6 +332,12 @@ def extract_features(samples: np.ndarray, event: CandidateEvent,
         'spectral_centroid_hz': spectral_centroid_hz,
         'decay_tau_ms': min(decay_tau_ms, 5000.0),  # cap pathological fits
         'multi_peak_count': multi_peak_count,
+        # Scale-invariant additions for cross-bathroom generalization
+        'pre_event_rms': pre_event_rms,
+        'post_event_rms': post_event_rms,
+        'post_pre_rms_ratio': min(post_pre_rms_ratio, 100.0),  # cap pathological ratios
+        'low_band_energy_frac': low_band_energy_frac,
+        'high_band_energy_frac': high_band_energy_frac,
     }
 
 
@@ -331,6 +369,8 @@ def extract_temporal_context(events: list[CandidateEvent],
 FEATURE_COLS = [
     'peak_amp', 'total_energy', 'duration_above_noise_ms',
     'spectral_centroid_hz', 'decay_tau_ms', 'multi_peak_count',
+    'pre_event_rms', 'post_event_rms', 'post_pre_rms_ratio',
+    'low_band_energy_frac', 'high_band_energy_frac',
     'events_in_last_5s', 'time_since_last_event_s',
 ]
 
@@ -352,6 +392,7 @@ def train_classifier(seeds_per_profile: int = 30,
                       seed_base: int = 1000,
                       n_estimators: int = 200,
                       max_depth: int = 8,
+                      model_type: str = 'rf',
                       ) -> TrainedModel:
     """Generate synthetic data from src/signals.py, extract features per
     detected event, fit RandomForest. Returns trained model bundle.
@@ -388,14 +429,26 @@ def train_classifier(seeds_per_profile: int = 30,
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
 
-    rf = RandomForestClassifier(
-        n_estimators=n_estimators,
-        max_depth=max_depth,
-        class_weight='balanced',  # falls are rarer than noise events
-        random_state=42,
-    )
-    rf.fit(X_scaled, y)
-    return TrainedModel(rf=rf, scaler=scaler, feature_cols=FEATURE_COLS)
+    if model_type == 'rf':
+        clf = RandomForestClassifier(
+            n_estimators=n_estimators,
+            max_depth=max_depth,
+            class_weight='balanced',
+            random_state=42,
+        )
+    elif model_type == 'svm':
+        # SVM with RBF kernel — alternative decision boundary geometry
+        from sklearn.svm import SVC
+        clf = SVC(
+            kernel='rbf',
+            class_weight='balanced',
+            probability=False,
+            random_state=42,
+        )
+    else:
+        raise ValueError(f"Unknown model_type: {model_type}")
+    clf.fit(X_scaled, y)
+    return TrainedModel(rf=clf, scaler=scaler, feature_cols=FEATURE_COLS)
 
 
 # Lazy module-level model cache
@@ -456,13 +509,16 @@ def run(samples: np.ndarray,
             gate_outcome='no_event',
         )
 
-    # Classify each event
+    # Classify each event — use the MODEL's feature_cols (not global)
+    # so RF-8/RF-13/SVM-13 etc. all work with their respective feature subsets.
     feature_rows = []
+    cols = getattr(model, 'feature_cols', FEATURE_COLS)
     for i, ev in enumerate(events):
         feats = extract_features(filtered, ev, fs)
         feats.update(extract_temporal_context(events, i))
         ev.features = feats
-        feature_rows.append(feature_dict_to_vec(feats))
+        # Select only the feature columns the model was trained on
+        feature_rows.append(np.array([feats[c] for c in cols], dtype=np.float64))
 
     X = np.vstack(feature_rows)
     X_scaled = model.scaler.transform(X)
