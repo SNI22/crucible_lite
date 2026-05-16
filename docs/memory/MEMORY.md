@@ -1,3 +1,6 @@
 - [Project comparison framing](project_comparison_framing.md) — soft vs rigid grasper comparison is a parameter-space mapping, not fixed-condition success-rate
 - [DAQ capacity pending](daq_capacity_pending.md) — 8-ch DAQ has 1 free channel; 5 incoming A301-25 need a wiring decision before use
 - [Framework restructure 2026-05-15](framework_restructure_2026_05_15.md) — project moved to ~/crucible/cloth-grasp; active branch is cloth_grasp; next step is /session 0
+- [A301 calibration via MTS](a301_calibration_mts.md) — MTS machine in lab is the planned force-generation source for A301 FlexiForce calibration
+- [Dominant error source — FlexiForce](dominant_error_source_flexiforce.md) — FlexiForce DAQ stack is the only tunable error source in the benchmark; all other errors are fixed
+- [MTS access unknown](mts_access_unknown.md) — lab MTS control mode (vendor GUI only vs Python API) is unconfirmed; blocks Task #5 (C1 feasibility check)
