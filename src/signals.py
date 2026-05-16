@@ -272,18 +272,29 @@ def walking_trajectory(start_xy, end_xy, *,
 
 
 def fall_trajectory(center_xy, n_impacts=3,
-                    t_start=0.0, rng=None):
+                    t_start=0.0, rng=None,
+                    body_absorption_db=5.0):
     """Multi-impact body fall — primitive P1.
     Forces: hip 1500-3000 N (derived from Robinovitch 1991 trochanter
     impact 5-9 kN, with floor coupling fraction 10-30% per
     FALL_DETECTION_DESIGN.md). Shoulder/head ~50% of hip impact.
     Spatial cluster ±30 cm. Inter-impact 80-200 ms derived from
     Appendix A §multi-impact peak spacing.
+
+    BODY ABSORPTION (added 2026-05-16 per drop-human-sensor experimental
+    data, catfood_201505.csv 1.5m blocked vs unblocked condition):
+    Real falls have the body at the impact location, attenuating the
+    signal in the propagation path by ~5-6 dB. body_absorption_db=5.0
+    is the default (= 0.56× linear amplitude scaling). Set to 0 for
+    "clear path" simulation (the previous behavior).
     """
     if rng is None:
         rng = np.random.default_rng()
     forces = sorted(rng.uniform(1500.0, 3000.0, n_impacts), reverse=True)
     forces = [forces[0]] + [f * 0.5 for f in forces[1:]]
+    # Apply body-absorption scaling (5 dB = 0.56× linear)
+    absorption_factor = 10 ** (-body_absorption_db / 20.0)
+    forces = [f * absorption_factor for f in forces]
     impacts = []
     t = t_start
     for i in range(n_impacts):
@@ -697,17 +708,25 @@ def _drop_heavy(rng, geom):
                             rebound_pattern='bouncy')
 
 
-def _drop_soft_pkg(rng, geom):
-    # 400 g soft-packaged object (cat-food bag, shampoo bottle) from 1 m.
-    # Multi-impact "settle" pattern — 3-5 sub-impacts as filler shifts.
-    # This is the sim-to-real Case 1 (a201022) offender — real cat-food
-    # drops were 100% misclassified as fall by the rigid-impact model.
+def _fall_softbody_surrogate(rng, geom):
+    # Soft-body fall surrogate — physically matches cat-food bag drop
+    # signature (multi-impact "settle" pattern, 3-5 sub-impacts over
+    # 150-400 ms). User clarification 2026-05-16: cat-food bag IS the
+    # body-fall surrogate; this multi-impact-with-content-settle pattern
+    # is the correct fall physics, not a confuser. Used as ADDITIONAL
+    # fall training data alongside fall_fast.
+    # Body absorption applied (-5 dB) because real falls have the body
+    # at the impact location (per drop-human-sensor experimental data).
     # Primitive P1.
     xy = (rng.uniform(0.20, 0.80) * geom.Lx, rng.uniform(0.20, 0.80) * geom.Ly)
-    return drop_trajectory(xy=xy, mass_kg=0.40, height_m=1.0,
-                            t_start=DEFAULT_EVENT_ONSET_S,
-                            contact_duration_s=0.006, rng=rng,
-                            rebound_pattern='soft_pkg')
+    impacts = drop_trajectory(xy=xy, mass_kg=0.40, height_m=1.0,
+                              t_start=DEFAULT_EVENT_ONSET_S,
+                              contact_duration_s=0.006, rng=rng,
+                              rebound_pattern='soft_pkg')
+    # Apply body absorption to all impacts (~5 dB → 0.56× force)
+    for i in impacts:
+        i.force_N *= 0.56
+    return impacts
 
 
 def _drop_glass(rng, geom):
@@ -730,7 +749,7 @@ PROFILES = {
     'confuser_drop_phone':   ProfileRecipe('confuser', ['vent'], _drop_phone),
     'confuser_drop_heavy':   ProfileRecipe('confuser', ['vent'], _drop_heavy),
     'confuser_drop_glass':   ProfileRecipe('confuser', ['vent'], _drop_glass),
-    'confuser_drop_soft_pkg': ProfileRecipe('confuser', ['vent'], _drop_soft_pkg),
+    'fall_softbody_surrogate': ProfileRecipe('fall', ['vent'], _fall_softbody_surrogate),
     'fall_fast':             ProfileRecipe('fall', ['vent'], _fall_fast_far),
     'fall_slump':            ProfileRecipe('fall', ['vent', 'shower'],
                                             lambda rng, geom: [],

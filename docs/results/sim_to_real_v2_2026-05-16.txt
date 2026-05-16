@@ -1,0 +1,30 @@
+=== Sim-to-Real v2 — corrected tag mapping ===
+Training classifier...
+  trained in 333.2s
+
+--- step_201505.csv (tag=step, expected=confuser, → confuser_step) ---
+  processed 9 events
+--- catfood_201505.csv (tag=fall, expected=fall, → fall_fast) ---
+  processed 12 events
+--- water_201505.csv (tag=other, expected=confuser, → confuser_drop_phone) ---
+  processed 9 events
+
+================================================================================
+SUMMARY — corrected sim-to-real test (v2)
+================================================================================
+CSV                       tag    distance           n    sens/FP    correct %
+--------------------------------------------------------------------------------
+catfood_201505.csv        fall   0.5                3    2/3 sens   67
+catfood_201505.csv        fall   1.5m_blocked       3    1/3 sens   33
+catfood_201505.csv        fall   1.5m_unblocked     3    1/3 sens   33
+catfood_201505.csv        fall   2.0                3    2/3 sens   67
+step_201505.csv           step   0.5                3    2/3 FP     33
+step_201505.csv           step   1.5                3    1/3 FP     67
+step_201505.csv           step   2.0                3    1/3 FP     67
+water_201505.csv          other  0.5                3    2/3 FP     33
+water_201505.csv          other  1.5                3    1/3 FP     67
+water_201505.csv          other  2.0                3    1/3 FP     67
+
+AGGREGATE:
+  Sensitivity (fall surrogates → fall):   6/12 = 50.0%
+  False-positive rate (confusers → fall): 8/18 = 44.4%
