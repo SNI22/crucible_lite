@@ -24,13 +24,16 @@ and is not permitted.
 
 1. **Floor acceleration** (m/s²) — inertial response of the bathroom floor
    to mechanical events on it. Measured via piezo (PVDF + proof-mass
-   cantilever) at **≥ 1.5 kHz**. Every recorded CSV from this project
+   cantilever) at **≥ 1 kHz**. Every recorded CSV from this project
    MUST include three metadata fields: `int_mark` (firmware streaming
    delay-selector value), `transport` ("usb-uart" or "bt-spp" or
    equivalent), and `measured_rate_hz` (samples ÷ wall-clock recording
    duration). CSVs missing any of these three fields are NOT admissible
    as Article I evidence in any future Judicial Hearing.
-   [Revised 2026-05-16 by Case 1 ruling on Bill 001.]
+   [Revised 2026-05-16 by Case 1 (Bill 001) — set to ≥1.5 kHz.
+    Re-revised 2026-05-16 by Case 2 (Bill 002) — back to ≥1 kHz after
+    empirical evidence (catfood_bedroom_2.txt) showed BT-SPP sustains
+    only ~1.38 kHz, contradicting Case 1's 1.7-1.9 kHz assumption.]
 
 2. **Acoustic pressure** (Pa, or normalized PCM count) — sound pressure in
    the bathroom air; broadband channel for environment classification
