@@ -299,32 +299,115 @@ def fall_trajectory(center_xy, n_impacts=3,
 
 def drop_trajectory(xy, mass_kg, height_m,
                     t_start=0.0, contact_duration_s=0.005,
-                    rng=None, n_impacts=1):
-    """Rigid-object drop — primitive P1.
+                    rng=None, n_impacts=1,
+                    rebound_pattern='rigid'):
+    """Object drop — primitive P1, with multi-impact physics.
+
     Peak force derived from impulse F·Δt = m·v where v = sqrt(2gh).
-    For brittle multi-impact (glass), splits impulse across N hits
-    over ~50 ms (Appendix A §multi-impact count for objects).
+
+    REBOUND PATTERN options (added 2026-05-16 per simulator gap #1
+    identified during sim-to-real verification — real cat-food and
+    water drops are multi-impact events, not single rigid impulses):
+
+      'rigid'      — single sharp impact (default; old phone/keys).
+                     Coefficient of restitution e ≈ 0.05 (negligible).
+                     Use for: dropping a phone face-down on tile.
+
+      'bouncy'     — rigid impact + 2-3 rebound impacts with energy
+                     loss factor e ≈ 0.4 per bounce. Used for: hard
+                     objects on tile (cans, plastic bottles), where
+                     each bounce returns ~40% of pre-bounce energy.
+
+      'soft_pkg'  — soft-packaged object (e.g., cat-food bag,
+                     shampoo bottle). Initial impact + content-settle
+                     impacts (food/liquid sloshes, rearranges over
+                     150-400 ms). 3-5 sub-impacts with mass-coupled
+                     content dynamics. Closer to body-fall multi-
+                     impact pattern — historically misclassified
+                     as fall (sim-to-real Case 1, commit a201022).
+
+      'shatter'   — brittle multi-impact (glass fragments). N
+                     fragments distribute the impulse over ~50 ms.
+                     n_impacts parameter sets fragment count.
+
+    Article I: rebound coefficient e ≈ 0.4 traces to standard
+    mechanics references for plastic/cardboard on tile (typical e
+    range 0.3-0.5). Soft-pkg content-settle dynamics derive from
+    fluid/granular sloshing literature — 2-4 secondary impacts at
+    30-150 ms intervals with progressively decreasing amplitude.
+    Primitive P1 in all branches.
     """
     if rng is None:
         rng = np.random.default_rng()
     v = math.sqrt(2.0 * 9.81 * height_m)
     total_impulse = mass_kg * v
     peak_force_total = total_impulse / contact_duration_s
-    if n_impacts == 1:
+
+    if rebound_pattern == 'shatter':
+        # Glass fragments — same as previous default n_impacts > 1 path
+        impacts = []
+        t = t_start
+        for i in range(n_impacts):
+            force = peak_force_total * rng.uniform(0.3, 1.0) / n_impacts ** 0.5
+            local_xy = (xy[0] + rng.uniform(-0.05, 0.05),
+                        xy[1] + rng.uniform(-0.05, 0.05))
+            impacts.append(Impact(xy=local_xy, time_s=t,
+                                  force_N=force, duration_s=contact_duration_s))
+            t += rng.uniform(0.010, 0.025)
+        return impacts
+
+    elif rebound_pattern == 'rigid':
+        # Single sharp impact (old default)
         return [Impact(xy=xy, time_s=t_start,
                        force_N=peak_force_total,
                        duration_s=contact_duration_s)]
-    impacts = []
-    t = t_start
-    for i in range(n_impacts):
-        # Multi-impact (glass fragments) — primitive P1
-        force = peak_force_total * rng.uniform(0.3, 1.0) / n_impacts ** 0.5
-        local_xy = (xy[0] + rng.uniform(-0.05, 0.05),
-                    xy[1] + rng.uniform(-0.05, 0.05))
-        impacts.append(Impact(xy=local_xy, time_s=t,
-                              force_N=force, duration_s=contact_duration_s))
-        t += rng.uniform(0.010, 0.025)
-    return impacts
+
+    elif rebound_pattern == 'bouncy':
+        # Hard object that bounces — initial impact + 2-3 rebounds.
+        # Coefficient of restitution e ~ 0.4 for plastic/cardboard on tile.
+        # Each rebound: force scales with sqrt(e) per bounce (energy ~ force²·dt).
+        e = rng.uniform(0.3, 0.5)
+        n_rebounds = int(rng.integers(2, 4))
+        impacts = [Impact(xy=xy, time_s=t_start,
+                          force_N=peak_force_total,
+                          duration_s=contact_duration_s)]
+        t = t_start
+        force = peak_force_total
+        for i in range(n_rebounds):
+            force *= math.sqrt(e)  # energy reduces by e each bounce
+            # Time-to-next-bounce by ballistic flight: t_flight = 2*v_remaining/g
+            v_remaining = math.sqrt(2 * 9.81 * height_m * (e ** (i + 1)))
+            t_flight = 2 * v_remaining / 9.81
+            t += t_flight
+            local_xy = (xy[0] + rng.uniform(-0.03, 0.03),
+                        xy[1] + rng.uniform(-0.03, 0.03))
+            impacts.append(Impact(xy=local_xy, time_s=t,
+                                  force_N=force,
+                                  duration_s=contact_duration_s * 1.2))
+        return impacts
+
+    elif rebound_pattern == 'soft_pkg':
+        # Soft-packaged object (cat-food bag, shampoo). Initial impact +
+        # content settle: 2-4 secondary impacts as filler shifts within
+        # the container. Each secondary impact has 30-60% of initial
+        # force, spaced 30-150 ms apart.  Primitive P1.
+        n_settle = int(rng.integers(2, 5))
+        impacts = [Impact(xy=xy, time_s=t_start,
+                          force_N=peak_force_total,
+                          duration_s=contact_duration_s * 1.5)]
+        t = t_start
+        for i in range(n_settle):
+            t += rng.uniform(0.030, 0.150)
+            settle_force = peak_force_total * rng.uniform(0.20, 0.55)
+            local_xy = (xy[0] + rng.uniform(-0.04, 0.04),
+                        xy[1] + rng.uniform(-0.04, 0.04))
+            impacts.append(Impact(xy=local_xy, time_s=t,
+                                  force_N=settle_force,
+                                  duration_s=contact_duration_s * 2.0))
+        return impacts
+
+    else:
+        raise ValueError(f"Unknown rebound_pattern: {rebound_pattern!r}")
 
 
 # ─── Slump (hand-rolled — sustained friction + final impact, P1) ───────
@@ -596,27 +679,45 @@ def _slump_far(rng, geom):
 
 def _drop_phone(rng, geom):
     # 200 g phone from 1 m, anywhere on slab. Primitive P1.
+    # Rigid pattern — phone is hard and doesn't bounce much on tile.
     xy = (rng.uniform(0.20, 0.80) * geom.Lx, rng.uniform(0.20, 0.80) * geom.Ly)
     return drop_trajectory(xy=xy, mass_kg=0.20, height_m=1.0,
                             t_start=DEFAULT_EVENT_ONSET_S,
-                            contact_duration_s=0.004, rng=rng)
+                            contact_duration_s=0.004, rng=rng,
+                            rebound_pattern='rigid')
 
 
 def _drop_heavy(rng, geom):
     # 600 g hair dryer from 0.8 m. Primitive P1.
+    # Bouncy pattern — hair dryer has plug + housing that bounces 2-3x.
     xy = (rng.uniform(0.20, 0.80) * geom.Lx, rng.uniform(0.20, 0.80) * geom.Ly)
     return drop_trajectory(xy=xy, mass_kg=0.60, height_m=0.8,
                             t_start=DEFAULT_EVENT_ONSET_S,
-                            contact_duration_s=0.008, rng=rng)
+                            contact_duration_s=0.008, rng=rng,
+                            rebound_pattern='bouncy')
+
+
+def _drop_soft_pkg(rng, geom):
+    # 400 g soft-packaged object (cat-food bag, shampoo bottle) from 1 m.
+    # Multi-impact "settle" pattern — 3-5 sub-impacts as filler shifts.
+    # This is the sim-to-real Case 1 (a201022) offender — real cat-food
+    # drops were 100% misclassified as fall by the rigid-impact model.
+    # Primitive P1.
+    xy = (rng.uniform(0.20, 0.80) * geom.Lx, rng.uniform(0.20, 0.80) * geom.Ly)
+    return drop_trajectory(xy=xy, mass_kg=0.40, height_m=1.0,
+                            t_start=DEFAULT_EVENT_ONSET_S,
+                            contact_duration_s=0.006, rng=rng,
+                            rebound_pattern='soft_pkg')
 
 
 def _drop_glass(rng, geom):
-    # 200 g brittle glass from 1.2 m, multi-impact. Primitive P1.
+    # 200 g brittle glass from 1.2 m, fragments. Primitive P1.
     xy = (rng.uniform(0.20, 0.80) * geom.Lx, rng.uniform(0.20, 0.80) * geom.Ly)
     return drop_trajectory(xy=xy, mass_kg=0.20, height_m=1.2,
                             t_start=DEFAULT_EVENT_ONSET_S,
                             contact_duration_s=0.003, rng=rng,
-                            n_impacts=int(rng.integers(2, 5)))
+                            n_impacts=int(rng.integers(2, 5)),
+                            rebound_pattern='shatter')
 
 
 PROFILES = {
@@ -629,6 +730,7 @@ PROFILES = {
     'confuser_drop_phone':   ProfileRecipe('confuser', ['vent'], _drop_phone),
     'confuser_drop_heavy':   ProfileRecipe('confuser', ['vent'], _drop_heavy),
     'confuser_drop_glass':   ProfileRecipe('confuser', ['vent'], _drop_glass),
+    'confuser_drop_soft_pkg': ProfileRecipe('confuser', ['vent'], _drop_soft_pkg),
     'fall_fast':             ProfileRecipe('fall', ['vent'], _fall_fast_far),
     'fall_slump':            ProfileRecipe('fall', ['vent', 'shower'],
                                             lambda rng, geom: [],

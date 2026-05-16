@@ -72,6 +72,62 @@ plumbing vibration (shower / flush / drain).
 
 ---
 
+## Install-Time Calibration Design (planned, Stage 2/3 deliverable)
+
+To generalize across the wide variation in real bathrooms (tile size,
+bonding, subfloor, wall coupling, ambient noise, sensor placement),
+the device performs a one-time install calibration. This is the
+generalization strategy of record per 2026-05-16 — the simulator does
+NOT need to model every bathroom variation accurately; the install
+calibration captures the actual deployment's response.
+
+**Three-step install calibration:**
+
+| Step | Duration | What is measured | How algorithm uses it |
+|------|----------|------------------|------------------------|
+| 1. Quiet baseline | 60 s | Ambient noise floor RMS + spectrum (vent, plumbing, washer if present) | Set adaptive event-detection thresholds; baseline-RMS becomes the denominator for SNR-based features |
+| 2. Tap test at 3 distances | ~2 min | Impulse response at known xy positions (e.g., 0.5 m, 1.5 m, 2.5 m from sensor) | Measures actual plate damping, spatial decay rate, local tile resonance, and bonding state — ALL bathroom-specific physics in one measurement |
+| 3. Calibration walk | ~1 min | Real footstep signature at moderate pace | Confirms walking-discriminator features work in this bathroom; sets reference amplitude for "normal walking" used by adaptive thresholds |
+
+**What this absorbs:**
+- Multi-tile mosaic effects (lateral grout damping)
+- Tile size + bonding state (local response in step 2)
+- Subfloor variation (slab vs joist appears as different impulse response shape)
+- Wall coupling (affects boundary modes captured in step 2)
+- Vent / washer locations (captured in step 1 baseline)
+- Sensor placement xy (implicit — the IR is from the sensor's actual location)
+
+**What the algorithm requires to leverage calibration:**
+- Adaptive event thresholds (MAD-based, already in `src/algorithm.py`)
+- Scale-invariant features for classification (band fractions, ratios — partially in features; could be extended)
+- Calibration-derivable amplitude reference (e.g., "fall energy ≥ K × measured-walking-energy" instead of "≥ X mg")
+- Decay-time reference relative to plate signature ("post-event RMS returns to baseline in ≤ N × plate-ringdown-tau" instead of "≤ M ms")
+
+The first two are in scope for the algorithm as it stands. The third
+and fourth would be a feature-engineering pass at Stage 2/3, after
+real calibration-measurement data is available.
+
+**Simulator implications:**
+
+This calibration strategy makes most per-bathroom simulator detail
+unnecessary:
+- Multi-tile mosaic modeling — defer (calibration captures lateral
+  grout damping)
+- Exact plate-damping value — defer (calibration measures the actual
+  damping in tap test)
+- Exact bathroom geometry — defer (calibration captures spatial decay)
+- Furniture mass loading — defer (captured in baseline)
+
+The simulator IS still needed for:
+- Algorithm development (representative-enough signals to validate logic)
+- Structural physics that's bathroom-independent (multi-impact rebound,
+  body-fall multi-stage signature, slow-slump dynamics, sensor model)
+
+This re-prioritizes the simulator-improvement roadmap toward STRUCTURAL
+features and away from per-bathroom parameter accuracy.
+
+---
+
 ## Signal Inventory
 
 | Signal | Physical quantity | Unit | Normal range | Hard limits | Sample rate | Primitive |
