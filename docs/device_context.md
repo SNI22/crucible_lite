@@ -44,6 +44,9 @@ plumbing vibration (shower / flush / drain).
 1. **Floor acceleration** (m/s²) — inertial response of the bathroom floor
    to mechanical events on it.
    Measured via: piezo (PVDF + proof-mass cantilever) at ≥ 1 kHz.
+   FIRMWARE NOTE (2026-05-16): active firmware streaming rate is
+   INT_MARK-dependent (0=~1.9 kHz default, 1=500 Hz, 2=200 Hz, etc.).
+   The ≥ 1 kHz clause requires INT_MARK=0 in deployment.
 2. **Acoustic pressure** (Pa, or normalized) — sound pressure in the
    bathroom air, both broadband (environment classification) and
    speech-band (verbal-response detection).
@@ -73,7 +76,7 @@ plumbing vibration (shower / flush / drain).
 
 | Signal | Physical quantity | Unit | Normal range | Hard limits | Sample rate | Primitive |
 |--------|------------------|------|--------------|-------------|-------------|-----------|
-| Piezo (PVDF+mass) | Floor acceleration | m/s² (derived from V via charge-amp transfer function) | ±0.5 g typical bathroom activity | clip at front-end rail (≈ ±5 V at ADC input) | 1 kHz baseline; ≥ 2 kHz stretch via external ADC | P1 |
+| Piezo (PVDF+mass) | Floor acceleration | m/s² (derived from V via charge-amp transfer function) | ±0.5 g typical bathroom activity | clip at front-end rail (≈ ±5 V at ADC input) | Active firmware: INT_MARK-dependent (default 0 → ~1.9 kHz; INT_MARK=1 → 500 Hz). Must be INT_MARK=0 to satisfy P1's ≥ 1 kHz clause | P1 |
 | Microphone — broadband channel | Acoustic pressure | Pa (or 16-bit PCM count) | 30–80 dB SPL room ambient | clip at digital full-scale | 8–16 kHz (TBD at /toolchain init) | P2 |
 | Microphone — speech-band channel | Acoustic pressure (300–3400 Hz) | Pa (or 16-bit PCM count) | response-time speech bursts | clip at digital full-scale | derived from broadband channel | P2 |
 | WiFi sensing | Human room occupancy | boolean (+ optional confidence 0–1) | 0 or 1 with confidence ≥ 0.7 stable | sensor-not-responding watchdog | event-driven or 1 Hz poll (TBD) | P3 |

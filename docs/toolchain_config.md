@@ -34,10 +34,17 @@ External: Linux PC with conda (development host for this loop — running receiv
           USB-UART adapter (CH340 on Alientek "Warship" board if used, or external).
 Notes:    Scope-reduced pass — only P1 (floor acceleration) implemented.
           P2 (microphone) and P3 (WiFi sensing) deferred to a future stage gate.
-          Two known Article I violations carried forward from prior firmware:
-            (1) `accur = 0.015295` (18× analog gain) baked in — needs Bill for
-                boot-time self-calibration
-            (2) `ADC offset = 1890` (DC zero-code) baked in — same fix
+          ACTIVE FIRMWARE IDENTIFIED 2026-05-16: located at
+          ~/Documents/piezo_circuit/代码 - 调节发送频率/USER/main.c
+          (FW-IDENTITY-UNRESOLVED finding from Stage 0 ruling is now RESOLVED).
+          Active firmware uses USART2 (NOT USART1) at PA2/PA3, routed through
+          PCB H6 header. Voltage conversion: (ADC × 3.3 / 4069) - 1.65V.
+          Known issues in active firmware (different from older firmware):
+            (1) Divisor typo: 4069 should be 4095 — ~0.6% systematic voltage error
+            (2) Streaming rate is INT_MARK-dependent (variable 50-1920 Hz)
+            (3) 1.65V mid-rail bias is hard-coded (no per-board calibration)
+          The OLD firmware's `accur=0.015295` and `1890 ADC offset` violations
+          do NOT exist in this version — the signal chain is different.
           HCNR200-500E linear optocoupler in BOM but not in current build.
 
           Alternative signal path (contingency, not current build):
@@ -63,8 +70,10 @@ Notes:    Scope-reduced pass — only P1 (floor acceleration) implemented.
 |--------|-----------|----------|----------|---------|
 | Piezo_ADC | PA6 | ADC1_IN6 | Analog input from OP07 U9 output (post-conditioning) | Sampled at 47.6 kS/s, 239.5-cycle sample time, DMA1 Ch1 |
 | Dout_Trigger | PB15 | EXTI15 | LM311 comparator output (event trigger) | Threshold set by RP5 trim — record current setting in calibration log |
-| UART1_TX | PA9 | USART1 TX | UART to host @ 115200 baud | Wired to H15 header and CH340 if Warship board used |
-| UART1_RX | PA10 | USART1 RX | UART from host @ 115200 baud | Currently unused in main loop |
+| UART2_TX | PA2 | USART2 TX | UART to host @ 115200 baud (ACTIVE firmware) | Routed through PCB H6 header |
+| UART2_RX | PA3 | USART2 RX | UART from host @ 115200 baud | Currently unused in active main loop |
+| UART1_TX | PA9 | USART1 TX | NOT USED in active firmware (legacy: old firmware used this) | Wired to H15 header — inactive |
+| UART1_RX | PA10 | USART1 RX | NOT USED in active firmware | Inactive in current build |
 | OLED_SCL | PB6 | I2C1 SCL | OLED SSD1306 clock | 5.1 kΩ pull-up to 3.3 V (R58) |
 | OLED_SDA | PB7 | I2C1 SDA | OLED SSD1306 data | 5.1 kΩ pull-up to 3.3 V (R59) |
 | XTAL_IN | OSC_IN | — | 8 MHz HSE crystal X2 | 22 pF load caps C11/C12 |
@@ -79,12 +88,25 @@ Notes:    Scope-reduced pass — only P1 (floor acceleration) implemented.
 
 ```
 Build:          Keil MDK-ARM (free size-limited edition; image < 32 KB)
-                Project: ~/Documents/piezo_circuit/PVDF压电采集资料/采集代码/USER/Template.uvprojx
+                Project: ~/Documents/piezo_circuit/代码 - 调节发送频率/USER/Template.uvprojx
+                  (ACTIVE — confirmed 2026-05-16; resolves FW-IDENTITY-UNRESOLVED)
                 Library: ST Standard Peripheral Library (SPL, vendored — not HAL/CubeMX)
                 Build host: Windows laptop (Keil is Windows-only; no Linux/CLI build path)
-                Status: firmware frozen for this stage gate — no active development
-                Known Article I violations: `accur = 0.015295` and `ADC offset = 1890`
-                  baked into main.c — see Hardware Notes for fix plan
+                Status: firmware located + analyzed; frozen for this stage gate
+                Signal chain: ADC1 ch6 (PA6), 28.5-cycle sample @ ~290 kS/s,
+                  DMA-driven into ADC_DMA_IN. Main loop reads + transmits
+                  `"%.3f\n"` (FireWater format) on USART2 @ 115200 baud.
+                  Voltage = (ADC × 3.3 / 4069) - 1.65V.
+                  Streaming rate = main-loop iteration rate, INT_MARK-dependent:
+                    INT_MARK=0 (default): ~1.9 kHz (UART-throughput-limited)
+                    INT_MARK=1: 500 Hz   (2 ms delay)
+                    INT_MARK=2: 200 Hz   (5 ms delay)
+                    INT_MARK=3: 100 Hz   (10 ms delay)
+                    INT_MARK=4: 50 Hz    (20 ms delay)
+                Known issues: 4069 divisor typo (should be 4095), hard-coded
+                  1.65V mid-rail (no per-board calibration). Both NEW Article I
+                  candidates; less severe than old firmware's accur+offset.
+                IWDG (independent watchdog) enabled — firmware self-resets on hang.
 Flash:          ST-Link V2 SWD (primary) via Keil µVision built-in flasher
                 Alternative: UART bootloader via BOOT0 = HIGH on H15 header +
                              `stm32flash` on the Linux PC host
@@ -92,11 +114,12 @@ Serial monitor: ~/Documents/piezo_circuit/receiver/receiver.py
                   PC-side capture (CSV write + key-tag events) on the Linux PC
                   development host (conda env — package versions pinned at
                   /toolchain scaffold)
-                  Formats supported: FireWater (ASCII), JustFloat (binary), RawData
-                  Baud: 115200 (firmware USART1 default)
+                  Formats: FireWater (ASCII "%.3f\n") — matches active firmware
+                  Baud: 115200 (firmware USART2 setting)
                   CSV schema: sample_index,value,event
-                  Transport: Bluetooth-serial bridge (HC-05/06 SPP module on USART1)
-                             OR direct USB-UART (CH340)
+                  Transport: USB-UART via USART2 on PA2/PA3 (active firmware path).
+                             Bluetooth-serial bridge (HC-05/06) would attach to USART2
+                             output, but USB-UART is the default deployment path.
                 Alternative for quick checks: minicom -b 115200 -o -D /dev/ttyUSB0
 Wireless recv:  N/A — STM32F103 has no onboard wireless
                 Alerts: routed via the development host (network/SMS/etc.,
@@ -175,9 +198,9 @@ scale:  > [comma-separated scale factors — e.g., "1, 1, 0.1, 0.1, 1, 1"]
 
 | Library | Version | Source | Purpose | Known issues |
 |---------|---------|--------|---------|--------------|
-| STM32F10x_StdPeriph_Lib | V3.5.0 (ST Standard Peripheral Library) | Vendored at `~/Documents/piezo_circuit/PVDF压电采集资料/采集代码/STM32F10x_FWLib/` | Low-level peripheral access (ADC, DMA, USART, GPIO, RCC) — predates HAL/Cube | Deprecated by ST since 2014; long-term Bill candidate to migrate to HAL/LL |
-| CMSIS Core (Cortex-M3) | per Alientek Warship template (to verify) | Vendored at `~/Documents/piezo_circuit/PVDF压电采集资料/采集代码/CORE/` | ARM Cortex-M3 core abstraction, startup, `system_stm32f10x.c` | — |
-| OLED SSD1306 driver | local (author-written) | `~/Documents/piezo_circuit/PVDF压电采集资料/采集代码/HARDWARE/OLED/` | I2C OLED waveform / voltage display | Two drivers coexist (`OLED_I2C` + `OLED0561`); `main.c` calls both Init paths |
+| STM32F10x_StdPeriph_Lib | V3.5.0 (ST Standard Peripheral Library) | Vendored at `~/Documents/piezo_circuit/代码 - 调节发送频率/STM32F10x_FWLib/` | Low-level peripheral access (ADC, DMA, USART, GPIO, RCC) — predates HAL/Cube | Deprecated by ST since 2014; long-term Bill candidate to migrate to HAL/LL |
+| CMSIS Core (Cortex-M3) | per Alientek Warship template (to verify) | Vendored at `~/Documents/piezo_circuit/代码 - 调节发送频率/CORE/` | ARM Cortex-M3 core abstraction, startup, `system_stm32f10x.c` | — |
+| OLED SSD1306 driver | local (author-written) | `~/Documents/piezo_circuit/代码 - 调节发送频率/HARDWARE/OLED/` | I2C OLED waveform / voltage display | Two drivers coexist (`OLED_I2C` + `OLED0561`); `main.c` calls both Init paths |
 
 ### Host-side (Linux PC, conda env `piezo_reader` — verified at /session 0 init)
 
@@ -271,8 +294,8 @@ algorithm development) while matching the actual hardware.
 | Gate | Test | Pass criterion |
 |------|------|----------------|
 | **0.1** | **MCU alive.** Power the STM32 (custom PCB or Alientek Warship dev board), connect transport (USB-UART or HC-05/06 BT-serial bridge) to the Linux PC receiver, run `receiver.py`. | Continuous UART data stream visible in receiver.py at 115200 baud; no resets across a 60-second observation window. |
-| **0.2a** | **ADC plausibility.** With piezo sensor connected, observe the live receiver.py trace at rest, then tap the floor 30 cm from the sensor. | Quiet baseline near ADC count 1890 (DC zero-code, may vary per board ±100) ; clear transient spike clearly above baseline on tap. |
-| **0.2b** | **Streaming rate verification.** Capture a 10-second receiver.py session at rest. Count sample rows in the resulting CSV. | ≥ 10,000 sample rows (≥ 1 kHz × 10 s) — matches Amendment 1's "≥ 1 kHz piezo" clause. Significantly fewer rows is a HARD FAIL — either flash modified firmware that streams at ≥ 1 kHz, or open an Amendment 3 Bill for an alternative signal path. Record the actual measured rate in `device_context.md` Test Results table. |
+| **0.2a** | **ADC plausibility.** With piezo sensor connected, observe the live receiver.py trace at rest, then tap the floor 30 cm from the sensor. The receiver displays values in volts (post firmware (ADC × 3.3 / 4069) - 1.65V conversion). | Quiet baseline near 0 V (mid-rail subtracted by firmware), small drift ±50 mV acceptable; clear transient spike clearly above baseline on tap. |
+| **0.2b** | **Streaming rate verification.** Record current INT_MARK setting on the device; capture a 10-second receiver.py session at rest; count sample rows in the resulting CSV. | At INT_MARK=0: ≥ 15,000 rows (~1.9 kHz × 10 s). At INT_MARK=1: ~5,000 rows (500 Hz). At lower INT_MARK values, fewer rows. To satisfy Amendment 1's "≥ 1 kHz piezo" clause: INT_MARK MUST be 0. Record the actual INT_MARK + measured rate in `device_context.md` Test Results table per session. |
 | **0.3** | **Receiver capture end-to-end.** Capture a 30-second receiver.py session; key-tag one "step" event with SPACE while tapping near the sensor. | Valid CSV with `sample_index,value,event` schema; the tagged event row exists at a sample index close to the actual tap (within receiver.py's documented tag latency). |
 | **0.4** | **Wireless / transport check.** If the deployment uses an HC-05/06 BT-serial bridge, repeat gate 0.1 over BT instead of USB and confirm receiver.py captures equivalently. If deployment is USB-only, explicitly record that and skip this gate. | BT capture matches USB capture in format and continuity for ≥ 60 s, OR explicit "BT not in deployment scope — USB-only" record in Test Results table. |
 
