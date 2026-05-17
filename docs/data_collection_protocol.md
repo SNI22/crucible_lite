@@ -93,9 +93,9 @@ post-rationalized.
   rate floor per Case 1+2)
 - **Transport:** USART2 (PA2/PA3, 115200 baud, FireWater ASCII `%.3f\n`),
   via USB-serial adapter
-- **Logging host:** laptop / Pi recording UART → CSV
+- **Logging host:** laptop / Pi recording USART2 stream → CSV
 
-**Sample-rate check before any recording:** capture 10 s of UART
+**Sample-rate check before any recording:** capture 10 s of USART2
 output, compute measured_rate_hz = lines / wall-clock-elapsed. Must be
 ≥ 1000 Hz. If less, abort — INT_MARK is wrong, transport is buffering,
 or the firmware build is the wrong one.
@@ -127,7 +127,7 @@ contaminated by a compliant contact.
 1. Place housing on tile. Confirm baseplate flush, no rocking when
    pushing the cap with a finger.
 2. Place 200 g weight on top platform.
-3. Start UART capture.
+3. Start USART2 capture.
 4. Tap the tile 30 cm from housing with a fingernail. 5 taps, ~2 s apart.
 5. Stop capture. Plot or scope:
    - **Pass:** clean impulse, ringdown < 50 ms, no oscillation between taps

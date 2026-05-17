@@ -178,7 +178,7 @@
 <h2>3 · Sample-rate gate — run before every session</h2>
 
 <div class="callout">
-  <strong>Gate check (10 s):</strong> capture 10 s of UART output, compute
+  <strong>Gate check (10 s):</strong> capture 10 s of USART2 output, compute
   <code>measured_rate_hz = lines / wall-clock-elapsed</code>. <strong>Must be ≥ 1000 Hz.</strong>
   If less: abort. <code>INT_MARK</code> is wrong, transport is buffering, or the firmware build is the wrong one.
   Per Case 1, recordings below 1 kHz are <em>not admissible</em> as Article I evidence.
@@ -206,7 +206,7 @@
 <ol>
   <li>Place housing on tile. Confirm baseplate is flush — no rocking when pushing the cap with a finger.</li>
   <li>Place 200 g weight on top platform.</li>
-  <li>Start UART capture.</li>
+  <li>Start USART2 capture.</li>
   <li>Tap tile 30 cm from housing with a fingernail. <strong>5 taps, ~2 s apart.</strong></li>
   <li>Stop capture, inspect:
     <ul>
