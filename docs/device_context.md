@@ -144,9 +144,45 @@ features and away from per-bathroom parameter accuracy.
 
 **Pre-existing assets carried in from `~/Documents/piezo_circuit/`:**
 - Charge-amplifier front-end (CA3140 or MAX44248, 100 MΩ ∥ 10 nF feedback)
-- Sensor-mounting protocol (`SENSOR_MOUNTING.md` — PVDF+mass cantilever, full-area epoxy)
+- Sensor-mounting protocol (`SENSOR_MOUNTING.md` — PVDF+mass cantilever, full-area epoxy) — superseded by the housing design below for piezo_fall
 - Walk-vs-fall characterization protocol (`WALK_VS_FALL_PROTOCOL.md`)
 - Feature dictionary (peak, energy, duration, spectral centroid, band ratios, decay shape, multi-peak count, footstep cadence) — pending augmentation with a slump-rumble feature
+
+**Deployment-specific sensor housing (piezo_fall):**
+
+CAD file: `~/Documents/piezo_circuit/ground_cantilever_housing.{stp,stl}`
+(user-designed, 2026-05-16, confirmed correct via review).
+
+Architecture: 3 rigid sections stacked along Z, single rigid load path
+from preload weight → top platform → PCB clamp → baseplate → floor.
+
+| Section | Z range (mm) | Function |
+|---------|-------------|----------|
+| Baseplate | -8 to -5 | Square 35×35 mm, ~3 mm thick — flat ground contact. Single-tile sized (well under standard 200 mm bathroom tile, no grout-joint bridging). |
+| PCB clamp / bracket | -5 to +10 | Through-slot grips MiniSense PCB edges. Pins/connectors route out top and bottom of the slot. Cantilever projects into the housing interior cavity with free air on all sides — no contact with walls or cap. |
+| Top platform / cap | +10 to +14.5 | Cylindrical disc ~30 mm diameter, flat top — surface for the 200 g preload weight to sit on. |
+
+**Preload:** ~200 g loose weight resting on top platform. Not bonded —
+removable for transport, repeatable on re-install. Range 100–500 g all
+acceptable; the figure isn't precision-critical.
+
+**Why this preserves the datasheet sensor model:**
+
+- Cantilever has free air around the tip mass → 2nd-order dynamics
+  (fn ≈ 75 Hz, ζ ≈ 0.092) preserved. No clamping → no resonance shift.
+- Rigid hard-on-hard load path (PLA/PETG print → MiniSense PCB →
+  baseplate → tile) → base-on-floor follow-the-floor resonance well
+  above 1 kHz. Faithful floor tracking in the 0–200 Hz band of interest.
+- 35 mm baseplate within one tile → no inter-tile rocking modes.
+
+**What still needs install-time tap-test verification:**
+
+Even with a correct housing design, the *as-deployed* coupling depends
+on tile flatness, dust, the specific tile, and operator placement.
+The 30-second tap test in step 2 of the install calibration above
+validates: tap 30 cm from sensor → expect clean impulse with ringdown
+< 50 ms. Long ringing or delayed rise = compliant contact, fix the
+deploy before recording.
 - ESP32-S3 host-streaming firmware (5 kHz reference; will be adapted to project firmware)
 - Bedroom + livingroom test data; **bathroom fall data does not yet exist** and is a Stage 1 data-collection requirement
 
