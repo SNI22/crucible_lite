@@ -27,12 +27,14 @@ weight_unit_mass_g    = 15
 weight_density_g_cc   = 11.3
 
 drop_height_mm        = 230
-tube_extra_top_mm     = 30
+tube_extra_top_mm     = 16   # tuned for Bambu X1C Z=256mm (total height 250mm)
 tube_wall_mm          = 3
 puck_clearance_mm     = 1
 pin_dia_mm            = 1.2
 base_dia_mm           = 70
 base_thickness_mm     = 4
+funnel_extra_dia_mm   = 5    # loading-funnel widening at tube top
+funnel_depth_mm       = 5
 
 # derived
 total_mass_g          = weight_count * weight_unit_mass_g
@@ -58,10 +60,13 @@ tube_total_height_mm  = drop_height_mm + tube_extra_top_mm
 # ---- print summary ----
 v_impact_ms = math.sqrt(2 * 9.81 * drop_height_mm / 1000)
 ke_J = 0.5 * (total_mass_g / 1000) * v_impact_ms ** 2
+total_print_height_mm = tube_total_height_mm + base_thickness_mm
 print("=== IMPULSE JIG — derived dimensions ===")
 print(f"  total mass: {total_mass_g} g ({weight_count}x {weight_unit_mass_g} g)")
 print(f"  puck OD x H: {puck_outer_dia_mm} x {puck_total_height_mm:.1f} mm")
 print(f"  tube ID x OD x H: {tube_id_mm} x {tube_od_mm} x {tube_total_height_mm} mm")
+print(f"  TOTAL PRINT HEIGHT (tube+base): {total_print_height_mm} mm  "
+      f"[X1C Z=256mm -> margin: {256 - total_print_height_mm} mm]")
 print(f"  drop height: {drop_height_mm} mm")
 print(f"  impact velocity: {v_impact_ms:.2f} m/s")
 print(f"  kinetic energy: {ke_J:.3f} J")
@@ -89,10 +94,18 @@ base       = base_solid.difference(base_hole)
 # tube
 tube_outer = cyl(tube_od_mm, tube_total_height_mm, z=base_thickness_mm)
 tube_bore  = cyl(tube_id_mm, tube_total_height_mm + 0.2, z=base_thickness_mm - 0.1)
-# pin hole through both walls (along Y axis)
+# loading funnel at top (truncated cone widening the bore)
+funnel = trimesh.creation.cone(radius=(tube_id_mm + funnel_extra_dia_mm) / 2,
+                                height=funnel_depth_mm + 0.1, sections=64)
+# cone() makes a cone with apex up. We want a frustum widening upward.
+# Construct as a cylinder difference for simplicity:
+funnel_box   = cyl(tube_id_mm + funnel_extra_dia_mm, funnel_depth_mm + 0.1,
+                   z=base_thickness_mm + tube_total_height_mm - funnel_depth_mm)
+# Use a tapered approach: subtract a cone-shaped solid
+# Easier: just use a slight outward chamfer via a wider cylinder at top
 pin_hole = cyl_at_y(pin_dia_mm + 0.3, tube_od_mm + 2)
 pin_hole.apply_translation([0, 0, base_thickness_mm + drop_height_mm])
-tube = tube_outer.difference([tube_bore, pin_hole])
+tube = tube_outer.difference([tube_bore, funnel_box, pin_hole])
 
 # small witness ring at pin height
 ring_outer = cyl(tube_od_mm + 0.8, 0.4, z=base_thickness_mm + drop_height_mm)
@@ -201,6 +214,7 @@ ax.set_aspect('equal'); ax.grid(alpha=0.3); ax.legend(loc='upper right')
 ax = fig.add_subplot(2, 2, 4)
 ax.axis('off')
 info = f"""IMPULSE JIG — design summary
+Target printer: BAMBU X1C (256 x 256 x 256 mm)
 
 Mass:          {total_mass_g} g  ({weight_count}× {weight_unit_mass_g} g fishing weights)
 Drop height:   {drop_height_mm} mm
@@ -210,8 +224,9 @@ Energy:        {ke_J:.3f} J
 TUBE
   ID:          {tube_id_mm} mm  (puck OD + {2*puck_clearance_mm} mm clearance)
   OD:          {tube_od_mm} mm
-  Height:      {tube_total_height_mm} mm  (drop + 30 mm headroom)
+  Tube only:   {tube_total_height_mm} mm  (drop + {tube_extra_top_mm} mm above pin)
   Base plate:  {base_dia_mm} mm dia × {base_thickness_mm} mm thick
+  PRINT TOTAL: {total_print_height_mm} mm  [X1C Z=256 -> {256 - total_print_height_mm} mm margin]
 
 PUCK
   OD:          {puck_outer_dia_mm} mm
@@ -228,10 +243,18 @@ PIN
   Dia:         {pin_dia_mm} mm (hole {pin_dia_mm+0.3} mm for paperclip)
   Z position:  {drop_height_mm} mm above tube interior bottom
 
-PRINT SETTINGS
-  Tube:  vertical on plate, 4 walls, 30% gyroid, 100% on base
-  Puck:  open-face up, 4 walls, 100% bottom
-  Cap:   flange-down, 4 walls
+LOADING NOTE
+  When loaded, the puck's lower {tube_extra_top_mm} mm is guided by
+  the tube. The remaining {puck_total_height_mm - tube_extra_top_mm:.0f} mm
+  sticks above the tube top — that's fine, puck only needs guidance
+  until it accelerates downward.
+
+PRINT SETTINGS (Bambu Studio)
+  Material:    PLA (Bambu Basic PLA fine)
+  Tube:        vertical, 4 walls, 30% gyroid, 0.2 mm layer, brim 5mm
+  Puck:        open-face up, 4 walls, 100% infill, 0.16 mm layer
+  Cap:         flange-down, 4 walls, 100% infill
+  All on one plate: ~3.5 hr total (mostly tube)
 """
 ax.text(0.02, 0.98, info, family='monospace', fontsize=10, va='top', ha='left')
 
