@@ -16,9 +16,16 @@ component needs to be **fit against real ground truth**.
 This protocol specifies what real measurements to collect, in what
 order, and exactly which simulator parameter each measurement corrects.
 
-The "tap test" is one piece of this (the IR-fitting piece); the full
-plan covers tap + walk + drop + fall-surrogate + noise so a single
+The "impulse test" is one piece of this (the IR-fitting piece); the full
+plan covers impulse + walk + drop + fall-surrogate + noise so a single
 bathroom deployment captures everything needed.
+
+**Note on terminology:** "impulse" (not "tap") is used throughout for the
+quantitative IR-fitting measurement (A2-A4). The word "tap" is reserved
+for the per-session qualitative mount sanity check (Phase 0), where the
+result is pass/fail. A quantitative measurement requires a calibrated
+impulse source (a jig — see section 5b); a fingernail "tap" is not
+acceptable because operator force variability (±50%) contaminates the fit.
 
 ---
 
@@ -30,7 +37,7 @@ that quantifies success.
 
 | Measurement | Simulator component it fits | Fit method | Acceptance residual |
 |---|---|---|---|
-| **Tap IR at 3 distances** | `signals.py` floor-plate FEA (`floor_sim` damping ζ_plate, modal density, spatial decay coefficient `REAL_TO_SIM_SCALE`) + sensor-model end-to-end gain | Compare measured tap IR (envelope + spectrum) to simulated tap IR at same distance; minimize log-spectral distance + ringdown-tau residual | Per-tap envelope correlation ≥ 0.85; ringdown τ within ±30% |
+| **Impulse at 3 distances** (jig-generated, see 5b) | `signals.py` floor-plate FEA (`floor_sim` damping ζ_plate, modal density, spatial decay coefficient `REAL_TO_SIM_SCALE`) + sensor-model end-to-end gain | Compare measured impulse response (envelope + spectrum) to simulated impulse response at same distance; minimize log-spectral distance + ringdown-tau residual | Per-impulse envelope correlation ≥ 0.85; ringdown τ within ±30% |
 | **Quiet baseline (60 s)** | `signals.py` `bg_environmental_noise` ASD (peaks + 1/f + white) — already done once, redo per bathroom | Compute Welch PSD of real baseline, overwrite per-peak amplitudes in noise model | Real PSD vs sim PSD within ±6 dB across 1–500 Hz |
 | **Calibration walk (60 s)** | `signals.py` `_footstep_force_profile` (peak force range, contact time) | Match measured per-step peak amplitude distribution and footstep cadence distribution | Peak amplitude mean within ±20%; cadence distribution KS-test p > 0.05 |
 | **Object drops × {phone, glass, water-bottle} × 3 distances** | `signals.py` `drop_trajectory` (`rebound_pattern` parameters: COR, multi-impact spacing) | Match measured multi-peak count, inter-peak interval, decay envelope | Multi-peak count match ±1; decay envelope correlation ≥ 0.80 |
@@ -66,7 +73,7 @@ is tested on the 1-bathroom data:
 2. **Sim-to-real v3 fails by a *small* margin** (e.g., 70%/15%) → the
    simulator structure looks OK but more data is needed; collect 2 more
    bathrooms with the same protocol
-3. **Tap-test repeatability is poor on a single bathroom** (per-tap
+3. **Impulse-test repeatability is poor on a single bathroom** (per-impulse
    envelope correlation < 0.7 across 5 repeats at the same distance) →
    sensor mount or tile-coupling is inconsistent; expand to characterize
    variance source before drawing conclusions
@@ -114,7 +121,7 @@ not admissible as Article I evidence):
 # operator: shiyao
 # date: 2026-05-XX
 # session_id: 001
-# measurement_type: tap_0.5m  # or baseline / walk / drop_phone_1.5m / etc.
+# measurement_type: impulse_0.5m  # or baseline / walk / drop_phone_1.5m / etc.
 ```
 
 ---
@@ -151,12 +158,14 @@ will use at deploy time.
 | Step | Duration | File | Purpose |
 |------|----------|------|---------|
 | A1: Quiet baseline | 60 s, no one in room | `<bathroom_id>_baseline.csv` | Noise PSD reference; SNR denominator |
-| A2: Tap at 0.5 m | 5 taps, ~2 s apart | `<bathroom_id>_tap_0.5m.csv` | IR at near distance |
-| A3: Tap at 1.5 m | 5 taps | `<bathroom_id>_tap_1.5m.csv` | IR at mid distance |
-| A4: Tap at 2.5 m | 5 taps | `<bathroom_id>_tap_2.5m.csv` | IR at far distance |
+| A2: Impulse at 0.5 m | 5 jig drops, ~2 s apart | `<bathroom_id>_impulse_0.5m.csv` | IR at near distance |
+| A3: Impulse at 1.5 m | 5 jig drops | `<bathroom_id>_impulse_1.5m.csv` | IR at mid distance |
+| A4: Impulse at 2.5 m | 5 jig drops | `<bathroom_id>_impulse_2.5m.csv` | IR at far distance |
 | A5: Calibration walk | 60 s normal walking | `<bathroom_id>_walk.csv` | Footstep amplitude reference |
 
-Mark tap locations with tape so they're repeatable for re-installs.
+Mark impulse locations with tape so they're repeatable for re-installs.
+Use the calibrated impulse jig (see section 5b) for A2–A4 — fingernail
+not acceptable because the result is fit quantitatively.
 
 ### Phase B — Sim-correction data (15–30 min)
 
@@ -213,9 +222,9 @@ Per bathroom:
 ```
 data/<bathroom_id>/
 ├── <bathroom_id>_baseline_<date>.csv      # Phase A1
-├── <bathroom_id>_tap_0.5m_<date>.csv      # Phase A2
-├── <bathroom_id>_tap_1.5m_<date>.csv      # Phase A3
-├── <bathroom_id>_tap_2.5m_<date>.csv      # Phase A4
+├── <bathroom_id>_impulse_0.5m_<date>.csv  # Phase A2
+├── <bathroom_id>_impulse_1.5m_<date>.csv  # Phase A3
+├── <bathroom_id>_impulse_2.5m_<date>.csv  # Phase A4
 ├── <bathroom_id>_walk_<date>.csv          # Phase A5
 ├── <bathroom_id>_drop_water_<date>.csv    # Phase B
 ├── <bathroom_id>_drop_phone_<date>.csv
@@ -251,7 +260,7 @@ silent simulator parameter changes.
 
 | Real measurement | Simulator parameter | Recommended fitting script |
 |---|---|---|
-| Tap IR per distance | `floor_sim` damping ζ, `REAL_TO_SIM_SCALE` | `scripts/fit_floor_ir.py` (to write) |
+| Impulse response per distance | `floor_sim` damping ζ, `REAL_TO_SIM_SCALE` | `scripts/fit_floor_ir.py` (to write) |
 | Quiet baseline PSD | `bg_environmental_noise` peak amplitudes | `scripts/fit_noise_psd.py` (extend existing real_noise_spectrum work) |
 | Calibration + extra walk | `_footstep_force_profile` peak range, contact time distribution | `scripts/fit_footstep.py` (to write) |
 | Object drops (water/phone/glass) | `drop_trajectory` COR + multi-impact spacing per `rebound_pattern` | `scripts/fit_drop_rebound.py` (to write) |
@@ -266,12 +275,16 @@ plan and the analysis plan are visible together.
 
 ## Open questions before first execution
 
-1. **Tap source standardization:** finger-nail tap is operator-dependent
-   (amplitude varies ±50%). For better repeatability, recommend a
-   **calibrated drop** — e.g., a 10 g steel ball dropped from a fixed
-   100 mm height through a vertical guide. Build a simple jig before
-   Phase A2–A4. (Optional refinement; finger taps are usable for an
-   initial pass to validate the protocol.)
+1. **Impulse source — jig is required, not optional.** Finger-nail
+   tap is operator-dependent (amplitude varies ±50%) and is NOT
+   acceptable for A2–A4 because the result is fit quantitatively.
+   Required: a calibrated impulse jig (drop a known mass from a fixed
+   height through a vertical tube guide). Open sizing question per
+   ambient-noise analysis (see section 11): the original 10 g ball /
+   100 mm may have insufficient SNR vs ambient noise at 2.5 m; consider
+   a heavier ball (100 g / 200 mm drop) or use the catfood-bag drop
+   (Phase B4) itself as the calibrated IR-fitting impulse. Decision
+   pending.
 2. **Sample-rate measurement:** one-shot 10 s capture per session, or
    inline timestamp in CSV header? Recommend: inline, record session
    wall-clock start and CSV row count, derive rate post-hoc.

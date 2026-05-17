@@ -196,7 +196,7 @@
 # operator: shiyao             <span class="tag tag-measure">MEASURE</span>
 # date: 2026-05-XX             <span class="tag tag-measure">MEASURE</span>
 # session_id: 001              <span class="tag tag-measure">MEASURE</span>
-# measurement_type: tap_0.5m   <span class="tag tag-measure">MEASURE</span>
+# measurement_type: impulse_0.5m   <span class="tag tag-measure">MEASURE</span>
 </code></pre>
 
 <p class="small">Missing fields → CSV not admissible. Don't proceed without them.</p>
@@ -264,30 +264,30 @@ of control kills the fit downstream.</strong></p>
 
     <tr>
       <td>A2</td><td>Install calib</td><td>5 taps</td>
-      <td>Tap at 0.5 m → <code>&lt;bid&gt;_tap_0.5m.csv</code></td>
+      <td>Impulse at 0.5 m → <code>&lt;bid&gt;_impulse_0.5m.csv</code></td>
       <td class="control-cell"><span class="tag tag-critical">CRITICAL</span>
-          tap source (same finger or jig), tap location (marked with tape!), 5 taps ≥ 2 s apart,
+          impulse source (calibrated jig, NOT fingernail), impulse location (marked with tape!), 5 jig drops ≥ 2 s apart,
           no other movement in room</td>
-      <td class="measure-cell">tap location xy in room, tap force (qualitative: light/medium/hard)</td>
+      <td class="measure-cell">impulse location xy in room, jig parameters (mass, drop height)</td>
       <td>Floor-plate FEA ζ, modal density, near-field gain</td>
-      <td>Per-tap envelope correlation ≥ 0.85</td>
+      <td>Per-impulse envelope correlation ≥ 0.85</td>
     </tr>
 
     <tr>
       <td>A3</td><td>Install calib</td><td>5 taps</td>
-      <td>Tap at 1.5 m → <code>&lt;bid&gt;_tap_1.5m.csv</code></td>
+      <td>Impulse at 1.5 m → <code>&lt;bid&gt;_impulse_1.5m.csv</code></td>
       <td class="control-cell"><span class="tag tag-critical">CRITICAL</span>
-          same tap source as A2, location marked with tape, 5 taps ≥ 2 s apart</td>
-      <td class="measure-cell">tap location xy, tap force level</td>
+          same impulse jig as A2, location marked with tape, 5 jig drops ≥ 2 s apart</td>
+      <td class="measure-cell">impulse location xy, jig parameters</td>
       <td>Same + <code>REAL_TO_SIM_SCALE</code> (spatial decay)</td>
       <td>Ringdown τ ±30%</td>
     </tr>
 
     <tr>
       <td>A4</td><td>Install calib</td><td>5 taps</td>
-      <td>Tap at 2.5 m → <code>&lt;bid&gt;_tap_2.5m.csv</code></td>
+      <td>Impulse at 2.5 m → <code>&lt;bid&gt;_impulse_2.5m.csv</code></td>
       <td class="control-cell"><span class="tag tag-critical">CRITICAL</span> same as A2/A3</td>
-      <td class="measure-cell">tap location xy, tap force level</td>
+      <td class="measure-cell">impulse location xy, jig parameters</td>
       <td>Same + far-field decay</td>
       <td>Same</td>
     </tr>
@@ -421,8 +421,8 @@ of control kills the fit downstream.</strong></p>
   your data is not comparable. Pick once and stick:</strong>
   <ul class="compact">
     <li><span class="tag tag-critical">CRITICAL</span> <code>INT_MARK</code> value (must stay 0)</li>
-    <li><span class="tag tag-critical">CRITICAL</span> tap source (fingernail vs jig — pick one and stick across A2/A3/A4)</li>
-    <li><span class="tag tag-critical">CRITICAL</span> tap locations (marked with tape, kept across re-installs)</li>
+    <li><span class="tag tag-critical">CRITICAL</span> impulse source = calibrated jig (NOT fingernail; same jig across A2/A3/A4)</li>
+    <li><span class="tag tag-critical">CRITICAL</span> impulse locations (marked with tape, kept across re-installs)</li>
     <li><span class="tag tag-critical">CRITICAL</span> operator footwear (barefoot / socks / sole) across A5 + B6</li>
     <li><span class="tag tag-critical">CRITICAL</span> drop height across B1/B2/B3/B4</li>
     <li><span class="tag tag-critical">CRITICAL</span> "body in path" means operator <em>directly</em> between drop and sensor — not off-axis</li>
@@ -505,7 +505,7 @@ of control kills the fit downstream.</strong></p>
           (e.g., multi-tile mosaic, FEA mode selection)</td>
     </tr>
     <tr>
-      <td>Tap-test repeatability (A2–A4) corr &lt; 0.7 across the 5 repeats</td>
+      <td>Impulse-test repeatability (A2–A4) corr &lt; 0.7 across the 5 repeats</td>
       <td><strong>Expand to 3 bathrooms</strong></td>
       <td>Mount / tile coupling unstable — need to see if it's bathroom A or general</td>
     </tr>
@@ -515,9 +515,12 @@ of control kills the fit downstream.</strong></p>
 <h2>10 · Open questions to resolve before first execution</h2>
 
 <ol>
-  <li><strong>Tap source standardization.</strong> Fingernail tap is operator-dependent (±50%).
-      Recommended refinement: a small jig — e.g., 10 g steel ball dropped from a fixed 100 mm
-      vertical guide. Optional for first pass; required if A2-A4 repeatability is bad.</li>
+  <strong>Impulse source — jig is required, not optional.</strong> Fingernail tap is operator-dependent (±50%)
+      and is NOT acceptable for A2–A4 because the result is fit quantitatively. Required:
+      a calibrated impulse jig (drop a known mass from a fixed height through a vertical tube).
+      Open sizing question per ambient-noise analysis: 10 g ball / 100 mm may be too quiet at
+      2.5 m; consider 100 g ball / 200 mm, or use the catfood-bag drop (Phase B4) itself as
+      the calibrated IR-fitting impulse. Decision pending.</li>
   <li><strong>Sample-rate metadata.</strong> Recommend inline: record session wall-clock start +
       CSV row count, derive rate post-hoc. Avoids a separate gate-check session.</li>
   <li><strong>Storage path.</strong> <code>data/</code> symlinked outside repo with <code>.gitignore</code>

@@ -86,7 +86,7 @@ calibration captures the actual deployment's response.
 | Step | Duration | What is measured | How algorithm uses it |
 |------|----------|------------------|------------------------|
 | 1. Quiet baseline | 60 s | Ambient noise floor RMS + spectrum (vent, plumbing, washer if present) | Set adaptive event-detection thresholds; baseline-RMS becomes the denominator for SNR-based features |
-| 2. Tap test at 3 distances | ~2 min | Impulse response at known xy positions (e.g., 0.5 m, 1.5 m, 2.5 m from sensor) | Measures actual plate damping, spatial decay rate, local tile resonance, and bonding state — ALL bathroom-specific physics in one measurement |
+| 2. Impulse test at 3 distances (calibrated jig-driven) | ~2 min | Impulse response at known xy positions (e.g., 0.5 m, 1.5 m, 2.5 m from sensor) | Measures actual plate damping, spatial decay rate, local tile resonance, and bonding state — ALL bathroom-specific physics in one measurement. Jig required (NOT fingernail) because result is fit quantitatively. |
 | 3. Calibration walk | ~1 min | Real footstep signature at moderate pace | Confirms walking-discriminator features work in this bathroom; sets reference amplitude for "normal walking" used by adaptive thresholds |
 
 **What this absorbs:**
@@ -114,7 +114,7 @@ unnecessary:
 - Multi-tile mosaic modeling — defer (calibration captures lateral
   grout damping)
 - Exact plate-damping value — defer (calibration measures the actual
-  damping in tap test)
+  damping in impulse test)
 - Exact bathroom geometry — defer (calibration captures spatial decay)
 - Furniture mass loading — defer (captured in baseline)
 
@@ -175,14 +175,15 @@ acceptable; the figure isn't precision-critical.
   above 1 kHz. Faithful floor tracking in the 0–200 Hz band of interest.
 - 35 mm baseplate within one tile → no inter-tile rocking modes.
 
-**What still needs install-time tap-test verification:**
+**What still needs install-time impulse-test verification:**
 
 Even with a correct housing design, the *as-deployed* coupling depends
 on tile flatness, dust, the specific tile, and operator placement.
-The 30-second tap test in step 2 of the install calibration above
-validates: tap 30 cm from sensor → expect clean impulse with ringdown
-< 50 ms. Long ringing or delayed rise = compliant contact, fix the
-deploy before recording.
+The 30-second impulse test in step 2 of the install calibration above
+serves double duty: records IR data for fitting AND validates coupling
+qualitatively (fingernail tap 30 cm from sensor → expect clean impulse
+with ringdown < 50 ms). Long ringing or delayed rise = compliant contact,
+fix the deploy before any further recording.
 - ESP32-S3 host-streaming firmware (5 kHz reference; will be adapted to project firmware)
 - Bedroom + livingroom test data; **bathroom fall data does not yet exist** and is a Stage 1 data-collection requirement
 

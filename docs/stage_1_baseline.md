@@ -114,7 +114,7 @@ CSVs (50% sens, 44% FP — this baseline).
 2. **Body-absorption value (5 dB) is a guess** — needs ≥ 10 events per condition to validate
 3. **Multi-tile mosaic floor not modeled** — defer to install-time calibration (per generalization strategy in `docs/device_context.md`)
 4. **Sensor identity assumption unverified** — task #31 (user visual inspection)
-5. **Plate damping / geometry** — defer to install-time calibration (tap test)
+5. **Plate damping / geometry** — defer to install-time calibration (impulse test)
 6. **Real fall human data unavailable** — surrogates only (catfood bag is closest)
 
 ## What needs to happen before Stage 2
@@ -124,7 +124,7 @@ Per `docs/device_context.md` Install-Time Calibration Design section:
 1. Collect real bathroom recordings with metadata per Case 1 ruling (int_mark,
    transport, measured_rate_hz) from multiple bathrooms (≥ 3 recommended)
 2. Add real events to training data alongside synthetic
-3. Build install-time calibration scripts (tap test + baseline + walk)
+3. Build install-time calibration scripts (impulse test + baseline + walk)
 4. Verify deployed sensor identity (task #31)
 5. Verify firmware streaming rate (Bill 002 ratified ≥ 1 kHz; INT_MARK=0
    required in deployment)
