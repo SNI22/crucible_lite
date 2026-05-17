@@ -147,3 +147,47 @@ Per `docs/device_context.md` Install-Time Calibration Design section:
 
 Stage 1 is HELD at this baseline. Resume at Stage 2 only after real data is
 collected and added to the training corpus.
+
+---
+
+## Post-baseline finding (2026-05-16): deployed sensor identity
+
+Task #31 (originally "verify deployed sensor visual inspection", reframed to
+"confirm part = MiniSense 100 via BOM/marking") resolved with a significant
+result: **the deployed sensor is NOT a MiniSense 100**.
+
+Evidence in `~/Documents/piezo_circuit/`:
+- `SENSOR_MOUNTING.md`: deployed sensor is a custom-assembled cantilever —
+  25 mm × 8 mm × 28 µm bare PVDF strip + 2–10 g brass/steel proof mass at
+  the free end, base epoxied to floor. Stated resonance: "50–500 Hz
+  depending on geometry" (not a fixed 75 Hz).
+- `PVDF压电采集系统资料/BOM_PVDF压电信号调理系统_2023-02-20.csv`: lists only
+  conditioning electronics (CA3140 / MAX44248 front-end, 100 MΩ bias
+  resistor R48). No commercial sensor module.
+- Zero "MiniSense" hits in original repo. The MiniSense 100 assumption
+  originated in our simulator work, not the hardware record.
+
+### Implications
+
+- Simulator's cantilever model (fn=75 Hz, ζ=0.092, 1.1 V/g, 6 V/g at
+  resonance) is **calibrated to the wrong reference**. Actual values must
+  come from tap-testing the real deployed cantilever.
+- Still likely valid: 100 MΩ bias × PVDF source impedance → low-Hz HP
+  cutoff order of magnitude; 2nd-order cantilever TF shape; high-Z FET
+  front-end. fn / ζ / sensitivity are NOT valid.
+- Direction of the gap: actual fn could be anywhere 50–500 Hz, which means
+  current sim could either over- or under-state spectral content of events.
+- Per CLAUDE.md, changing the sensor model is a simulator parameter change
+  → requires a **Bill** (legislative process) before edit. Recorded as a
+  known open item, not silently fixed.
+
+### Bill candidates for Stage 1 → Stage 2 entry
+
+1. **Sensor-model recalibration Bill**: replace MiniSense 100 datasheet
+   values with measured cantilever fn, ζ, sensitivity from tap test.
+   Blocked on: tap-test data collection.
+2. **Sensor-spec Amendment**: add cantilever geometry (PVDF dimensions,
+   mass) to BOM in `docs/device_context.md` so future calibration is
+   traceable.
+
+These Bills should be drafted before Stage 2 starts.
