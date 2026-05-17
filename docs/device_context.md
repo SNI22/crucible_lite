@@ -216,9 +216,9 @@ fix the deploy before any further recording.
 | 4 | `noise_washer_local` | noise | vent + washing machine on spin in same unit (direct floor coupling) |
 | 5 | `noise_washer_neighbor` | noise | vent + neighbor's washer (through-wall + shared-floor attenuation) |
 | 6 | `confuser_step` | confuser | vent + far step at 3 m (Case 2: far step ≈ close fall amplitude) |
-| 7 | `confuser_drop_phone` | confuser | vent + light rigid drop (~200 g phone) |
+| 7 | `confuser_drop_phone` | confuser | vent + light rigid drop (~150–200 g "phone-class" object). NOTE: name is legacy; real-world data collection MUST use a surrogate (power-adapter brick, hardback book, etc.) NOT an actual phone. See `docs/data_collection_protocol.md` Phase B2. |
 | 8 | `confuser_drop_heavy` | confuser | vent + heavy rigid drop (~600 g hair dryer / electric razor) |
-| 9 | `confuser_drop_glass` | confuser | vent + brittle multi-impact drop (~200 g cosmetic glass) |
+| 9 | `confuser_drop_glass` | confuser | vent + brittle multi-impact drop. NOTE: name is legacy; real-world data collection MUST use a SAFE multi-impact surrogate (small bag of dried pasta or marbles in a thin bag) — DO NOT break glassware in the bathroom. See `docs/data_collection_protocol.md` Phase B3. |
 | 10 | `fall_fast` | fall | vent + fast fall at 3 m (200 J effective floor impact) |
 | 11 | `fall_slump` | fall | vent + shower + slow slump at 3 m (worst case: slump + plumbing FP + far range) |
 

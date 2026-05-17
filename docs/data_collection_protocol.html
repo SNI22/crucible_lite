@@ -304,8 +304,8 @@ of control kills the fit downstream.</strong></p>
     </tr>
 
     <tr>
-      <td>B1</td><td>Events</td><td>~5 min</td>
-      <td>Water bottle drops × 15 (0.5/1.5/2.5 m × 5) → <code>&lt;bid&gt;_drop_water.csv</code></td>
+      <td>B1</td><td>Events</td><td>~3 min</td>
+      <td>Rigid heavy — water bottle drops × 9 (0.5/1.5/2.5 m × 3) → <code>&lt;bid&gt;_drop_water.csv</code></td>
       <td class="control-cell"><span class="tag tag-critical">CRITICAL</span>
           drop height (waist height = ~1 m, measure with a stick the first time and keep that stick),
           same bottle (mass + fill level), bottle orientation at release (cap up)</td>
@@ -315,27 +315,26 @@ of control kills the fit downstream.</strong></p>
     </tr>
 
     <tr>
-      <td>B2</td><td>Events</td><td>~3 min</td>
-      <td>Phone drops × 10 → <code>&lt;bid&gt;_drop_phone.csv</code></td>
-      <td class="control-cell">same phone, same drop height as B1, same orientation (screen up)</td>
-      <td class="measure-cell">phone mass (g), drop height, drop location xy</td>
+      <td>B2</td><td>Events</td><td>~2 min</td>
+      <td><span class="tag tag-critical">SURROGATE</span> Rigid medium — drops × 6 (0.5/1.5/2.5 m × 2) → <code>&lt;bid&gt;_drop_phone.csv</code></td>
+      <td class="control-cell"><strong>DO NOT use your actual phone.</strong> Use a 100–200 g rigid surrogate: power adapter brick, hardback book, closed metal canister, wood block, spare TV remote. Same surrogate object every drop. Same drop height as B1.</td>
+      <td class="measure-cell">surrogate mass (g), surrogate description, drop height, drop location xy</td>
       <td>Same, lower-mass rigid</td>
       <td>Same</td>
     </tr>
 
     <tr>
-      <td>B3</td><td>Events</td><td>~3 min</td>
-      <td>Glass drops × 10 → <code>&lt;bid&gt;_drop_glass.csv</code></td>
-      <td class="control-cell">same glass type each time (or label per glass), same drop height,
-          drop into a contained area (cleanup)</td>
-      <td class="measure-cell">glass mass (g), drop height, drop location xy, "did it break?" (yes/no)</td>
+      <td>B3</td><td>Events</td><td>~2 min</td>
+      <td><span class="tag tag-critical">SURROGATE</span> Multi-impact — drops × 3 (1.5 m only) → <code>&lt;bid&gt;_drop_glass.csv</code></td>
+      <td class="control-cell"><strong>DO NOT break actual glassware.</strong> Use a small zip-loc bag of dried pasta OR a handful of marbles in a thin cloth bag. Same surrogate every drop, same drop height as B1.</td>
+      <td class="measure-cell">surrogate mass (g), surrogate description (pasta / marbles / etc.), drop height</td>
       <td><code>drop_trajectory</code> <code>shatter</code> pattern (multi-impact)</td>
       <td>Same</td>
     </tr>
 
     <tr>
-      <td>B4</td><td>Events</td><td>~10 min</td>
-      <td>Catfood-bag drops × 30 (0.5/1.5/2.5 m × 10; 5 of the 1.5m with body-in-path)
+      <td>B4</td><td>Events</td><td>~6 min</td>
+      <td>Catfood-bag drops × 18 (0.5/1.5/2.5 m × 6; at 1.5m: 3 body-in-path + 3 not)
           → <code>&lt;bid&gt;_fall_catfood.csv</code></td>
       <td class="control-cell"><span class="tag tag-critical">CRITICAL</span>
           same catfood bag (mass + fill), drop height (waist), body-in-path means operator stands

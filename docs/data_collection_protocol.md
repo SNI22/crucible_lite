@@ -40,7 +40,7 @@ that quantifies success.
 | **Impulse at 3 distances** (jig-generated, see 5b) | `signals.py` floor-plate FEA (`floor_sim` damping ζ_plate, modal density, spatial decay coefficient `REAL_TO_SIM_SCALE`) + sensor-model end-to-end gain | Compare measured impulse response (envelope + spectrum) to simulated impulse response at same distance; minimize log-spectral distance + ringdown-tau residual | Per-impulse envelope correlation ≥ 0.85; ringdown τ within ±30% |
 | **Quiet baseline (60 s)** | `signals.py` `bg_environmental_noise` ASD (peaks + 1/f + white) — already done once, redo per bathroom | Compute Welch PSD of real baseline, overwrite per-peak amplitudes in noise model | Real PSD vs sim PSD within ±6 dB across 1–500 Hz |
 | **Calibration walk (60 s)** | `signals.py` `_footstep_force_profile` (peak force range, contact time) | Match measured per-step peak amplitude distribution and footstep cadence distribution | Peak amplitude mean within ±20%; cadence distribution KS-test p > 0.05 |
-| **Object drops × {phone, glass, water-bottle} × 3 distances** | `signals.py` `drop_trajectory` (`rebound_pattern` parameters: COR, multi-impact spacing) | Match measured multi-peak count, inter-peak interval, decay envelope | Multi-peak count match ±1; decay envelope correlation ≥ 0.80 |
+| **Object drops × 3 distances** (rigid heavy = water bottle; rigid medium = SURROGATE for phone — see B2; multi-impact = SAFE surrogate for glass — see B3) | `signals.py` `drop_trajectory` (`rebound_pattern` parameters: COR, multi-impact spacing) | Match measured multi-peak count, inter-peak interval, decay envelope | Multi-peak count match ±1; decay envelope correlation ≥ 0.80 |
 | **Catfood-bag drops × 3 distances × {body-in-path, no-body}** | `signals.py` `fall_trajectory` `body_absorption_db` (currently 5 dB, weakly validated) | Compare amplitude ratio (body-in-path vs not) to current 5 dB assumption | Amplitude ratio within ±2 dB of measurement |
 | **Slow-slump surrogate (heavy bag lowered onto floor)** | `signals.py` `fall_slump` profile (slow-rumble onset + final impact two-stage signature) | Match measured pre-impact slow build + impact decay shape | Two-stage signature visually matches in plot review (qualitative for now) |
 | **Confuser noise (shower, vent, flush, washer if present)** | `signals.py` noise-profile amplitudes for `noise_shower`, `noise_vent`, etc. | Match per-source PSD against current noise-profile amplitudes | Per-source PSD within ±6 dB across 1–500 Hz |
@@ -173,32 +173,47 @@ Each event in this phase is **labeled in a separate paper / phone log**
 with timestamp, class, distance, and any anomaly (bounce off wall, wet
 floor, etc.).
 
-| Event class | Count target | Distances | Notes |
-|-------------|--------------|-----------|-------|
-| Object drop — water bottle | 15 | 0.5 / 1.5 / 2.5 m × 5 each | Rigid, single-impact-with-rebound class. Drops from waist height (~1 m). |
-| Object drop — phone | 10 | 0.5 / 1.5 / 2.5 m × ~3 each | Lower-mass rigid object. Same drop height. |
-| Object drop — glass | 10 | 0.5 / 1.5 / 2.5 m | Brittle / multi-impact class. Drops from waist height. Be careful. |
-| Catfood-bag drop (body-fall surrogate) | 30 | 0.5 / 1.5 / 2.5 m × 10 each | At 1.5 m, split 5 with operator between drop and sensor ("body in path") and 5 without |
-| Slow-slump surrogate | 10 | 0.5 / 1.5 / 2.5 m | Heavy bag (~10 kg) lowered slowly onto floor; controlled descent, not free fall |
+**IMPORTANT — use surrogates for fragile/expensive items.** The
+simulator's drop classes characterize *physics* (rigid heavy, rigid
+medium, multi-impact), not specific objects. Substitute any
+convenient item that matches the physics class. Never use your real
+phone or glasses you actually use.
+
+| Event class (physics → safe surrogate) | Count target | Distances | Notes |
+|---|---|---|---|
+| Rigid heavy — closed water bottle, fully filled (~500–700 g) | 9 | 0.5 / 1.5 / 2.5 m × 3 | Cap-up orientation. Drops from waist height (~1 m) via the drop-guide tube (B1 jig) so release is consistent. |
+| **Rigid medium SURROGATE** (NOT your phone) | 6 | 0.5 / 1.5 / 2.5 m × 2 | Use a 100–200 g rigid object you don't mind dropping: **power adapter brick, hardback book, closed metal canister, wood block, spare TV remote.** **DO NOT use your actual phone.** The simulator class is labeled `confuser_drop_phone` for legacy reasons; what matters is the rigid-medium physics, not the object identity. |
+| **Multi-impact SAFE surrogate** (NOT broken glass) | 3 | 1.5 m only | Use a small zip-loc bag of dried pasta, OR a handful of marbles in a thin cloth bag. Produces the multi-peak shatter signature without the hazard of broken glass on a wet bathroom floor. **Do NOT actually break glassware.** |
+| Catfood-bag drop (body-fall surrogate) | 18 | 0.5 / 1.5 / 2.5 m × 6 | At 1.5 m, split 3 with operator between drop and sensor ("body in path") and 3 without. Same bag, same fill level across all 18 trials. |
+| Slow-slump surrogate | 10 | 0.5 / 1.5 / 2.5 m | Heavy bag (~10 kg — rice / cat litter / sand) lowered slowly to floor; controlled descent, not free fall |
 | Step / walk (extra, beyond A5) | continuous 5 min | n/a | Operator walks varied paths; oversample for cadence statistics |
 | Confuser — shower running | 60 s | n/a | Continuous, separately recorded |
 | Confuser — vent on | 60 s | n/a | Continuous |
 | Confuser — toilet flush | 5 flushes | n/a | One file with 5 distinct flushes |
 | Confuser — washer (if present) | 60 s + a spin-up | n/a | Skip if not in/adjacent to bathroom |
 
-Save Phase B events grouped by class:
+Reduced totals: 46 discrete events (was 65) + ~4 min of continuous
+recordings. ~45 minute active session (was ~60).
+
+Save Phase B events grouped by class. File names use the simulator's
+physics-class labels (even when the object is a surrogate — see the
+description column above):
 ```
-<bathroom_id>_drop_water_<date>.csv      # all water drops in one file
-<bathroom_id>_drop_phone_<date>.csv
-<bathroom_id>_drop_glass_<date>.csv
-<bathroom_id>_fall_catfood_<date>.csv
-<bathroom_id>_fall_slump_<date>.csv
+<bathroom_id>_drop_water_<date>.csv          # rigid heavy (water bottle)
+<bathroom_id>_drop_phone_<date>.csv          # rigid medium SURROGATE (book / brick / etc.)
+<bathroom_id>_drop_glass_<date>.csv          # multi-impact SAFE surrogate (pasta / marbles)
+<bathroom_id>_fall_catfood_<date>.csv        # body-fall surrogate (catfood bag)
+<bathroom_id>_fall_slump_<date>.csv          # slow descent
 <bathroom_id>_walk_extra_<date>.csv
 <bathroom_id>_noise_shower_<date>.csv
 <bathroom_id>_noise_vent_<date>.csv
 <bathroom_id>_noise_flush_<date>.csv
 <bathroom_id>_noise_washer_<date>.csv
 ```
+The `drop_phone` / `drop_glass` names match the simulator's
+`confuser_drop_phone` / `confuser_drop_glass` profile labels (in
+`src/signals.py`). The names are legacy — what's actually dropped
+should always be a safe surrogate per the table above.
 
 ### Logging discipline
 
@@ -263,7 +278,7 @@ silent simulator parameter changes.
 | Impulse response per distance | `floor_sim` damping ζ, `REAL_TO_SIM_SCALE` | `scripts/fit_floor_ir.py` (to write) |
 | Quiet baseline PSD | `bg_environmental_noise` peak amplitudes | `scripts/fit_noise_psd.py` (extend existing real_noise_spectrum work) |
 | Calibration + extra walk | `_footstep_force_profile` peak range, contact time distribution | `scripts/fit_footstep.py` (to write) |
-| Object drops (water/phone/glass) | `drop_trajectory` COR + multi-impact spacing per `rebound_pattern` | `scripts/fit_drop_rebound.py` (to write) |
+| Object drops (water bottle / rigid-medium surrogate / multi-impact surrogate) | `drop_trajectory` COR + multi-impact spacing per `rebound_pattern` | `scripts/fit_drop_rebound.py` (to write) |
 | Catfood drops body-in vs out | `fall_trajectory` `body_absorption_db` (currently 5 dB guess) | `scripts/fit_body_absorption.py` (to write) |
 | Confuser noise | `noise_shower` / `noise_vent` / `noise_flush` amplitudes | `scripts/fit_confuser_noise.py` (to write) |
 
