@@ -207,21 +207,22 @@ achieve target metrics on the locked catalog above.
 
 ## Bill of Materials (BOM)
 
-> Component-level record. Every component that touches a domain primitive must be here.
-> Include part number, value/spec, supplier, and any substitution notes.
-> Delete this instruction block and replace with your actual BOM.
-
 | Ref | Component | Part Number | Value / Spec | Supplier | Notes |
 |-----|-----------|-------------|--------------|----------|-------|
-| U1  | [MCU board] | — | — | — | [e.g., must be Sense variant] |
-| U2  | [Sensor] | — | [I2C addr, ODR, range] | — | — |
-| R1  | [Resistor] | — | [Ω, tolerance, power] | — | — |
-| C1  | [Capacitor] | — | [μF, voltage] | — | — |
-| J1  | [Connector] | — | — | — | — |
+| U1  | MCU board | STM32F103C8T6 (blue pill) | 72 MHz ARM Cortex-M3, 64 KB flash | — | Firmware in `~/Documents/piezo_circuit/代码 - 调节发送频率/` |
+| U2  | **Piezo sensor** | **MiniSense 100** | PVDF cantilever + integrated proof mass; fn ≈ 75 Hz, ζ ≈ 0.092; 1.1 V/g baseline / 6 V/g at resonance; source Z ≈ 650 MΩ @ 1 Hz | Measurement Specialties (TE Connectivity) | User-confirmed 2026-05-16. Simulator's sensor model in `src/signals.py` is calibrated to this datasheet. |
+| U3  | Front-end op-amp | CA3140 / MAX44248 | FET-input, low bias current | — | High-Z buffer for PVDF source impedance |
+| R48 | PVDF bias | — | 100 MΩ | — | Combined with PVDF Cs → ~6.5 Hz HP corner |
+| J1  | Sensor connector | — | 2-pin | — | Sensor leads — shield grounded at front-end only |
 
-**BOM revision:** [vX.Y — YYYY-MM-DD]  
 **Known substitution constraints:**  
-- [e.g., "U2: LSM6DS3TR-C only — LSM6DSO has different WHO_AM_I and I2C timing"]
+- **U2 (sensor):** if the MiniSense 100 is ever swapped for a different
+  PVDF assembly (e.g. custom cantilever), the simulator sensor model in
+  `src/signals.py` MUST be recalibrated to the new fn / ζ / sensitivity.
+  This is a domain-primitive-affecting change → requires a Bill, not a
+  silent edit. The source repo `~/Documents/piezo_circuit/` front-end is
+  general-purpose (compatible with any PVDF sensor); the MiniSense 100
+  identity comes from the deployment record, not the schematic.
 
 ---
 
