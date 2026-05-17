@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>piezo_fall — Real-to-Sim Correction Data Collection Protocol</title>
+<style>
+  :root {
+    --hold: #d62728;        /* must hold constant */
+    --hold-bg: #fde0e0;
+    --measure: #1f77b4;     /* must measure & log */
+    --measure-bg: #d8e7f3;
+    --free: #888;           /* free to vary */
+    --free-bg: #efefef;
+    --fix-this: #ff7f0e;    /* sensitivity-critical */
+    --fix-this-bg: #ffe9cc;
+  }
+  body {
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    max-width: 1280px;
+    margin: 2em auto;
+    padding: 0 1.5em;
+    line-height: 1.45;
+    color: #222;
+  }
+  h1 { border-bottom: 3px solid #222; padding-bottom: 0.3em; }
+  h2 { border-bottom: 1px solid #ccc; padding-bottom: 0.2em; margin-top: 2em; }
+  h3 { margin-top: 1.5em; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.92em;
+    margin: 1em 0;
+  }
+  th, td {
+    border: 1px solid #aaa;
+    padding: 0.45em 0.6em;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #f0f0f0; font-weight: 600; }
+  tr:nth-child(even) td { background: #fafafa; }
+  code, .mono { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 0.92em; }
+  .tag {
+    display: inline-block;
+    padding: 0.05em 0.45em;
+    border-radius: 3px;
+    font-size: 0.82em;
+    font-weight: 600;
+    white-space: nowrap;
+    margin-right: 0.3em;
+  }
+  .tag-hold     { background: var(--hold-bg);     color: var(--hold);     border: 1px solid var(--hold); }
+  .tag-measure  { background: var(--measure-bg);  color: var(--measure);  border: 1px solid var(--measure); }
+  .tag-free     { background: var(--free-bg);     color: var(--free);     border: 1px solid var(--free); }
+  .tag-critical { background: var(--fix-this-bg); color: var(--fix-this); border: 1px solid var(--fix-this); }
+  .legend {
+    background: #f7f7f7;
+    border: 1px solid #ccc;
+    padding: 0.8em 1em;
+    margin: 1em 0;
+    border-radius: 4px;
+  }
+  .callout {
+    background: var(--hold-bg);
+    border-left: 4px solid var(--hold);
+    padding: 0.8em 1em;
+    margin: 1em 0;
+    border-radius: 0 4px 4px 0;
+  }
+  .callout-warn {
+    background: var(--fix-this-bg);
+    border-left: 4px solid var(--fix-this);
+    padding: 0.8em 1em;
+    margin: 1em 0;
+    border-radius: 0 4px 4px 0;
+  }
+  .control-cell { background: var(--hold-bg) !important; }
+  .measure-cell { background: var(--measure-bg) !important; }
+  .small { font-size: 0.85em; color: #666; }
+  ul.compact { margin: 0.3em 0; padding-left: 1.4em; }
+  ul.compact li { margin: 0.15em 0; }
+  .nowrap { white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<h1>Real-to-Sim Correction — Data Collection Protocol</h1>
+
+<p class="small">
+  Source: <code>docs/data_collection_protocol.md</code> (committed 2026-05-16, 91b0a5f). This HTML is a reading
+  rendition with experimental-control highlights added — the markdown is the canonical source.
+</p>
+
+<div class="legend">
+  <strong>Variable-control legend</strong> — used throughout this document:
+  <ul class="compact">
+    <li><span class="tag tag-hold">HOLD CONSTANT</span> Must not change within a session or across re-runs.
+        Drift here invalidates comparisons. <em>This is what you'll be tempted to fudge — don't.</em></li>
+    <li><span class="tag tag-measure">MEASURE &amp; LOG</span> Allowed to vary but must be recorded
+        per session (CSV metadata header or paper log). Without the value, the data is not analyzable.</li>
+    <li><span class="tag tag-free">FREE</span> Can vary freely, no impact on comparability.</li>
+    <li><span class="tag tag-critical">CRITICAL</span> Sensitivity-critical control — if this drifts, the
+        comparison breaks even if everything else is solid.</li>
+  </ul>
+</div>
+
+<h2>1 · Purpose (recap)</h2>
+<p>
+  Stage 1 left the simulator-only classifier at <strong>50% sensitivity / 44% FP</strong>
+  on real bathroom CSVs. Closing that gap requires fitting each simulator component against
+  real ground truth. This protocol specifies what to measure, in what order, and which
+  <code>signals.py</code> parameter each measurement corrects.
+</p>
+
+<h2>2 · Hardware setup — what must be held constant</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Item</th>
+      <th>Setting</th>
+      <th>Variable type</th>
+      <th>Why it matters</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>MCU + firmware</td>
+      <td>STM32F103C8T6 with <code>~/Documents/piezo_circuit/代码 - 调节发送频率/USER/main.c</code></td>
+      <td><span class="tag tag-critical">CRITICAL</span></td>
+      <td>Different firmware → different output format / rate. Comparisons across sessions break.</td>
+    </tr>
+    <tr>
+      <td><code>INT_MARK</code></td>
+      <td><strong>0</strong> (mandatory, per Amendment 1 P1)</td>
+      <td><span class="tag tag-critical">CRITICAL</span></td>
+      <td>Any other value violates the &gt;= 1 kHz rate floor → CSV not admissible as Article I evidence.</td>
+    </tr>
+    <tr>
+      <td>Sensor</td>
+      <td>MiniSense 100 (user-confirmed)</td>
+      <td><span class="tag tag-hold">HOLD CONSTANT</span></td>
+      <td>Sensor swap → datasheet sensor model invalid. Requires Bill.</td>
+    </tr>
+    <tr>
+      <td>Housing</td>
+      <td><code>ground_cantilever_housing.stp</code>, PLA, 100% infill</td>
+      <td><span class="tag tag-hold">HOLD CONSTANT</span></td>
+      <td>Re-printing with different infill or material shifts the follow-the-floor resonance.</td>
+    </tr>
+    <tr>
+      <td>Preload weight</td>
+      <td><strong>~200 g</strong> (range 100–500 g acceptable, but pick one and stay there)</td>
+      <td><span class="tag tag-hold">HOLD CONSTANT</span> within a study</td>
+      <td>Different preload → different rocking margin and different follow-the-floor resonance.</td>
+    </tr>
+    <tr>
+      <td>Transport</td>
+      <td>USART2 (PA2/PA3) → USB-serial @ 115200 baud, FireWater <code>%.3f\n</code></td>
+      <td><span class="tag tag-critical">CRITICAL</span></td>
+      <td>Different transport → different buffering → different effective sample rate / drops.</td>
+    </tr>
+    <tr>
+      <td>Measured rate</td>
+      <td>Whatever it actually is — typical ~1.38 kHz on USART2-USB</td>
+      <td><span class="tag tag-measure">MEASURE &amp; LOG</span></td>
+      <td>Must be in CSV header per Case 1 ruling. <strong>Compute</strong>, don't assume.</td>
+    </tr>
+    <tr>
+      <td>Bathroom / tile / device xy</td>
+      <td>Whatever the actual install is</td>
+      <td><span class="tag tag-measure">MEASURE &amp; LOG</span></td>
+      <td>Different bathrooms produce different IRs — that's the point of multi-bathroom planning.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>3 · Sample-rate gate — run before every session</h2>
+
+<div class="callout">
+  <strong>Gate check (10 s):</strong> capture 10 s of UART output, compute
+  <code>measured_rate_hz = lines / wall-clock-elapsed</code>. <strong>Must be ≥ 1000 Hz.</strong>
+  If less: abort. <code>INT_MARK</code> is wrong, transport is buffering, or the firmware build is the wrong one.
+  Per Case 1, recordings below 1 kHz are <em>not admissible</em> as Article I evidence.
+</div>
+
+<h2>4 · Mandatory CSV metadata header (per Case 1)</h2>
+
+<pre><code># int_mark: 0                  <span class="tag tag-critical">CRITICAL</span>
+# transport: USART2_USB        <span class="tag tag-hold">HOLD</span>
+# measured_rate_hz: 1380       <span class="tag tag-measure">MEASURE</span>
+# bathroom_id: bathroom_A      <span class="tag tag-measure">MEASURE</span>
+# tile_size_mm: 200x200        <span class="tag tag-measure">MEASURE</span>
+# device_xy_in_room: "0.3m W wall, 0.5m S wall"   <span class="tag tag-measure">MEASURE</span>
+# preload_mass_g: 200          <span class="tag tag-hold">HOLD</span>
+# operator: shiyao             <span class="tag tag-measure">MEASURE</span>
+# date: 2026-05-XX             <span class="tag tag-measure">MEASURE</span>
+# session_id: 001              <span class="tag tag-measure">MEASURE</span>
+# measurement_type: tap_0.5m   <span class="tag tag-measure">MEASURE</span>
+</code></pre>
+
+<p class="small">Missing fields → CSV not admissible. Don't proceed without them.</p>
+
+<h2>5 · Per-session mount sanity check (~1 min)</h2>
+
+<ol>
+  <li>Place housing on tile. Confirm baseplate is flush — no rocking when pushing the cap with a finger.</li>
+  <li>Place 200 g weight on top platform.</li>
+  <li>Start UART capture.</li>
+  <li>Tap tile 30 cm from housing with a fingernail. <strong>5 taps, ~2 s apart.</strong></li>
+  <li>Stop capture, inspect:
+    <ul>
+      <li><strong>Pass:</strong> clean impulse, ringdown &lt; 50 ms, no inter-tap oscillation</li>
+      <li><strong>Fail:</strong> ringdown &gt; 200 ms (compliant contact), delayed rise (foam),
+          large oscillation between taps (loose preload / rocking baseplate)</li>
+    </ul>
+  </li>
+</ol>
+
+<div class="callout-warn">
+  If fail: alcohol-wipe the tile, re-seat the housing, repeat. <strong>Do not proceed to data collection
+  until sanity check passes.</strong> Bad coupling silently contaminates everything downstream.
+</div>
+
+<h2>6 · The protocol as one table (per bathroom)</h2>
+
+<p>Each row is a discrete measurement. Columns 4–5 are the experimental controls — what must be held
+constant vs measured/logged for that specific measurement. <strong>The orange cells are where a slip
+of control kills the fit downstream.</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Phase</th>
+      <th nowrap>Duration</th>
+      <th>Measurement &amp; output file</th>
+      <th>What must be <span class="tag tag-hold">HELD CONSTANT</span></th>
+      <th>What must be <span class="tag tag-measure">MEASURED &amp; LOGGED</span></th>
+      <th>Fixes in <code>signals.py</code></th>
+      <th>Acceptance residual</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <tr>
+      <td>0</td><td>Sanity</td><td>1 min</td>
+      <td>Tap 30 cm × 5 (verify, not saved)</td>
+      <td class="control-cell">tap source (fingernail), tap location (30 cm), preload (200 g)</td>
+      <td class="measure-cell">pass/fail observation in operator log</td>
+      <td>n/a — verifies mount only</td>
+      <td>ringdown &lt; 50 ms, no inter-tap oscillation</td>
+    </tr>
+
+    <tr>
+      <td>A1</td><td>Install calib</td><td>60 s</td>
+      <td>Quiet baseline, no one in room → <code>&lt;bid&gt;_baseline.csv</code></td>
+      <td class="control-cell">no one in room, all appliances OFF except vent (if it's normally on),
+          door state (closed/open) — pick one and stay there</td>
+      <td class="measure-cell">vent state, door state, time of day</td>
+      <td><code>bg_environmental_noise</code> per-peak amplitudes</td>
+      <td>Real PSD vs sim PSD ±6 dB, 1–500 Hz</td>
+    </tr>
+
+    <tr>
+      <td>A2</td><td>Install calib</td><td>5 taps</td>
+      <td>Tap at 0.5 m → <code>&lt;bid&gt;_tap_0.5m.csv</code></td>
+      <td class="control-cell"><span class="tag tag-critical">CRITICAL</span>
+          tap source (same finger or jig), tap location (marked with tape!), 5 taps ≥ 2 s apart,
+          no other movement in room</td>
+      <td class="measure-cell">tap location xy in room, tap force (qualitative: light/medium/hard)</td>
+      <td>Floor-plate FEA ζ, modal density, near-field gain</td>
+      <td>Per-tap envelope correlation ≥ 0.85</td>
+    </tr>
+
+    <tr>
+      <td>A3</td><td>Install calib</td><td>5 taps</td>
+      <td>Tap at 1.5 m → <code>&lt;bid&gt;_tap_1.5m.csv</code></td>
+      <td class="control-cell"><span class="tag tag-critical">CRITICAL</span>
+          same tap source as A2, location marked with tape, 5 taps ≥ 2 s apart</td>
+      <td class="measure-cell">tap location xy, tap force level</td>
+      <td>Same + <code>REAL_TO_SIM_SCALE</code> (spatial decay)</td>
+      <td>Ringdown τ ±30%</td>
+    </tr>
+
+    <tr>
+      <td>A4</td><td>Install calib</td><td>5 taps</td>
+      <td>Tap at 2.5 m → <code>&lt;bid&gt;_tap_2.5m.csv</code></td>
+      <td class="control-cell"><span class="tag tag-critical">CRITICAL</span> same as A2/A3</td>
+      <td class="measure-cell">tap location xy, tap force level</td>
+      <td>Same + far-field decay</td>
+      <td>Same</td>
+    </tr>
+
+    <tr>
+      <td>A5</td><td>Install calib</td><td>60 s</td>
+      <td>Calibration walk → <code>&lt;bid&gt;_walk.csv</code></td>
+      <td class="control-cell">one operator, normal pace (~2 steps/s), shoes off or shoes on
+          — pick one and stay there for the whole study</td>
+      <td class="measure-cell">operator weight (kg), footwear (barefoot / socks / soft / hard sole),
+          rough path description</td>
+      <td><code>_footstep_force_profile</code> peak, contact time</td>
+      <td>Peak mean ±20%, cadence KS p &gt; 0.05</td>
+    </tr>
+
+    <tr>
+      <td>B1</td><td>Events</td><td>~5 min</td>
+      <td>Water bottle drops × 15 (0.5/1.5/2.5 m × 5) → <code>&lt;bid&gt;_drop_water.csv</code></td>
+      <td class="control-cell"><span class="tag tag-critical">CRITICAL</span>
+          drop height (waist height = ~1 m, measure with a stick the first time and keep that stick),
+          same bottle (mass + fill level), bottle orientation at release (cap up)</td>
+      <td class="measure-cell">bottle mass (g, with current fill), drop height (m), drop location xy</td>
+      <td><code>drop_trajectory</code> rigid <code>rebound_pattern</code> (COR, multi-impact spacing)</td>
+      <td>Multi-peak count ±1, decay corr ≥ 0.80</td>
+    </tr>
+
+    <tr>
+      <td>B2</td><td>Events</td><td>~3 min</td>
+      <td>Phone drops × 10 → <code>&lt;bid&gt;_drop_phone.csv</code></td>
+      <td class="control-cell">same phone, same drop height as B1, same orientation (screen up)</td>
+      <td class="measure-cell">phone mass (g), drop height, drop location xy</td>
+      <td>Same, lower-mass rigid</td>
+      <td>Same</td>
+    </tr>
+
+    <tr>
+      <td>B3</td><td>Events</td><td>~3 min</td>
+      <td>Glass drops × 10 → <code>&lt;bid&gt;_drop_glass.csv</code></td>
+      <td class="control-cell">same glass type each time (or label per glass), same drop height,
+          drop into a contained area (cleanup)</td>
+      <td class="measure-cell">glass mass (g), drop height, drop location xy, "did it break?" (yes/no)</td>
+      <td><code>drop_trajectory</code> <code>shatter</code> pattern (multi-impact)</td>
+      <td>Same</td>
+    </tr>
+
+    <tr>
+      <td>B4</td><td>Events</td><td>~10 min</td>
+      <td>Catfood-bag drops × 30 (0.5/1.5/2.5 m × 10; 5 of the 1.5m with body-in-path)
+          → <code>&lt;bid&gt;_fall_catfood.csv</code></td>
+      <td class="control-cell"><span class="tag tag-critical">CRITICAL</span>
+          same catfood bag (mass + fill), drop height (waist), body-in-path means operator stands
+          DIRECTLY between drop point and sensor (not off to the side)</td>
+      <td class="measure-cell">bag mass (g), drop height, drop xy, body-in-path? yes/no, operator weight</td>
+      <td><code>fall_trajectory</code> peak + <code>body_absorption_db</code> (currently 5 dB guess)</td>
+      <td>Body-in-vs-out amplitude ratio ±2 dB</td>
+    </tr>
+
+    <tr>
+      <td>B5</td><td>Events</td><td>~5 min</td>
+      <td>Slow-slump surrogate × 10 → <code>&lt;bid&gt;_fall_slump.csv</code></td>
+      <td class="control-cell">same heavy bag (~10 kg), lowered slowly by hand to floor
+          (not dropped) — pick a target descent time (e.g., 2 s) and try to match it</td>
+      <td class="measure-cell">bag mass, descent time (s), descent location xy</td>
+      <td><code>fall_slump</code> two-stage profile (rumble onset + impact)</td>
+      <td>Visual match in plot review</td>
+    </tr>
+
+    <tr>
+      <td>B6</td><td>Events</td><td>5 min</td>
+      <td>Extra walking → <code>&lt;bid&gt;_walk_extra.csv</code></td>
+      <td class="control-cell">same operator + footwear as A5</td>
+      <td class="measure-cell">vary the paces deliberately (slow / normal / fast) and log time-windows of each</td>
+      <td>Walking cadence statistics (augments A5)</td>
+      <td>Cadence distribution coverage</td>
+    </tr>
+
+    <tr>
+      <td>B7</td><td>Noise</td><td>60 s</td>
+      <td>Shower running → <code>&lt;bid&gt;_noise_shower.csv</code></td>
+      <td class="control-cell">water on full, no operator movement, door state same as A1</td>
+      <td class="measure-cell">flow rate setting (low/med/high), water temperature (hot/cold) if relevant</td>
+      <td><code>noise_shower</code> PSD amplitudes</td>
+      <td>Per-source PSD ±6 dB</td>
+    </tr>
+
+    <tr>
+      <td>B8</td><td>Noise</td><td>60 s</td>
+      <td>Vent on → <code>&lt;bid&gt;_noise_vent.csv</code></td>
+      <td class="control-cell">vent on at full speed, no other source</td>
+      <td class="measure-cell">vent fan rating (W or m³/h) if known</td>
+      <td><code>noise_vent</code> PSD amplitudes</td>
+      <td>Same</td>
+    </tr>
+
+    <tr>
+      <td>B9</td><td>Noise</td><td>5 flushes</td>
+      <td>Toilet flush × 5 → <code>&lt;bid&gt;_noise_flush.csv</code></td>
+      <td class="control-cell">same toilet, wait for refill between flushes, ~30 s gap</td>
+      <td class="measure-cell">flush-to-flush gap (s), tank refill duration (s)</td>
+      <td><code>noise_flush</code> transient amplitude + duration</td>
+      <td>Same</td>
+    </tr>
+
+    <tr>
+      <td>B10</td><td>Noise</td><td>60 s + spin-up</td>
+      <td>Washer (if applicable) → <code>&lt;bid&gt;_noise_washer.csv</code></td>
+      <td class="control-cell">washer cycle stage (agitate vs spin), load size repeatable across studies</td>
+      <td class="measure-cell">cycle stage, load type (laundry / empty), distance from bathroom (m)</td>
+      <td><code>noise_washer_local</code> / <code>_neighbor</code> PSD</td>
+      <td>Same</td>
+    </tr>
+
+    <tr>
+      <td>—</td><td>Log</td><td>continuous</td>
+      <td>Handwritten / phone-notes labels → <code>&lt;bid&gt;_log.md</code></td>
+      <td class="control-cell">log format (timestamp + class + distance + body-in-path + anomaly per line)</td>
+      <td class="measure-cell">everything</td>
+      <td>n/a — labeling</td>
+      <td>n/a</td>
+    </tr>
+
+  </tbody>
+</table>
+
+<p><strong>Total per-bathroom time:</strong> ~50–60 min active + 5 min calibration. One session, one device deploy, one operator.</p>
+
+<h2>7 · Variables that matter most — &quot;don't change these mid-study&quot;</h2>
+
+<div class="callout">
+  <strong>If you change any of these between A-phase and B-phase, or between sessions in the same bathroom,
+  your data is not comparable. Pick once and stick:</strong>
+  <ul class="compact">
+    <li><span class="tag tag-critical">CRITICAL</span> <code>INT_MARK</code> value (must stay 0)</li>
+    <li><span class="tag tag-critical">CRITICAL</span> tap source (fingernail vs jig — pick one and stick across A2/A3/A4)</li>
+    <li><span class="tag tag-critical">CRITICAL</span> tap locations (marked with tape, kept across re-installs)</li>
+    <li><span class="tag tag-critical">CRITICAL</span> operator footwear (barefoot / socks / sole) across A5 + B6</li>
+    <li><span class="tag tag-critical">CRITICAL</span> drop height across B1/B2/B3/B4</li>
+    <li><span class="tag tag-critical">CRITICAL</span> "body in path" means operator <em>directly</em> between drop and sensor — not off-axis</li>
+    <li><span class="tag tag-hold">HOLD</span> preload weight (~200 g, no swap mid-study)</li>
+    <li><span class="tag tag-hold">HOLD</span> housing (don't re-print between sessions)</li>
+    <li><span class="tag tag-hold">HOLD</span> sensor (no swap)</li>
+    <li><span class="tag tag-hold">HOLD</span> door state during baseline + noise recordings</li>
+    <li><span class="tag tag-hold">HOLD</span> bathroom appliance state during baseline (everything OFF except what's normally on)</li>
+  </ul>
+</div>
+
+<h3>Variables that must be measured &amp; logged (but allowed to vary)</h3>
+<div class="callout" style="background: var(--measure-bg); border-left-color: var(--measure);">
+  <ul class="compact">
+    <li><span class="tag tag-measure">MEASURE</span> <code>measured_rate_hz</code> per session</li>
+    <li><span class="tag tag-measure">MEASURE</span> bag / bottle / phone / glass mass</li>
+    <li><span class="tag tag-measure">MEASURE</span> operator weight (kg)</li>
+    <li><span class="tag tag-measure">MEASURE</span> tile size + device xy in room</li>
+    <li><span class="tag tag-measure">MEASURE</span> drop locations xy</li>
+    <li><span class="tag tag-measure">MEASURE</span> per-event anomalies (bounced off wall, wet floor, etc.)</li>
+  </ul>
+</div>
+
+<h3>Variables you can ignore</h3>
+<div class="callout" style="background: var(--free-bg); border-left-color: var(--free);">
+  <ul class="compact">
+    <li><span class="tag tag-free">FREE</span> time of day (within reason — avoid 3 AM dead silence vs 9 AM neighbor noise extremes)</li>
+    <li><span class="tag tag-free">FREE</span> operator's emotional state, hairstyle, hydration, etc.</li>
+    <li><span class="tag tag-free">FREE</span> ambient temperature (within room-temperature range)</li>
+    <li><span class="tag tag-free">FREE</span> humidity (within bathroom-normal range)</li>
+  </ul>
+</div>
+
+<h2>8 · After data: the correction loop</h2>
+
+<table>
+  <thead>
+    <tr><th>Step</th><th>Who</th><th>What</th><th>Output</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>Operator</td><td>Run section 6 on bathroom A</td><td><code>data/bathroom_A/*.csv</code></td></tr>
+    <tr><td>2</td><td>Claude</td><td>Draft fit scripts (<code>fit_floor_ir.py</code>, <code>fit_footstep.py</code>,
+        <code>fit_drop_rebound.py</code>, <code>fit_body_absorption.py</code>, <code>fit_confuser_noise.py</code>)
+        and a single Bill: <em>"Sim-to-real v3 corrections from bathroom_A"</em></td>
+      <td>Bill draft + fit scripts</td></tr>
+    <tr><td>3</td><td>Judicial hearing</td><td>Debate the Bill</td><td>Case ruling</td></tr>
+    <tr><td>4</td><td>Claude</td><td>If passed: apply fits to <code>signals.py</code>, retrain classifier,
+        rerun sim-to-real v3</td>
+      <td>Updated <code>signals.py</code>, <code>algorithm.py</code>, <code>scripts/sim_to_real_test_v3.py</code> output</td></tr>
+    <tr><td>5</td><td>Decision gate</td><td>Inspect v3 vs trigger criteria below</td>
+      <td>"Stay at 1 bathroom" or "Expand to 3"</td></tr>
+  </tbody>
+</table>
+
+<h2>9 · The expand-to-3 trigger (pre-committed)</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>v3 result on bathroom A</th>
+      <th>Decision</th>
+      <th>Why</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Sens ≥ 80%, FP ≤ 10%</td>
+      <td><strong>Expand to 3 bathrooms</strong></td>
+      <td>Correction worked here, but need to prove not just over-fit to one tile</td>
+    </tr>
+    <tr>
+      <td>Sens 60–80% or FP 10–25%</td>
+      <td><strong>Expand to 3 bathrooms</strong></td>
+      <td>Structure looks OK but needs more data</td>
+    </tr>
+    <tr>
+      <td>Sens &lt; 60% or FP &gt; 25%</td>
+      <td><strong>Stay at 1, draft simulator-structure Bills</strong></td>
+      <td>Extra data won't fix a wrong-shaped simulator; revisit modeling assumptions
+          (e.g., multi-tile mosaic, FEA mode selection)</td>
+    </tr>
+    <tr>
+      <td>Tap-test repeatability (A2–A4) corr &lt; 0.7 across the 5 repeats</td>
+      <td><strong>Expand to 3 bathrooms</strong></td>
+      <td>Mount / tile coupling unstable — need to see if it's bathroom A or general</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>10 · Open questions to resolve before first execution</h2>
+
+<ol>
+  <li><strong>Tap source standardization.</strong> Fingernail tap is operator-dependent (±50%).
+      Recommended refinement: a small jig — e.g., 10 g steel ball dropped from a fixed 100 mm
+      vertical guide. Optional for first pass; required if A2-A4 repeatability is bad.</li>
+  <li><strong>Sample-rate metadata.</strong> Recommend inline: record session wall-clock start +
+      CSV row count, derive rate post-hoc. Avoids a separate gate-check session.</li>
+  <li><strong>Storage path.</strong> <code>data/</code> symlinked outside repo with <code>.gitignore</code>
+      to avoid bloating git with large CSVs. Decide once we see actual file sizes.</li>
+  <li><strong>Legacy CSV admission.</strong> The existing
+      <code>~/Documents/piezo_circuit/bathroom_testing/{catfood,water,step}_201505.csv</code>
+      should be migrated under <code>data/bathroom_legacy/</code> with metadata headers
+      retro-fitted (operator-attested, not measured). Flag the asymmetry in any v3 report.</li>
+  <li><strong>Event segmentation tool.</strong> Phase B produces 30-minute CSVs with discrete events.
+      Need a tool (script or simple GUI) to extract event windows from log timestamps. Build
+      alongside Phase B execution.</li>
+</ol>
+
+</body>
+</html>
