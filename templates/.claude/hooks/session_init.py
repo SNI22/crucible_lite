@@ -24,11 +24,8 @@ def _git(*args: str, cwd: Path) -> tuple[int, str]:
     return result.returncode, result.stdout.strip()
 
 
-def _has_module(name: str) -> bool:
-    return subprocess.run(
-        [sys.executable, "-c", f"import {name}"],
-        capture_output=True,
-    ).returncode == 0
+def _has_crucible_cli() -> bool:
+    return shutil.which("crucible") is not None
 
 
 def main() -> int:
@@ -69,15 +66,13 @@ def main() -> int:
     else:
         issues.append(".github/workflows/constitution-check.yml missing")
 
-    # 4. crucible-core importable from python3 (gates full local enforcement)
-    has_core = _has_module("crucible.checks.runner")
-    if has_core:
-        ok.append("crucible-core importable → full local enforcement active")
+    # 4. `crucible` CLI on PATH (gates full local enforcement — hooks call it)
+    if _has_crucible_cli():
+        ok.append("crucible CLI on PATH → full local enforcement active")
     else:
         issues.append(
-            "crucible-core not installed in python3 env. "
-            "Hooks fall back to Article I only. To enable Corpus + Stage Gate "
-            "checks locally: pip install -r requirements.txt"
+            "'crucible' CLI not on PATH. Hooks fall back to Article I only. "
+            "Install with: pipx install crucible-core   (or pip install crucible-core)"
         )
 
     # 5. Required governance docs present (the runner reads these)

@@ -175,6 +175,22 @@ def cmd_init(args: argparse.Namespace) -> int:
     os.execv(claude_bin, ["claude"])
 
 
+def cmd_check(args: argparse.Namespace) -> int:
+    """Run the constitutional checks using crucible-core's own python.
+
+    Exists so git hooks and CI can invoke the checks without resolving
+    'which python3 has crucible-core installed'. Whatever interpreter
+    runs the `crucible` CLI is the one that runs the checks.
+    """
+    from crucible.checks.runner import main as runner_main
+    runner_argv: list[str] = []
+    if args.base_ref:
+        runner_argv.extend(["--base-ref", args.base_ref])
+    if args.pre_commit:
+        runner_argv.append("--pre-commit")
+    return runner_main(runner_argv)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="crucible",
@@ -204,6 +220,22 @@ def main(argv: list[str] | None = None) -> int:
              "docs/.adoption/source_CLAUDE.md regardless of this flag.",
     )
     p_init.set_defaults(func=cmd_init)
+
+    p_check = sub.add_parser(
+        "check",
+        help="Run the constitutional check stack (Article I + Corpus + Stage Gate).",
+    )
+    p_check.add_argument(
+        "--base-ref",
+        default=None,
+        help="Git ref to diff against (e.g. origin/main). Default: HEAD~1.",
+    )
+    p_check.add_argument(
+        "--pre-commit",
+        action="store_true",
+        help="Pre-commit mode: staged files only, warnings do not block.",
+    )
+    p_check.set_defaults(func=cmd_check)
 
     args = parser.parse_args(argv)
     if not args.command:

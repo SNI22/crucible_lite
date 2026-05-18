@@ -39,13 +39,13 @@ def _detect_repo_root() -> Path:
     return Path(__file__).resolve().parents[3]
 
 
-def main() -> int:
+def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('--base-ref', default=None,
                         help='Git ref to diff against (e.g. origin/main)')
     parser.add_argument('--pre-commit', action='store_true',
                         help='Pre-commit mode: staged files only, warnings allowed')
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     repo_root = _detect_repo_root()
     base_ref = args.base_ref

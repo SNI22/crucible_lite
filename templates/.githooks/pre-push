@@ -1,25 +1,26 @@
 #!/usr/bin/env bash
 # Constitutional pre-push enforcement (CI-strict).
-# Matches what GitHub Actions runs in constitution-check.yml — Article I,
-# Corpus Supremacy, and Stage Gate. Catches anything pre-commit let through
-# (warnings escalate, --no-verify bypasses) before changes reach GitHub.
+# Runs the same 3-check stack CI runs, via the `crucible` CLI (which uses
+# crucible-core's own python — works for pipx, venv, or system pip installs).
+# Catches anything pre-commit warnings or `--no-verify` would have let through.
 #
 # Activated by `crucible init` automatically via:
 #   git config core.hooksPath .githooks
 
 set -e
 
-if ! python3 -c "import crucible.checks.runner" 2>/dev/null; then
-    echo "✗ Pre-push blocked: crucible-core is not installed in python3."
-    echo "  Run:  pip install -r requirements.txt"
-    echo "  Then retry the push. (Bypass at your own risk: git push --no-verify"
-    echo "  — but GitHub CI will still enforce.)"
+if ! command -v crucible >/dev/null 2>&1; then
+    echo "✗ Pre-push blocked: 'crucible' CLI not on PATH."
+    echo "  Install crucible-core, e.g.:"
+    echo "    pipx install -e /path/to/crucible-core"
+    echo "    # or: pip install crucible-core   (when on PyPI)"
+    echo "  Then retry the push."
     exit 1
 fi
 
 # Match CI: diff against origin/main when available, otherwise default.
 if git rev-parse --verify origin/main >/dev/null 2>&1; then
-    python3 -m crucible.checks.runner --base-ref origin/main
+    crucible check --base-ref origin/main
 else
-    python3 -m crucible.checks.runner
+    crucible check
 fi

@@ -1,23 +1,22 @@
 #!/usr/bin/env bash
 # Constitutional pre-commit enforcement.
-# When crucible-core is importable: runs the full 3-check stack (Article I +
-# Corpus Supremacy + Stage Gate) in --pre-commit mode (warnings allowed,
-# violations block).
-# When crucible-core is NOT installed: falls back to the standalone Article I
-# regex check so commits aren't fully unguarded while the user finishes setup.
+# Invokes the full 3-check stack (Article I + Corpus Supremacy + Stage Gate)
+# via the `crucible` CLI, which uses crucible-core's own python — works
+# whether crucible-core was installed via pipx, venv, or system pip.
+# Falls back to the standalone Article I regex script if the `crucible`
+# command isn't on PATH yet (e.g., fresh project before crucible-core is
+# installed).
 #
 # Activated by `crucible init` automatically via:
-#   git config core.hooksPath .githooks
-# To activate manually in an existing clone:
 #   git config core.hooksPath .githooks
 
 set -e
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 
-if python3 -c "import crucible.checks.runner" 2>/dev/null; then
-    python3 -m crucible.checks.runner --pre-commit
+if command -v crucible >/dev/null 2>&1; then
+    crucible check --pre-commit
 else
-    echo "ℹ crucible-core not in python3 env — running Article I fallback only."
-    echo "  For full enforcement: pip install -r requirements.txt"
+    echo "ℹ 'crucible' CLI not on PATH — running Article I fallback only."
+    echo "  For full enforcement: install crucible-core, then ensure 'crucible' is on PATH."
     python3 "$REPO_ROOT/.claude/hooks/article1_check.py" --staged
 fi
