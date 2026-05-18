@@ -1,4 +1,6 @@
-crucible-core>=0.1.0
+# Crucible framework — installed from public git (PyPI release pending).
+# Pin to a branch during active dev; switch to a commit SHA or tag for reproducible builds.
+crucible-core @ git+https://github.com/SNI22/crucible_lite.git@crucible_core
 
 # Crucible — Python dependencies
 #
