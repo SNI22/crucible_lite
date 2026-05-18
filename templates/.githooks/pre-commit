@@ -1,11 +1,23 @@
 #!/usr/bin/env bash
-# Article I pre-commit enforcement.
-# Applies to every commit — agent or human engineer, no exceptions.
-# Blocks commits that introduce empirical values without Amendment 1 citations.
+# Constitutional pre-commit enforcement.
+# When crucible-core is importable: runs the full 3-check stack (Article I +
+# Corpus Supremacy + Stage Gate) in --pre-commit mode (warnings allowed,
+# violations block).
+# When crucible-core is NOT installed: falls back to the standalone Article I
+# regex check so commits aren't fully unguarded while the user finishes setup.
 #
-# Activated by `crucible new` automatically via `git config core.hooksPath .githooks`.
-# For an existing clone, activate manually with:
+# Activated by `crucible init` automatically via:
+#   git config core.hooksPath .githooks
+# To activate manually in an existing clone:
 #   git config core.hooksPath .githooks
 
+set -e
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-python3 "$REPO_ROOT/.claude/hooks/article1_check.py" --staged
+
+if python3 -c "import crucible.checks.runner" 2>/dev/null; then
+    python3 -m crucible.checks.runner --pre-commit
+else
+    echo "ℹ crucible-core not in python3 env — running Article I fallback only."
+    echo "  For full enforcement: pip install -r requirements.txt"
+    python3 "$REPO_ROOT/.claude/hooks/article1_check.py" --staged
+fi

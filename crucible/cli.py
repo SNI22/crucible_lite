@@ -125,7 +125,7 @@ def cmd_init(args: argparse.Namespace) -> int:
     if not args.no_git:
         is_repo = (project_dir / ".git").exists()
         if not is_repo:
-            subprocess.run(["git", "init", "-q"], cwd=project_dir, check=True)
+            subprocess.run(["git", "init", "-q", "-b", "main"], cwd=project_dir, check=True)
         if (project_dir / ".githooks" / "pre-commit").exists():
             subprocess.run(
                 ["git", "config", "core.hooksPath", ".githooks"],
