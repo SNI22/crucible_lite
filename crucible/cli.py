@@ -17,6 +17,15 @@ ADOPTION_DIR_REL = Path("docs/.adoption")
 ADOPTION_SOURCE_NAME = "source_CLAUDE.md"
 ADOPTION_PENDING_NAME = "PENDING.md"
 
+GOVERNANCE_STAGING_DIR_REL = Path("docs/.adoption/source_governance")
+GOVERNANCE_FILES_TO_STAGE = [
+    "docs/governance/amendments.md",
+    "docs/governance/case_law.md",
+]
+GOVERNANCE_DIRS_TO_STAGE = [
+    "docs/governance/bills",
+]
+
 
 def harness_memory_path(project_path: Path) -> Path:
     encoded = str(project_path.resolve()).replace("/", "-")
@@ -64,6 +73,101 @@ def _stage_adoption(project_dir: Path) -> bool:
     return True
 
 
+def _governance_has_user_content(project_dir: Path) -> bool:
+    """Detect whether existing governance files hold real project content
+    (a ratified amendment, recorded case law, drafted bills) rather than
+    being the unmodified template."""
+    amendments = project_dir / "docs/governance/amendments.md"
+    if amendments.exists():
+        try:
+            text = amendments.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            text = ""
+        if "Status: RATIFIED" in text:
+            return True
+    case_law = project_dir / "docs/governance/case_law.md"
+    if case_law.exists():
+        try:
+            text = case_law.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            text = ""
+        # Template line: "*(No precedents recorded yet...". Real entries: "### Case ".
+        if "### Case " in text:
+            return True
+    bills = project_dir / "docs/governance/bills"
+    if bills.exists() and bills.is_dir():
+        # Any file in bills/ other than a README counts as user content.
+        for p in bills.iterdir():
+            if p.is_file() and p.name.lower() != "readme.md":
+                return True
+    return False
+
+
+def _stage_governance(project_dir: Path) -> bool:
+    """Preserve user governance content before the template copy overwrites it.
+
+    Moves amendments.md, case_law.md, and bills/ into
+    docs/.adoption/source_governance/ when those files contain real content.
+    Mirrors _stage_adoption(): same pattern, same staging location, same
+    intent — never silently destroy ratified governance on `crucible init`.
+
+    Returns True if any content was staged.
+    """
+    if not _governance_has_user_content(project_dir):
+        return False
+
+    staging_dir = project_dir / GOVERNANCE_STAGING_DIR_REL
+    staging_dir.mkdir(parents=True, exist_ok=True)
+
+    moved: list[str] = []
+    for rel in GOVERNANCE_FILES_TO_STAGE:
+        src = project_dir / rel
+        if src.exists():
+            dest = staging_dir / Path(rel).name
+            if dest.exists():
+                dest.unlink()
+            shutil.move(str(src), str(dest))
+            moved.append(rel)
+
+    for rel in GOVERNANCE_DIRS_TO_STAGE:
+        src = project_dir / rel
+        if src.exists() and src.is_dir():
+            dest = staging_dir / Path(rel).name
+            if dest.exists():
+                shutil.rmtree(dest)
+            shutil.move(str(src), str(dest))
+            moved.append(rel)
+
+    today = dt.date.today().isoformat()
+    readme = staging_dir / "README.md"
+    readme.write_text(
+        "# Staged governance content\n\n"
+        f"`crucible init` ran in this directory on {today} and found ratified\n"
+        "governance content. To avoid silently destroying it, the following\n"
+        "files were moved here BEFORE the framework templates were installed:\n\n"
+        + "".join(f"- `{rel}`\n" for rel in moved)
+        + "\n"
+        "## Why this happened\n\n"
+        "Templates ship a fresh, unratified `amendments.md` and an empty\n"
+        "`case_law.md`. Overwriting your ratified content would destroy the\n"
+        "constitutional record of every Hearing, Bill, and Amendment to date.\n"
+        "Re-running `crucible init` (intentionally or by accident) preserves\n"
+        "rather than clobbers.\n\n"
+        "## What to do next\n\n"
+        "Merge your preserved content back into the freshly-installed templates:\n\n"
+        "  1. `diff source_governance/amendments.md ../../governance/amendments.md`\n"
+        "  2. Copy Amendment 1 (and any subsequent project amendments) into the\n"
+        "     new file. Keep the template's framework amendments unless you have\n"
+        "     a specific reason to diverge.\n"
+        "  3. Move your case_law entries and bills back. The template versions\n"
+        "     are empty placeholders.\n\n"
+        "Once the merge is done, delete this directory:\n\n"
+        "  `rm -rf docs/.adoption/source_governance/`\n",
+        encoding="utf-8",
+    )
+    return True
+
+
 def cmd_init(args: argparse.Namespace) -> int:
     project_dir = Path.cwd().resolve()
     project_name = project_dir.name
@@ -74,6 +178,9 @@ def cmd_init(args: argparse.Namespace) -> int:
 
     # If CLAUDE.md already exists, stage it for adoption BEFORE checking conflicts.
     adoption_staged = _stage_adoption(project_dir)
+    # If governance files already exist with ratified content, preserve them too —
+    # never silently overwrite Amendment 1, case law, or bills.
+    governance_staged = _stage_governance(project_dir)
 
     template_files = _template_relpaths(TEMPLATES_DIR)
     conflicts = [rel for rel in template_files if (project_dir / rel).exists()]
@@ -140,6 +247,8 @@ def cmd_init(args: argparse.Namespace) -> int:
         )
         if adoption_staged:
             commit_msg += " (adoption pending — invoke claude-md-adopter)"
+        if governance_staged:
+            commit_msg += " (prior governance preserved at docs/.adoption/source_governance/)"
         subprocess.run(
             ["git", "commit", "-q", "-m", commit_msg],
             cwd=project_dir,
@@ -158,6 +267,13 @@ def cmd_init(args: argparse.Namespace) -> int:
         print(f"  Your original CLAUDE.md was moved to {ADOPTION_DIR_REL}/{ADOPTION_SOURCE_NAME}.")
         print(f"  See {ADOPTION_DIR_REL}/{ADOPTION_PENDING_NAME} for next-step instructions.")
         print(f"  First Claude Code task here: invoke the claude-md-adopter agent.")
+    if governance_staged:
+        print()
+        print("  *** GOVERNANCE PRESERVED ***")
+        print(f"  Existing ratified governance was moved to {GOVERNANCE_STAGING_DIR_REL}/")
+        print(f"  before the template overwrite. Merge it back into the freshly")
+        print(f"  installed docs/governance/ files, then delete the staging dir.")
+        print(f"  See {GOVERNANCE_STAGING_DIR_REL}/README.md for the merge checklist.")
     print()
 
     if args.no_claude:
