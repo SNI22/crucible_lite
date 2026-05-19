@@ -1,0 +1,388 @@
+% =============================================================
+% 6Q Proposal — Contact-centred benchmark for soft vs rigid
+% grippers on thin, flat cloth.
+%
+% Source: 6Q_Grasping cloth.pdf (project proposal, six-question
+% structure). LaTeX port with citations to Clark et al. 2023
+% (Dyson Household Clothing Set) and Teeple et al. 2022 (Harvard
+% Multi-Dimensional Compliance) + comparison table.
+% =============================================================
+
+\documentclass[10pt,letterpaper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage[hidelinks]{hyperref}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\title{A Contact-Centred Benchmark for Soft Passive-Adaptive vs Rigid
+       Parallel-Jaw Grippers on Thin, Flat Cloth}
+
+\author{Shiyao Ni \\
+        McGill University \\
+        \texttt{shiyao.ni@mail.mcgill.ca}}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Robotic manipulation of thin, flat cloth resting on a hard surface remains
+an open problem. Most existing solutions augment rigid parallel-jaw
+grippers with environment-assisted actions, specialised end-effectors, or
+closed-loop perception, treating the gripper itself as a fixed component.
+Prior benchmarks for cloth manipulation either standardise tasks across
+many gripper designs without instrumenting the contact interaction
+\cite{Clark2023}, or compare soft and rigid grippers under a single
+fixed-condition test with an actively-controlled pneumatic soft hand
+\cite{Teeple2022}. This proposal targets the contact stage directly:
+a benchmark that explicitly treats gripper compliance as the independent
+variable and maps the per-gripper success envelope in a five-axis
+control-parameter space, comparing a soft, passively-adaptive UMI
+finray (TPU~90A) against a factory Franka parallel jaw on the same
+Franka Research~3 arm under an identical control policy. The output is
+a pair of envelopes whose shape and area form the basis of the soft-vs-rigid
+comparison, complemented by three functional cloth-manipulation tasks
+under a shared human-defined policy.
+\end{abstract}
+
+\section{Problem}
+\label{sec:problem}
+Current robot-manipulation research relies heavily on the operator to hand
+the target object into the manipulator before any trajectory is executed.
+This work targets the upstream step that is typically skipped: the robot
+picking up a thin, flat cloth lying on a hard surface, without
+human staging and without active replanning. The specific failure mode
+under study is the contact stage of the grasp, where the gripper must
+make controlled contact with the cloth--surface system and pinch a
+graspable layer.
+
+\section{Motivation}
+\label{sec:motivation}
+If a robot cannot pick up cloth flat from a surface, the practical
+autonomy of downstream manipulation pipelines is severely constrained.
+Successful flat-cloth grasping enables:
+\begin{itemize}[leftmargin=*,nosep]
+    \item Laundry folding and textile handling;
+    \item Hospital bedding management;
+    \item Assistive robotics for elderly or disabled individuals;
+    \item Garment manufacturing and logistics;
+    \item Soft-object packaging.
+\end{itemize}
+Each application sits behind the same gating capability: lifting a
+single flat layer from a hard surface reliably.
+
+\section{State of the Art}
+\label{sec:sota}
+Current solutions combine environment interaction, specialised
+end-effectors, and feedback mechanisms to make cloth grasping
+tractable.
+
+\textbf{Environment-assisted actions} create graspable features
+(folds, wrinkles, exposed edges) through dragging, wiping, or peeling,
+allowing a standard parallel-jaw gripper to perform a pinch on a
+prepared edge.
+
+\textbf{Specialised end-effectors} reduce reliance on precise edge access:
+variable-friction grippers, micro-needle or needle-based graspers,
+electroadhesion, and airflow-based methods (Bernoulli or Coand\u{a}
+effects).
+
+\textbf{Closed-loop perception and control} verify grasp success
+(e.g., single-ply detection) and trigger recovery actions when failures
+occur. In practice, most systems still rely on rigid parallel-jaw
+grippers augmented with these strategies.
+
+Two recent works are directly relevant to this proposal because they
+attempt cross-gripper comparison rather than perception or planning
+improvements. Clark~\textit{et al.}~\cite{Clark2023} introduce a
+standardised household-clothing object set and four benchmark tasks
+(edge drag accuracy, edge grasp resilience, crumpled object
+encapsulation, flat non-boundary grasp success), and evaluate four
+parallel grippers including a Fin~Ray\textregistered{} variant. However,
+their benchmarks score outcomes (placement offset, payload, droop,
+binary success) rather than instrument the contact stage; the soft-vs-rigid
+difference is reported but not isolated from the task-specific
+gripper kinematics.
+
+Teeple~\textit{et al.}~\cite{Teeple2022} directly compare a rigid
+parallel jaw to a soft pneumatic two-finger gripper, showing that
+vertical, lateral, and rotational compliance each protect against
+distinct failure modes (positional uncertainty, snag duration, peak
+snag force). Their soft gripper, however, is actively pressure-controlled,
+and the comparison is performed at a fixed vertical sweep without a
+multi-axis control-parameter envelope.
+
+\section{Drawbacks of the State of the Art}
+\label{sec:drawbacks}
+\begin{itemize}[leftmargin=*,nosep]
+    \item Heavy reliance on environment-assisted actions reduces true
+          autonomy and inflates task complexity and execution time.
+    \item Specialised end-effectors are task-specific, hard to
+          generalise, and often fragile or impractical for real-world
+          deployment.
+    \item Rigid parallel-jaw grippers require precise positioning and
+          well-defined geometry, making them unreliable for thin, flat
+          cloth on a hard surface.
+    \item Closed-loop verification and recovery introduce sensing and
+          control overhead.
+    \item Most approaches treat the gripper as fixed and focus on
+          perception or planning, so there is no systematic evaluation
+          of how gripper design (rigid vs.\ soft) affects the contact
+          stage in isolation.
+\end{itemize}
+Consequently, directly grasping thin, flat cloth from a surface remains
+an open problem. The work that does compare soft and rigid grippers
+either does not instrument the contact \cite{Clark2023} or relies on
+active control of the soft side \cite{Teeple2022}, leaving the
+contribution of a \emph{passive} soft gripper at the contact stage
+uncharacterised.
+
+\section{Contribution}
+\label{sec:contribution}
+This proposal contributes a benchmark focused on the contact stage of
+grasping thin, flat cloth, comparing a soft but passively-adaptive
+gripper (UMI finray, TPU~90A; no added control space relative to a
+parallel jaw) against a rigid parallel-jaw gripper on the same robot
+arm under the same human-defined control policy.
+
+\subsection{Benchmark Metrics}
+\textit{Control-policy admissibility:} a trial is admissible only if
+the Franka controller did not quit due to a force-safety error during
+execution. Per-trial outcome is determined by a researcher visual
+verification of grasp success, combined with the controller-status flag.
+
+The benchmark sweeps five gripper-control axes (approach z-offset,
+head rotation, applied-force setpoint, finger gap, closing speed) and
+records the boundary of the region in which both conditions hold. Five
+tolerance metrics per gripper are then read off the envelope:
+\begin{enumerate}[leftmargin=*,nosep]
+    \item \textbf{z-axis tolerance:} range of approach-height offset
+          over which the grasp succeeds.
+    \item \textbf{Angular tolerance:} orientation spread of the
+          Franka achieved end-effector pose observed across successful
+          trials with commanded orientation held constant (a passive
+          observation, not a swept parameter).
+    \item \textbf{Maximum admissible surface-contact force} at which the
+          controller still agrees (does not quit).
+    \item \textbf{Peak contact force} during successful grasps (table or
+          cloth side).
+    \item \textbf{Minimum contact force} required for a successful grasp.
+\end{enumerate}
+
+\subsection{Functional Tasks}
+Both grippers are additionally tested on three downstream tasks under
+a single shared human-defined policy:
+\begin{itemize}[leftmargin=*,nosep]
+    \item Diagonal fold (flat cloth corner grasp);
+    \item Middle pick $\rightarrow$ drop onto adjacent sphere (flat
+          cloth middle grasp);
+    \item Drag from A to B (flat cloth edge grasp).
+\end{itemize}
+A future scope extension may add tasks dealing with folded cloth.
+
+\subsection{Comparison with Prior Benchmarks}
+Table~\ref{tab:comparison} situates this work alongside the two most
+directly comparable prior benchmarks. Conceptually, the proposal sits
+closer to Teeple~\textit{et al.}~\cite{Teeple2022} (same soft-vs-rigid
+question on flat thin cloth) than to Clark~\textit{et al.}~\cite{Clark2023}
+(broad standardised benchmark across many gripper designs), but it
+replaces Teeple's two-point comparison with a five-axis swept envelope
+and instruments the under-cloth force-distribution side with a
+distributed force-sensor array rather than a single wrist
+force/torque sensor.
+
+Distinctive contributions of this work relative to both prior benchmarks:
+
+\begin{enumerate}[leftmargin=*,nosep]
+    \item \emph{Envelope shape, not aggregate pass-rate.} The output is
+          a region in 5-D control-parameter space whose boundary is the
+          metric, not a per-task scalar score.
+    \item \emph{Controller-quit as a tracked admissibility gate.}
+          Neither prior benchmark explicitly separates ``controller
+          refused to continue'' from ``grasp failed.'' Teeple's
+          rigid-gripper failures include UR5e safety-stop trips that
+          are conflated with grasp failure. This benchmark separates
+          them to avoid biasing the comparison against grippers
+          operating near the controller's force-safety threshold.
+    \item \emph{Distributed under-cloth force sensing.} A five-channel
+          force array (Tekscan A301-1) measures per-foot table-side
+          reaction force; a two-channel A301-25 pair measures
+          finger-pad pinch force; the Franka built-in $F_{\text{ext}}$
+          and joint torques are logged in parallel.
+    \item \emph{Force traceability.} Per-channel calibration is
+          traceable to an OIML M1 mass standard via dead-weight loading
+          with a power-law fit; calibration freshness is a hard gate
+          on data admissibility.
+    \item \emph{Passive soft gripper.} The soft side is a passively
+          deforming UMI finray, not an active pneumatic system,
+          isolating the contribution of compliance to grasp success
+          without introducing additional control variables.
+\end{enumerate}
+
+\begin{table}[!t]
+\centering
+\caption{Comparison of this proposal with two directly relevant prior benchmarks for cloth grasping.}
+\label{tab:comparison}
+\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{@{}L{2.5cm} X X X@{}}
+\toprule
+\textbf{Axis} & \textbf{This proposal} & \textbf{Clark et al. 2023~\cite{Clark2023}} & \textbf{Teeple et al. 2022~\cite{Teeple2022}} \\
+\midrule
+Research question
+  & Map the control-parameter success envelope per gripper (size and shape of the region in which the grasp succeeds and the Franka controller does not quit).
+  & Define a standardised cloth-manipulation benchmark suite (object set + edge taxonomy + four tasks) for cross-paper gripper comparison.
+  & Show that vertical, lateral, and rotational compliance each protect against distinct failure modes (uncertainty, snag duration, peak snag force). \\
+Output type
+  & Two parameter-space envelopes, one per gripper, compared in shape and area.
+  & Per-gripper score on each of four tasks (offset~mm, payload~N, droop~mm, success~\%).
+  & Range of vertical-offset tolerance (mm); snag displacement (mm, deg), force duration (s), peak lateral force (N). \\
+Object set
+  & 2 cloth specimens (1 thin + 1 thick), flat only.
+  & 13-item household clothing set with edge classification (single/double/folded; boundary/non-boundary).
+  & 3 swatches: elastic spandex, woven cotton, folded woven cotton. \\
+Cloth state(s) tested
+  & Flat only (crumpled/folded out of scope).
+  & Flat boundary edges, non-boundary edges, crumpled, compressed-crumpled.
+  & Flat only; snags imposed by external clamp. \\
+Grippers compared
+  & 22~mm UMI finray (TPU~90A), 17~mm UMI finray (TPU~90A), Franka factory parallel jaw (\textbf{3}).
+  & OpenHand T42, Robotiq 2F-140, FE~Hand, FE~Hand (Fin~Ray Flex) (\textbf{4}).
+  & Rigid PhantomX AX-12 (foam pads) vs custom soft pneumatic 2-finger (\textbf{2}). \\
+Independent variable
+  & \emph{Swept:} approach z-offset, head rotation, applied force, finger gap, closing speed.
+  & \emph{Categorical:} object $\times$ edge type $\times$ gripper.
+  & \emph{Swept:} vertical centring offset (\(-40\) to \(+4\)~mm); other parameters fixed. \\
+Robot
+  & Franka Research~3.
+  & Franka Emika Panda.
+  & UR5e (150~N safety stop). \\
+Surface / fixturing
+  & Instrumented 3D-printed test bench; rigid feet on A301-1 array (TPU~95A 1~mm contact pad option per Bill~0003 amendment).
+  & A0 alignment grid on rigid backing plate.
+  & Plain tabletop. \\
+Force instrumentation
+  & 5$\times$ A301-1 table feet + 2$\times$ A301-25 finger pads + Franka $F_{\text{ext}}$ + Franka joint torques, shared ROS timebase; 100~Hz DAQ + 1~kHz Franka FCI.
+  & Single load cell on motorised rail (resilience benchmark only); 1~mm ruler for placement.
+  & UR5e wrist F/T sensor (500~Hz) + AprilTag pose tracking (30~Hz). \\
+Force calibration rigor
+  & OIML~M1 traceable dead-weight per-channel power-law fit; JSON record with derivation header; 30-day re-cal cadence; $\sigma$-discard threshold.
+  & Not specified.
+  & Stiffness measured ($n{=}3$); per-trial force traceability not specified. \\
+Pass/fail criterion
+  & Researcher visual verification + Franka controller-not-quit admissibility gate (treated as separate failure class).
+  & Binary success per task.
+  & Binary ``arm picks up swatch.'' \\
+Distinctive failure modes tracked
+  & Controller-quit / force-safety abort tracked as a signal-derived admissibility class.
+  & Drop during motion; lift failure; encapsulation failure.
+  & UR5e safety-stop and grasp instability (conflated with grasp failure for the rigid gripper); tear under snag. \\
+Trials per condition
+  & Parameter sweep (count per axis TBD at execution).
+  & 5 repeats per object.
+  & $n{=}3$ per condition. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{How the Contribution Addresses the Drawbacks}
+\label{sec:addresses}
+\begin{itemize}[leftmargin=*,nosep]
+    \item \textbf{Gripper as a variable.} By explicitly treating the
+          gripper as the independent variable rather than a fixed
+          subsystem, this work addresses the central limitation
+          identified in Section~\ref{sec:drawbacks}: that gripper
+          design is rarely the swept axis in cloth-manipulation
+          benchmarks.
+    \item \textbf{Quantified behaviour under uncertainty.} The
+          proposed metrics (positional tolerance, angular tolerance,
+          force profiles) directly quantify how each gripper behaves
+          under control-parameter uncertainty. This reduces reliance
+          on environment-assisted actions such as dragging or folding
+          to expose graspable features.
+    \item \textbf{Isolated compliance effect.} By comparing a soft
+          passively-adaptive gripper to a rigid parallel jaw under
+          the same control policy, the study isolates the
+          contribution of compliance and contact mechanics, rather
+          than conflating it with perception or planning improvements.
+          This is the gap left open by~\cite{Clark2023} (does not
+          instrument contact) and~\cite{Teeple2022} (active pneumatic
+          control on the soft side).
+    \item \textbf{Force-related failure modes.} The minimum, peak, and
+          maximum-admissible force metrics provide visibility into
+          slipping, snagging, and excessive-force failure modes that
+          are not surfaced by current benchmarks.
+    \item \textbf{Task-level usefulness.} The three functional tasks
+          ensure that grasps are not only successful at contact but
+          also useful for downstream manipulation, addressing the gap
+          between grasp acquisition and task execution.
+    \item \textbf{Hardware-aware design.} The overall framing shifts
+          part of the cloth-manipulation problem from complex
+          perception and control toward hardware-aware design,
+          potentially reducing system complexity while improving
+          robustness on thin, deformable objects.
+\end{itemize}
+
+\section{Grasping Strategy}
+\label{sec:strategy}
+The proposed contact protocol is a multi-stage descent followed by a
+slow close and slow ascent. Defining the cloth--surface contact plane
+as $z = 0$:
+\begin{enumerate}[leftmargin=*,nosep]
+    \item \textbf{Multi-stage descent.} Descend rapidly to the $(x, y)$
+          contact position at $z = +5$~mm. Slow descent to $z = 0$~mm.
+          Very slow descent to a small negative height (e.g.,
+          $z = -3$~mm). This provides a safety margin and a force
+          limit, and allows the finray to deform slightly. The
+          resulting contact force between the lower section of the
+          gripper and the cloth enables the subsequent steps.
+    \item \textbf{Slow close.} Close the gripper slowly. Because
+          contact force already exists between the lower section of
+          the gripper and the cloth, this closing motion pinches the
+          cloth into the inner contact surface of the gripper.
+    \item \textbf{Slow ascent.} Ascend slowly in the first few steps to
+          allow the finray to recover its original shape and grip the
+          cloth firmly.
+    \item \textbf{Pinch margin.} The margin between the gripper's
+          current opening and the cloth thickness determines the
+          amount of fabric pinched into the contact zone.
+    \item \textbf{Comparison with parallel jaw.} The protocol is
+          enabled by the deformable nature of the finray. The Franka
+          parallel jaw can succeed on the same task but does not
+          require (and cannot exploit) the negative-height step.
+          Without that step, the parallel jaw requires careful
+          height tuning: too-high fails on insufficient contact;
+          too-low fails on excessive contact force triggering the
+          controller-quit admissibility gate. Quantifying this
+          tuning margin per gripper is precisely the z-axis tolerance
+          metric in Section~\ref{sec:contribution}.
+\end{enumerate}
+
+\begin{thebibliography}{9}
+
+\bibitem{Clark2023}
+A.~B. Clark, L.~Cramphorn-Neal, M.~Rachowiecki, and A.~Gregg-Smith,
+``Household clothing set and benchmarks for characterising end-effector
+cloth manipulation,'' in \emph{Proc.\ IEEE Int.\ Conf.\ Robot.\ Autom.\
+(ICRA)}, 2023.
+
+\bibitem{Teeple2022}
+C.~B. Teeple, J.~Werfel, and R.~J. Wood,
+``Multi-dimensional compliance of soft grippers enables gentle
+interaction with thin, flexible objects,'' in \emph{Proc.\ IEEE Int.\
+Conf.\ Robot.\ Autom.\ (ICRA)}, 2022, pp.~728--734.
+
+\end{thebibliography}
+
+\end{document}
