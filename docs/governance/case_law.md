@@ -440,6 +440,216 @@ without the characterization Position B requires first.
 
 ---
 
+### Case 3: Bill 0004 — TPU 95A Fixturing Pad for A301-1 Channels (Ch0–Ch4)
+
+**Date:** 2026-05-19
+**Positions:**
+  - A — Enact Bill 0004 as drafted — TPU 95A 1.0 mm pad (OUVERTURE, 3D-printed
+    100% infill) at the A301-1 contact interface at both calibration time and
+    trial time.
+  - B — Reject Bill 0004 — bare-sensor calibration is sufficient; do not
+    introduce TPU viscoelastic compliance into the load path.
+
+**Prevailing position:** A (CONDITIONALLY ENACTED — substantially amended at
+ruling with four binding conditions). Justice ruled on 2026-05-19.
+
+**Scope of enactment:**
+- Bill 0004 applies to A301-1 channels Ch0–Ch4 ONLY (inherits the Bill 0003 /
+  Case 2 scope).
+- A301-25 channels Ch5–Ch6 are NOT affected.
+
+Position B's evidentiary point about the empty Signal Measurements table
+prevailed in part: the 0.22 N systematic offset was a class-level projection,
+not a measurement on this hardware. The four conditions below convert Position
+A's projections into a measurement-first protocol.
+
+**Justice's ruling:**
+
+Bill 0004 is enacted with the four conditions below. Original Bill 0004
+clauses (a), (b), (d), (e), (f) stand as drafted, subject to the four
+conditions. Clause (c) is superseded by Case 3 C1 (which strengthens the
+original wording).
+
+**CONDITIONS BINDING ON IMPLEMENTATION:**
+
+**C1 — Pre-acquisition sanity check with TPU pad in place (modifies Bill 0004
+Clause (c)):**
+Before the first calibration point is acquired on any A301-1 channel under
+Bill 0004, run a one-shot placement-transient capture on a single channel with
+the full A301-1 + TPU 95A 1.0 mm pad + 200 g weight stack as deployed. 200
+frames baseline + 500 frames post-placement at 100 Hz. Record the result to
+`docs/device_context.md` Signal Measurements. Confirm the placement transient
+decays to within the within-window stationarity criterion (5% creep allowance
+per `capture.py` `is_stationary`, line 52) before t = 0.5 s. If the check
+fails, Bill 0004 is suspended pending a follow-up Bill.
+
+**C2 — Bare-sensor baseline offset measurement (new — protects against Position
+B's evidentiary objection):**
+Before any TPU pad calibration data is admitted, the operator runs a
+comparative offset measurement on one A301-1 channel:
+  (a) Apply a 200 g OIML M1 mass directly to the bare A301-1 sensor surface.
+      Record 200 sample mean raw ADC reading.
+  (b) Apply the same 200 g mass via the deployed 3D-printed bench-foot geometry
+      seated on the bare sensor. Record 200 sample mean raw ADC reading.
+  (c) Compute the bare-sensor vs bench-foot delta in ADC counts. Convert to
+      Newtons using a preliminary linear approximation
+      (delta_F ≈ delta_raw * applied_N / mean_raw).
+  (d) Record both measurements and the computed delta_F in
+      `docs/device_context.md` Signal Measurements as
+      "bench-foot vs OIML-mass offset, bare A301-1, Ch<N>".
+If |delta_F| < 0.05 N (half the Bill 0002 Part 5.2 zero-load tolerance), the
+TPU pad is NOT necessary for Article I compliance, and Bill 0004 is suspended
+(the projected 0.22 N motivation does not hold on this hardware). If
+|delta_F| >= 0.05 N, Bill 0004 proceeds — the measured offset is the empirical
+justification for fixturing identity.
+
+**C3 — Per-pad modulus consistency check (new — protects against 3D-printed
+TPU anisotropy):**
+Each of the 5 TPU 95A pads must be produced from the same OUVERTURE filament
+lot, printed in the same session at 100% infill with identical layer-line
+orientation. Before deployment, run a simple 3-point loading consistency test:
+place each pad in turn between the same bare A301-1 channel and the same 200 g
+OIML mass; record the raw ADC reading at the 0.5–2.5 s window. The inter-pad
+spread (max - min raw mean) must be < 5% of the mean reading across the 5
+pads. If the spread exceeds 5%, the affected pad(s) must be re-printed or the
+inter-channel variance must be recorded as a known systematic in the JSON
+`dead_weight_record.print_session_id` field. Measurement results recorded in
+`docs/device_context.md` Signal Measurements as
+"TPU 95A inter-pad consistency, lot <id>, print session <id>".
+
+**C4 — Polymer compression-set re-calibration trigger (modifies Bill 0002
+Part 5.1):**
+The 30-day re-fit cadence under Bill 0002 Part 5 was designed for sensor
+drift. Under Bill 0004, the calibrated artifact (A301-1 + TPU 95A 1 mm stack)
+has an additional drift mode: polymer compression set. A new trigger is added
+to the Bill 0002 Part 5.1 mandatory re-calibration trigger list (NOTE: this
+addition is authorised by Case 3 ruling, NOT a violation of Case 1 Condition
+C2 which froze Part 5 — Case 3 explicitly extends Part 5 for the dead-weight +
+pad path):
+
+  "(f) Visible deformation or thickness change of any TPU fixturing pad > 0.05
+  mm (5% of nominal 1.0 mm), measured with calipers at session start. Reason:
+  polymer compression set under sustained load can exceed 5% in 30 days at
+  room temperature, shifting the calibrated artifact's response."
+
+**Amendment 9 status acknowledgement:**
+Amendment 9 (Hardware Optimization Transparency) is PROPOSED, not RATIFIED, as
+of this ruling. The 6-row BOM change (5 TPU pads + 1 backing disc reference,
+applied per A301-1 channel) is authorised by this Justice's ruling under
+Article II directly, pending Amendment 9 ratification. Once Amendment 9 is
+ratified, this BOM change shall be cited as a precedent example of
+pre-Amendment-9 BOM change ratified by Judicial Hearing.
+
+**Physical/empirical basis (Benjamin Franklin Principle):**
+Position B's evidentiary objection was correct: Bill 0004 as drafted relied on
+a class-level projection (0.22 N offset) without per-hardware measurement.
+Position A's Article I / Amendment 7 argument is sound in principle
+(calibration ≡ trial fixturing identity) but requires empirical grounding on
+this specific hardware. The four conditions resolve the dispute by requiring
+measurement before enactment is fully operative:
+  - C2 measures whether the projected offset actually exists.
+  - C1 measures whether the pad-in-place stack settles within the 0.5 s window.
+  - C3 measures inter-pad consistency to bound the 3D-printed anisotropy
+    concern.
+  - C4 acknowledges polymer drift mode in the re-cal cadence.
+If all four checks pass, the fixturing-identity argument is empirically
+grounded and Bill 0004 is fully operative. If any check fails, the operator
+suspends and files a follow-up Bill.
+
+**Device outcome protected (Thomas Jefferson Principle):**
+A301-1 channels Ch0–Ch4 (table-foot contact-force array) gain a defined,
+traceable, measurement-grounded fixturing standard (A301-1 + TPU 95A 1 mm
+stack, with all per-pad metadata in the JSON). The dead-weight calibration
+coefficients (a, b) become traceable not only to the OIML M1 mass standard
+(Bill 0003) but also to the specific fixturing stack used at both calibration
+and trial. Bill 0002 Part 5.2 session-start zero-load check operates on the
+same fixturing as calibration, eliminating the spurious-abort risk. A301-25
+channels Ch5–Ch6 remain on the MTS path under Bill 0002 unchanged.
+
+**Enacted bill:** Bill 0004 — TPU 95A Fixturing Pad for A301-1 Channels
+(conditionally enacted, four conditions binding).
+**Implementation branch:** `bill/tpu-fixturing-a301-1`
+
+---
+
+#### Arguments — Position A (filed by Attorney-A, 2026-05-19)
+
+Position A argued that:
+
+**Amendment invoked:** Amendment 1 (Domain Primitives, RATIFIED 2026-05-14),
+Amendment 7 (Calibration Discipline, RATIFIED 2026-05-15 by Case 1). The
+fixturing identity principle — calibration and trial must use the identical
+contact geometry — is an Article I requirement: if the bench-foot geometry
+differs between calibration and trial, the transfer function measured at
+calibration does not predict the sensor output at trial. This is precisely
+the Amendment 7 failure mode ("a tuned constant... requires re-tuning at
+every hardware or population change"). The TPU 95A 1 mm pad is the physical
+artifact that establishes fixturing identity for the A301-1 array.
+
+**Precedent:** Case 1 (2026-05-15) and Case 2 (2026-05-19). Case 1
+established that the calibration timescale must match the trial timescale —
+the same principle of measurement-condition identity that governs fixturing.
+Case 2 established the dead-weight path for A301-1, creating the context in
+which fixturing standardisation becomes necessary: the bench-foot geometry
+through which dead-weight force is delivered at calibration time must be
+identical to the geometry present at trial time.
+
+**Physical outcome protected:** A 3D-printed bench-foot geometry channels the
+applied dead-weight force through a defined contact patch on the A301-1
+sensor surface. Without a TPU pad, the effective contact area and stress
+distribution at calibration differ from those at trial (where the bench foot
+sits on the loaded sensor surface without an intervening pad). A class-level
+projection of the resulting systematic offset is approximately 0.22 N at
+2 N applied force — ~10% of the Contact Force primitive range relevant to
+benchmark metric 3.
+
+**Consequences of Position B in physical terms:** If Position B prevails, the
+A301-1 calibration is performed bare-sensor (no bench-foot pad), but trial
+measurements pass through the bench-foot geometry. The transfer function
+mismatch introduces a systematic force error whose magnitude is uncharacterized
+and unrecorded, violating Article I and Amendment 7.
+
+---
+
+#### Arguments — Position B (filed by Attorney-B, 2026-05-19)
+
+Position B argued that:
+
+**Amendment invoked:** Amendment 1 (Domain Primitives) and the Benjamin
+Franklin Principle. The Signal Measurements table in `docs/device_context.md`
+is empty. No per-hardware measurement of the bench-foot vs bare-sensor offset
+exists for this project's specific A301-1 units, bench-foot geometry, and
+surface finish. The 0.22 N figure cited by Position A is a class-level
+projection from sensor characterization literature, not a measurement on this
+hardware.
+
+**Precedent:** Case 1 (2026-05-15). Case 1 ruled that calibration parameters
+must trace to physical measurements — not to "generic bench-testing
+conventions." Position A's 0.22 N figure is a convention drawn from a
+different measurement context.
+
+**Physical outcome protected:** A TPU 95A viscoelastic pad introduces its
+own compliance and creep into the force path between the applied dead-weight
+and the sensor surface. TPU compression creep over 30 days at room temperature
+can exceed 5% — comparable in magnitude to the offset it is intended to
+correct. A bare-sensor calibration with the bench-foot geometry measured
+directly (no pad) avoids adding a new viscoelastic variable with an
+uncharacterized drift mode.
+
+**Consequences of Position A in physical terms:** If Position A prevails
+without empirical grounding, the calibration stack includes a TPU pad whose
+compliance and long-term creep are uncharacterized on this hardware. The
+improvement in fixturing identity may be smaller than the variance introduced
+by inter-pad 3D-printing anisotropy and polymer compression set.
+
+**Residual conditions (adopted as Case 3 C1–C4):**
+C2 — Measure the actual bench-foot vs bare-sensor offset before admitting TPU
+pad calibration. C1 — Confirm pad-in-place stack settles within 0.5 s. C3 —
+Confirm inter-pad consistency < 5% spread. C4 — Add polymer compression set
+as a re-calibration trigger.
+
+---
+
 ## Frozen Precedents
 
 *(Populated by stage-compactor at each stage gate.)*

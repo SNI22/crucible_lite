@@ -41,6 +41,7 @@ def build_calibration_record(
     acquisition_window_s: tuple[float, float] = (0.5, 2.5),
     force_source: str = "mts",
     dead_weight_records: list[dict] | None = None,
+    fixture_stack: dict | None = None,
 ) -> dict:
     """
     Assemble the per-channel calibration record per Bill 0002 Part 6.2,
@@ -77,6 +78,23 @@ def build_calibration_record(
             "Traces to: Amendment 1 primitive 1 (Contact Force)."
         )
         amendment_grounding = "Amendment 1, Amendment 7"
+    elif fixture_stack is not None:
+        curve_fit_key = (
+            "CURVE_FIT — derived from Contact Force primitive (Amendment 1), "
+            "dead-weight + TPU pad path (Bills 0003 + 0004)"
+        )
+        curve_fit_value = (
+            "Physical derivation: F = m * g, g = 9.80665 m/s^2 (CGPM 1901). "
+            "Fixturing stack: weight -> backing disc -> TPU 95A 1 mm pad -> "
+            "A301-1 sensor surface. Pad installed identically at calibration "
+            "and trial. Curve fit: F(raw) = a * raw^b; fit in log-log space "
+            f"via OLS. Value: a = {fit.a:.6g} N*ADC^-b, b = {fit.b:.6g} "
+            "dimensionless. Traces to: Amendment 1 primitive 1 (Contact "
+            "Force), Amendment 7 (Calibration Discipline), Case 3."
+        )
+        amendment_grounding = (
+            "Amendment 1, Amendment 7, Bill 0003 (Case 2), Bill 0004 (Case 3)"
+        )
     else:
         curve_fit_key = (
             "CURVE_FIT — derived from Contact Force primitive (Amendment 1), "
@@ -132,6 +150,14 @@ def build_calibration_record(
 
     if force_source == "dead_weight":
         record["dead_weight_records"] = list(dead_weight_records or [])
+
+    if fixture_stack is not None:
+        if force_source != "dead_weight":
+            raise ValueError(
+                "fixture_stack is only valid for force_source='dead_weight' "
+                "(Bill 0004 builds on Bill 0003)"
+            )
+        record["fixture_stack"] = fixture_stack
 
     return record
 

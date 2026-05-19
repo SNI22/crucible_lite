@@ -17,8 +17,10 @@ from src.calibration.deadweight import (
     CGPM_GRAVITY_M_PER_S2,
     DeadWeightRecord,
     ScopeError,
+    TPUPadRecord,
     acquire_level,
     build_deadweight_calibration_record,
+    build_fixture_stack,
     check_scope,
     deadweight_force_N,
 )
@@ -64,8 +66,10 @@ __all__ = [
     "CGPM_GRAVITY_M_PER_S2",
     "DeadWeightRecord",
     "ScopeError",
+    "TPUPadRecord",
     "acquire_level",
     "build_deadweight_calibration_record",
+    "build_fixture_stack",
     "check_scope",
     "deadweight_force_N",
 ]

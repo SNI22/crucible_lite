@@ -1,18 +1,18 @@
 """
-Layer D — Dead-weight calibration force source (Bill 0003 / Case 2).
+Layer D — Dead-weight calibration force source (Bill 0003 / Case 2) and
+TPU 95A fixturing pad support (Bill 0004 / Case 3).
 
 Enacted: 2026-05-19. Scope: A301-1 channels Ch0–Ch4 ONLY.
 
-Provides the mass-to-force conversion (F = m * g, CGPM 1901 standard gravity),
-the OIML traceability record, a scope check that enforces the A301-1 channel
-restriction, and a coordination wrapper that pairs a CalibrationCapture
-acquisition with a calibrated mass to yield one (raw, applied_N) point ready
-for fit.py.
+Bill 0003 (Case 2) provides the mass-to-force conversion (F = m * g, CGPM 1901
+standard gravity), the OIML traceability record, a scope check that enforces
+the A301-1 channel restriction, and a coordination wrapper.
 
-The acquisition protocol itself (window, sigma-threshold, repeats, sensor
-conditioning) is UNCHANGED from Bill 0002 Part 3 — only the force-generation
-source is substituted. The DAQ-stream onset detector in capture.py resolves
-t = 0 from the signal; the operator does not need to time the placement.
+Bill 0004 (Case 3) adds the TPUPadRecord dataclass and fixture_stack JSON
+field for the calibrated artifact "A301-1 + TPU 95A 1.0 mm stack". Bill 0004
+is conditionally enacted under four binding conditions C1–C4; the
+TPUPadRecord schema enforces the durometer/thickness admissibility boundary
+defined in those conditions.
 
 **Channel scope (Bill 0003 Clause (a)):** dead-weight is admissible for Ch0–Ch4
 (A301-1) only. For Ch5–Ch6 (A301-25) the MTS path under Bill 0002 must be
@@ -79,6 +79,93 @@ class DeadWeightRecord:
         return block
 
 
+@dataclass(frozen=True)
+class TPUPadRecord:
+    """
+    Fixturing traceability for a TPU 95A pad at the A301-1 contact interface
+    (Bill 0004 Clause (d), Case 3 Conditions C1–C4).
+
+    Bill 0004 admits only TPU 95A; durometer is enforced. Thickness must be in
+    [0.8, 1.2] mm (nominal 1.0). Infill must be 100% (otherwise creep and
+    stiffness deviate from the spec). All other fields are required Amendment 7
+    traceability metadata.
+    """
+    channel: int                # Ch0–Ch4
+    durometer: str              # "95A" — only admissible value under Bill 0004
+    thickness_mm: float         # measured pre-install; must be in [0.8, 1.2]
+    manufacturer: str           # e.g., "OUVERTURE"
+    lot_number: str             # filament lot id
+    print_session_id: str       # print session identifier (date + operator)
+    infill_pct: int             # must be 100
+    layer_orientation: str      # e.g., "0/90", "45/135" — identical across pads
+    bonding_adhesive: str       # "none" if dry-seated; else adhesive type
+    install_date: str           # ISO-8601 date
+
+    def __post_init__(self) -> None:
+        if self.channel not in A301_1_CHANNELS:
+            raise ScopeError(
+                f"TPUPadRecord channel {self.channel} out of A301-1 scope "
+                "(Ch0–Ch4). Bill 0004 does not cover A301-25 channels."
+            )
+        if self.durometer != "95A":
+            raise ValueError(
+                f"Bill 0004 only admits TPU 95A; got durometer={self.durometer!r}."
+            )
+        if not (0.8 <= self.thickness_mm <= 1.2):
+            raise ValueError(
+                f"thickness_mm={self.thickness_mm} outside admissible range "
+                "[0.8, 1.2] mm (Bill 0004 Clause (d))."
+            )
+        if self.infill_pct != 100:
+            raise ValueError(
+                f"infill_pct must be 100 (Bill 0004 Clause (d)); got {self.infill_pct}."
+            )
+        for name, value in (
+            ("manufacturer", self.manufacturer),
+            ("lot_number", self.lot_number),
+            ("print_session_id", self.print_session_id),
+            ("layer_orientation", self.layer_orientation),
+            ("bonding_adhesive", self.bonding_adhesive),
+            ("install_date", self.install_date),
+        ):
+            if not value:
+                raise ValueError(f"{name} is required (Bill 0004 / Amendment 7 traceability)")
+
+    def as_json_block(self) -> dict:
+        """Return the tpu_pad sub-record per Bill 0004 Clause (e)."""
+        return asdict(self)
+
+
+def build_fixture_stack(
+    tpu_pad: TPUPadRecord,
+    backing_disc: dict | None = None,
+) -> dict:
+    """
+    Build the `fixture_stack` JSON block per Bill 0004 Clause (e).
+
+    backing_disc is an optional dict with keys: material, thickness_mm,
+    diameter_mm. If None, a placeholder is recorded.
+    """
+    if backing_disc is None:
+        backing_disc = {
+            "material": "TBD",
+            "thickness_mm": None,
+            "diameter_mm": None,
+        }
+    return {
+        "description": "Physical load path from weight to sensor surface at calibration time",
+        "layers_top_to_bottom": [
+            "OIML M1 mass (Bill 0003 dead_weight_record)",
+            "rigid backing disc — ~2 mm acrylic or aluminium",
+            f"TPU {tpu_pad.durometer} {tpu_pad.thickness_mm:.2f} mm pad "
+            f"({tpu_pad.manufacturer}, {tpu_pad.infill_pct}% infill)",
+            "A301-1 sensor surface",
+        ],
+        "tpu_pad": tpu_pad.as_json_block(),
+        "backing_disc": backing_disc,
+    }
+
+
 def deadweight_force_N(mass_kg: float) -> float:
     """
     FORCE — derived from Contact Force primitive (Amendment 1).
@@ -140,16 +227,21 @@ def build_deadweight_calibration_record(
     points: list[CalibrationPointRecord],
     weights_used: list[DeadWeightRecord],
     acquisition_window_s: tuple[float, float] = (0.5, 2.5),
+    tpu_pad: TPUPadRecord | None = None,
+    backing_disc: dict | None = None,
 ) -> dict:
     """
     Assemble the calibration record for a dead-weight calibration session.
 
     Delegates the base record to json_writer.build_calibration_record with
     force_source='dead_weight', then attaches per-point weight metadata
-    (Bill 0003 Clause (e)).
+    (Bill 0003 Clause (e)) and the optional fixture_stack block
+    (Bill 0004 Clause (e)).
+
+    If tpu_pad is provided, it must reference the same channel as `channel`.
 
     Raises:
-        ScopeError if channel is outside A301-1.
+        ScopeError if channel is outside A301-1, or tpu_pad.channel mismatches.
         ValueError if weights_used is empty or its length does not match points.
     """
     check_scope(channel)
@@ -160,6 +252,14 @@ def build_deadweight_calibration_record(
             f"weights_used has {len(weights_used)} entries but points has "
             f"{len(points)}; each calibration point must cite its applied weight"
         )
+    if tpu_pad is not None and tpu_pad.channel != channel:
+        raise ValueError(
+            f"tpu_pad.channel={tpu_pad.channel} does not match record channel={channel}"
+        )
+
+    fixture_stack = (
+        build_fixture_stack(tpu_pad, backing_disc) if tpu_pad is not None else None
+    )
 
     record = build_calibration_record(
         channel=channel,
@@ -175,6 +275,7 @@ def build_deadweight_calibration_record(
         acquisition_window_s=acquisition_window_s,
         force_source="dead_weight",
         dead_weight_records=[w.as_json_block() for w in weights_used],
+        fixture_stack=fixture_stack,
     )
 
     for point_record, weight in zip(record["calibration_points"], weights_used):

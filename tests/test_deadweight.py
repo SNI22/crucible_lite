@@ -11,8 +11,10 @@ from src.calibration.deadweight import (
     CGPM_GRAVITY_M_PER_S2,
     DeadWeightRecord,
     ScopeError,
+    TPUPadRecord,
     acquire_level,
     build_deadweight_calibration_record,
+    build_fixture_stack,
     check_scope,
     deadweight_force_N,
 )
@@ -387,4 +389,220 @@ def test_build_calibration_record_rejects_unknown_force_source():
             quiescent_load_N=0.0,
             fit=fit, acceptance=acc, points=points,
             force_source="balloon",
+        )
+
+
+# ----------------------------------------------------------------------
+# TPUPadRecord — Bill 0004 / Case 3
+# ----------------------------------------------------------------------
+
+
+def _good_pad(channel: int = 2) -> TPUPadRecord:
+    return TPUPadRecord(
+        channel=channel,
+        durometer="95A",
+        thickness_mm=1.0,
+        manufacturer="OUVERTURE",
+        lot_number="OUV-2026-042",
+        print_session_id="2026-05-19/shiyao",
+        infill_pct=100,
+        layer_orientation="0/90",
+        bonding_adhesive="none",
+        install_date="2026-05-19",
+    )
+
+
+def test_tpu_pad_record_valid():
+    pad = _good_pad()
+    block = pad.as_json_block()
+    assert block["durometer"] == "95A"
+    assert block["thickness_mm"] == 1.0
+    assert block["manufacturer"] == "OUVERTURE"
+    assert block["infill_pct"] == 100
+    assert block["channel"] == 2
+
+
+@pytest.mark.parametrize("bad", ["85A", "90A", "100A", "shore95", ""])
+def test_tpu_pad_record_rejects_non_95a_durometer(bad):
+    with pytest.raises(ValueError, match="only admits TPU 95A"):
+        TPUPadRecord(
+            channel=0, durometer=bad, thickness_mm=1.0,
+            manufacturer="OUVERTURE", lot_number="x",
+            print_session_id="x", infill_pct=100,
+            layer_orientation="0/90", bonding_adhesive="none",
+            install_date="2026-05-19",
+        )
+
+
+@pytest.mark.parametrize("bad_thickness", [0.5, 0.79, 1.21, 2.0, 0.0])
+def test_tpu_pad_record_rejects_out_of_range_thickness(bad_thickness):
+    with pytest.raises(ValueError, match=r"outside admissible range"):
+        TPUPadRecord(
+            channel=0, durometer="95A", thickness_mm=bad_thickness,
+            manufacturer="OUVERTURE", lot_number="x",
+            print_session_id="x", infill_pct=100,
+            layer_orientation="0/90", bonding_adhesive="none",
+            install_date="2026-05-19",
+        )
+
+
+def test_tpu_pad_record_rejects_non_100_infill():
+    with pytest.raises(ValueError, match="infill_pct must be 100"):
+        TPUPadRecord(
+            channel=0, durometer="95A", thickness_mm=1.0,
+            manufacturer="OUVERTURE", lot_number="x",
+            print_session_id="x", infill_pct=80,
+            layer_orientation="0/90", bonding_adhesive="none",
+            install_date="2026-05-19",
+        )
+
+
+@pytest.mark.parametrize("ch", [5, 6, -1, 99])
+def test_tpu_pad_record_rejects_a301_25_channel(ch):
+    with pytest.raises(ScopeError, match="A301-1 scope"):
+        TPUPadRecord(
+            channel=ch, durometer="95A", thickness_mm=1.0,
+            manufacturer="OUVERTURE", lot_number="x",
+            print_session_id="x", infill_pct=100,
+            layer_orientation="0/90", bonding_adhesive="none",
+            install_date="2026-05-19",
+        )
+
+
+@pytest.mark.parametrize("field", [
+    "manufacturer", "lot_number", "print_session_id",
+    "layer_orientation", "bonding_adhesive", "install_date",
+])
+def test_tpu_pad_record_rejects_empty_required_field(field):
+    kwargs = dict(
+        channel=0, durometer="95A", thickness_mm=1.0,
+        manufacturer="OUVERTURE", lot_number="x",
+        print_session_id="x", infill_pct=100,
+        layer_orientation="0/90", bonding_adhesive="none",
+        install_date="2026-05-19",
+    )
+    kwargs[field] = ""
+    with pytest.raises(ValueError, match=f"{field} is required"):
+        TPUPadRecord(**kwargs)
+
+
+def test_build_fixture_stack_shape():
+    pad = _good_pad()
+    fs = build_fixture_stack(pad)
+    assert fs["tpu_pad"]["durometer"] == "95A"
+    assert "OUVERTURE" in fs["layers_top_to_bottom"][2]
+    assert fs["backing_disc"]["material"] == "TBD"  # default placeholder
+
+
+def test_build_fixture_stack_with_backing_disc():
+    pad = _good_pad()
+    disc = {"material": "acrylic", "thickness_mm": 2.0, "diameter_mm": 12.0}
+    fs = build_fixture_stack(pad, backing_disc=disc)
+    assert fs["backing_disc"]["material"] == "acrylic"
+
+
+# ----------------------------------------------------------------------
+# build_deadweight_calibration_record with tpu_pad (Bill 0004)
+# ----------------------------------------------------------------------
+
+
+def test_deadweight_record_with_tpu_pad():
+    points, weights = _eight_synthetic_points()
+    fit = fit_power_law([(p.raw_mean, p.applied_N) for p in points])
+    acc = check_acceptance(fit, full_scale_N=4.4)
+    pad = _good_pad(channel=2)
+
+    record = build_deadweight_calibration_record(
+        channel=2,
+        sensor_model="A301-1",
+        physical_location="table-foot",
+        calibration_date="2026-05-20",
+        operator="shiyao",
+        full_scale_N=4.4,
+        quiescent_load_N=0.0,
+        fit=fit, acceptance=acc,
+        points=points, weights_used=weights,
+        tpu_pad=pad,
+    )
+
+    assert "fixture_stack" in record
+    assert record["fixture_stack"]["tpu_pad"]["channel"] == 2
+    # Amendment 7 header swaps to dead-weight + TPU variant
+    bill_0004_key = (
+        "CURVE_FIT — derived from Contact Force primitive (Amendment 1), "
+        "dead-weight + TPU pad path (Bills 0003 + 0004)"
+    )
+    assert bill_0004_key in record
+    # Bill 0003-only header must be absent
+    bill_0003_key = (
+        "CURVE_FIT — derived from Contact Force primitive (Amendment 1), "
+        "dead-weight path (Bill 0003)"
+    )
+    assert bill_0003_key not in record
+    assert "Bill 0004 (Case 3)" in record["amendment_grounding"]
+
+
+def test_deadweight_record_without_tpu_pad_still_works():
+    """Bill 0003 path stays valid when tpu_pad is not provided."""
+    points, weights = _eight_synthetic_points()
+    fit = fit_power_law([(p.raw_mean, p.applied_N) for p in points])
+    acc = check_acceptance(fit, full_scale_N=4.4)
+
+    record = build_deadweight_calibration_record(
+        channel=0,
+        sensor_model="A301-1",
+        physical_location="table-foot",
+        calibration_date="2026-05-20",
+        operator="shiyao",
+        full_scale_N=4.4,
+        quiescent_load_N=0.0,
+        fit=fit, acceptance=acc,
+        points=points, weights_used=weights,
+    )
+    assert "fixture_stack" not in record
+    bill_0003_key = (
+        "CURVE_FIT — derived from Contact Force primitive (Amendment 1), "
+        "dead-weight path (Bill 0003)"
+    )
+    assert bill_0003_key in record
+
+
+def test_deadweight_record_rejects_pad_channel_mismatch():
+    points, weights = _eight_synthetic_points()
+    fit = fit_power_law([(p.raw_mean, p.applied_N) for p in points])
+    acc = check_acceptance(fit, full_scale_N=4.4)
+    pad = _good_pad(channel=3)
+    with pytest.raises(ValueError, match=r"tpu_pad.channel=3 does not match"):
+        build_deadweight_calibration_record(
+            channel=0,
+            sensor_model="A301-1",
+            physical_location="table-foot",
+            calibration_date="2026-05-20",
+            operator="shiyao",
+            full_scale_N=4.4,
+            quiescent_load_N=0.0,
+            fit=fit, acceptance=acc,
+            points=points, weights_used=weights,
+            tpu_pad=pad,
+        )
+
+
+def test_json_writer_rejects_fixture_stack_with_mts():
+    from src.calibration.json_writer import build_calibration_record
+    points, _ = _eight_synthetic_points()
+    fit = fit_power_law([(p.raw_mean, p.applied_N) for p in points])
+    acc = check_acceptance(fit, full_scale_N=4.4)
+    pad = _good_pad()
+    with pytest.raises(ValueError, match="only valid for force_source='dead_weight'"):
+        build_calibration_record(
+            channel=0,
+            sensor_model="A301-1",
+            physical_location="table-foot",
+            calibration_date="2026-05-20",
+            operator="shiyao",
+            full_scale_N=4.4,
+            quiescent_load_N=0.0,
+            fit=fit, acceptance=acc, points=points,
+            force_source="mts",
+            fixture_stack=build_fixture_stack(pad),
         )
