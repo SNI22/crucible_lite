@@ -101,14 +101,14 @@ Compare toolchain_config.md active toolchain field across recent commits:
 - If the active toolchain changed and no corresponding Bill exists in case_law.md:
   **AMENDMENT-3-VIOLATION**
 
-### Unadmitted Contact Force evidence (Amendment 7 / Article I — Bill 0002 Part 7)
+### Unadmitted Contact Force evidence (Amendment 7 / Article I — Bill 0002 Part 7; Bill 0003 Clause (a), Case 2)
 
 For any code path (Python script, analysis module, notebook) introduced or modified
 since Amendment 7 was ratified (2026-05-15) that reads a `daq_sample` value and
 converts it to a Contact Force (N):
 
-Confirm ALL FIVE admissibility conditions are demonstrably met in the same commit or
-session record:
+Confirm ALL FIVE base admissibility conditions are demonstrably met in the same
+commit or session record:
   1. A per-channel calibration JSON file exists for the channel read.
   2. `acceptance.passed` is `true` in that JSON.
   3. `calibration_date` in that JSON is within 30 days of the session date.
@@ -116,8 +116,36 @@ session record:
   5. The `toolchain_config.md` Channel & Topic Map entry for that channel names
      that specific JSON file.
 
-If any condition is unmet and the code nevertheless uses the reading as Contact Force
+Additionally, check force-source channel scope (Bill 0003 Clause (a), Case 2,
+enacted 2026-05-19):
+  6. If the channel is Ch0–Ch4 (A301-1) and the JSON has `force_source: "dead_weight"`:
+     (a) A `dead_weight_record` block must be present with all five subfields:
+         `mass_kg`, `oiml_class`, `certificate_id`, `traceable_to`, `g_m_per_s2`.
+     (b) The Case 2 C1 placement-transient sanity check result must be recorded in
+         `docs/device_context.md` Signal Measurements (confirming the transient
+         decays within `capture.py` `is_stationary` criterion before t = 0.5 s).
+         If absent, the calibration is not yet admissible.
+  7. If the channel is Ch5 or Ch6 (A301-25): the JSON's `force_source` field must
+     be `"mts"`. A `force_source: "dead_weight"` value on Ch5–Ch6 is a constitutional
+     violation regardless of acceptance criteria — dead-weight is out of scope for
+     A301-25 (Bill 0003 scope is A301-1 only; Bill 0002 Part 3 prohibition on
+     alternative force rigs remains in force for Ch5–Ch6).
+
+If any base condition (1–5) is unmet and the code uses the reading as Contact Force
 evidence: **AMENDMENT-7-VIOLATION** — unadmitted Contact Force reading.
+
+If condition 6(a) is unmet on a Ch0–Ch4 dead-weight JSON:
+**AMENDMENT-7-VIOLATION** — dead_weight_record block incomplete; JSON is not
+admissible under Bill 0003.
+
+If condition 6(b) is unmet (C1 sanity check not recorded):
+**AMENDMENT-7-WARNING** — C1 placement-transient check not found in Signal
+Measurements; Ch0–Ch4 dead-weight calibration not yet confirmed admissible.
+
+If condition 7 is violated (dead_weight on Ch5–Ch6):
+**AMENDMENT-7-VIOLATION** — force_source: "dead_weight" on Ch5 or Ch6 is
+inadmissible; Bill 0002 Part 3 prohibition on alternative force rigs applies
+to A301-25 channels and was not reversed by Bill 0003.
 
 Resolution paths:
   → Confirm calibration JSON exists and passes acceptance criteria, then re-run.
@@ -125,6 +153,14 @@ Resolution paths:
     before the code path can be used (Bill 0002 Part 5 cadence).
   → If the Channel & Topic Map entry is missing, update docs/toolchain_config.md
     under Standing Order (documentation only — no Bill required).
+  → For dead_weight_record violations: add the missing subfields to the JSON
+    calibration record; if OIML certificate data is unavailable, calibration
+    cannot proceed under Bill 0003.
+  → For C1 sanity check absent: run the C1 one-shot placement-transient capture
+    and record the result in docs/device_context.md Signal Measurements before
+    any Ch0–Ch4 dead-weight calibration data is used.
+  → For Ch5–Ch6 force_source violation: recalibrate Ch5–Ch6 via MTS path per
+    Bill 0002; the dead-weight JSON for those channels is inadmissible.
 
 ### Three-strike violations (Amendment 4)
 

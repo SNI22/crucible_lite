@@ -243,6 +243,203 @@ required for consistency. *(Justice ruled C2: cadence unchanged.)*
 
 ---
 
+### Case 2: Bill 0003 — Dead-Weight Alternative Force Source for A301-1 Calibration
+
+**Date:** 2026-05-19
+**Positions:**
+  - A — Enact Bill 0003 as drafted — dead-weight first-pass calibration
+    unblocks Stage 0 close while MTS access remains unresolved.
+  - B — Reject Bill 0003 — wait for MTS access before any per-channel
+    calibration; do not admit a lower-precision force source even as
+    first-pass.
+
+**Prevailing position:** A (amended at ruling — substantially narrower than
+as-drafted). Justice ruled on 2026-05-19.
+
+**Scope of enactment:**
+- Bill 0003 applies to A301-1 channels Ch0–Ch4 ONLY.
+- A301-25 channels Ch5–Ch6 remain on the MTS path under Bill 0002 unchanged;
+  calibration deferred until MTS access is resolved.
+- Bill 0002 Part 3's clause "No alternative force-generation rig is admissible"
+  is REVERSED for A301-1 only, by this ruling. The reversal was the subject
+  of this named hearing.
+
+**Justice's ruling:**
+
+1. **Clause (a) — ENACTED, scoped:** Dead-weight loading is admissible as
+   an alternative force source for first-pass A301-1 calibration (Ch0–Ch4).
+   MTS path under Bill 0002 remains primary; if MTS access becomes available,
+   MTS recalibration of A301-1 channels is recommended but not mandatory within
+   any fixed window. A301-25 (Ch5–Ch6) calibration must use the MTS path per
+   Bill 0002 unchanged.
+
+2. **Clause (b) — REMOVED:** No Part 3.2b. Existing Bill 0002 Part 3.2 timing
+   (0.5–2.5 s window, 200 samples) stands unchanged. The capture.py DAQ-stream
+   onset detector resolves t=0 from the signal, not from operator placement
+   timing.
+
+3. **Clause (c) — REMOVED:** No σ-discard threshold change. Existing 21 ADC
+   count threshold stands.
+
+4. **Clause (d) — ENACTED:** New `src/calibration/deadweight.py` shall contain:
+   - `DeadWeightRecord` dataclass (`mass_kg`, `oiml_class`, `certificate_id`,
+     `traceable_to`)
+   - `deadweight_force_N(mass_kg) -> float` using g = 9.80665 m/s² (CGPM
+     standard gravity)
+   - Coordination wrapper around existing `capture.py` / `fit.py`
+   - No modification to `mts.py`
+
+5. **Clause (e) — ENACTED:** JSON schema additions in Bill 0002 Part 6.2:
+   - `force_source: "dead_weight" | "mts"`
+   - `dead_weight_record: { mass_kg, oiml_class, certificate_id, traceable_to,
+     g_m_per_s2 }`
+   - Amendment 7 derivation header records the mass-to-force derivation
+     explicitly
+
+6. **Clause (f) — REMOVED:** No 30-day MTS-access recalibration trigger.
+   Resolves Case 1 C2 conflict — Part 5 cadence remains as drafted per Case 1.
+
+**Force levels for A301-1** (FS 4.4 N, calibration range 0.25–4.18 N):
+Use 50/100/200/500 g weights (OIML M1 or better, mass certificate recorded),
+singly and stacked, yielding: 0.49, 0.98, 1.47, 1.96, 2.45, 2.94, 3.43,
+4.90 N (eight log-spaced points; the 4.90 N point slightly exceeds the 4.18 N
+upper end — clip to 4.4 N FS or omit at operator discretion).
+
+**Conditions on application:**
+
+- **C1 — Pre-acquisition placement-transient sanity check (Attorney-B residual
+  condition):** Before the first calibration point is acquired on any channel
+  under this Bill, run a one-shot placement-transient capture on a single
+  A301-1 channel: 200 frames baseline + 500 frames post-placement at one
+  mid-range weight (e.g., 200 g). Record the result to
+  `docs/device_context.md` Signal Measurements. Confirm the placement
+  transient decays to within the within-window stationarity criterion (5%
+  creep allowance per `capture.py` `is_stationary`) before t = 0.5 s. If it
+  does not, this Bill is suspended pending a follow-up Bill that either
+  (i) extends the acquisition window or (ii) modifies the placement procedure.
+
+- **C2 — Case 1 Condition C1 (MTS feasibility check) status:**
+  - For A301-1 channels Ch0–Ch4: DEFERRED. Does not block Stage 0 close.
+  - For A301-25 channels Ch5–Ch6: REMAINS BLOCKING. Channels Ch5–Ch6 stay TBD
+    in `docs/toolchain_config.md` until MTS access is confirmed.
+
+- **C3 — OIML mass traceability:** Each weight used must carry OIML M1 or
+  better classification with a current certificate number and a traceability
+  statement (national standard authority). Metadata recorded in the
+  `dead_weight_record` block of the JSON calibration header per Bill 0002
+  Part 6.2 as amended by Clause (e) of this Bill.
+
+- **C4 — Case 1 Conditions C2 and C3 stand unchanged.** Part 5 cadence is
+  unmodified.
+
+**Physical/empirical basis (Benjamin Franklin Principle):**
+F = m · g where g = 9.80665 m/s² (CGPM standard gravity, 1901). OIML M1
+mass-uncertainty at 0.5 kg is ≤ 0.025 g, giving force uncertainty ≤ 0.00025 N
+— four orders of magnitude below the A301-1 Part 4 acceptance criterion of
+RMS residual ≤ 0.088 N (2% of 4.4 N FS). The 50/100/200/500 g weight set,
+singly and stacked, covers the A301-1 calibration force range with appropriate
+log-spacing. Dead-weight force generation introduces no measurable uncertainty
+into the calibration point at this sensor's FS. The `capture.py` module is
+force-source-agnostic by design (frame_source iterator, DAQ-stream onset
+detection); the existing 0.5–2.5 s window and σ ≤ 21 ADC count threshold
+remain physically traceable under dead-weight loading provided C1 sanity check
+passes.
+
+**Device outcome protected (Thomas Jefferson Principle):**
+A301-1 channels Ch0–Ch4 (table-foot contact-force array) transition from
+INADMISSIBLE to ADMISSIBLE under Bill 0002 Part 7. Contact Force evidence
+becomes available for benchmark metrics 3, 4, and 5 on the table-foot array.
+The finger-pad A301-25 channels (Ch5–Ch6) remain inadmissible until MTS access
+is resolved — acknowledged as a partial Stage 0 progress condition. The MTS
+calibration path (`src/calibration/mts.py`) is preserved intact for both
+sensor families.
+
+**Enacted bill:** Bill 0003 — Dead-Weight Calibration for A301-1 Channels
+(amended at ruling)
+**Implementation branch:** `bill/deadweight-calibration-a301-1`
+
+---
+
+#### Arguments — Position A (filed by Attorney-A, 2026-05-19)
+
+Attorney-A argued that:
+
+**Amendment invoked:** Amendment 1 (Domain Primitives, RATIFIED 2026-05-14)
+and Amendment 7 (Calibration Discipline, RATIFIED 2026-05-15 by Case 1). The
+Contact Force primitive requires admissible evidence from Ch0–Ch4. With MTS
+access unresolved, the Bill 0002 Part 3 prohibition on alternative force sources
+leaves Ch0–Ch4 permanently inadmissible under the current record — which itself
+violates Amendment 2 (Stage Gate Order) by blocking Stage 0 close
+indefinitely. Dead-weight generation is traceable to CGPM standard gravity
+(g = 9.80665 m/s²), a physical first-order measurement, satisfying Article I.
+
+**Precedent:** Case 1 (2026-05-15). Case 1 established that the Bill 0002 MTS
+feasibility precondition (C1) could be deferred — it does not block Stage 0
+close until MTS access is confirmed. This ruling created the gap that Bill 0003
+fills: if MTS is unavailable, a physically traceable alternative force source
+is needed or Stage 0 remains permanently open. Case 1 did not address this
+gap because MTS access was assumed resolvable in the short term.
+
+**Physical outcome protected:** OIML M1 force uncertainty at 0.5 kg is
+≤ 0.00025 N — four orders of magnitude below the A301-1 acceptance criterion
+of 0.088 N RMS residual. Dead-weight loading introduces no measurable force
+uncertainty at A301-1 FS of 4.4 N. The `capture.py` onset-detection mechanism
+is force-source-agnostic. The 0.5–2.5 s window and 21 ADC count threshold from
+Case 1 remain unchanged and their physical derivation is unaffected by whether
+the load arrives via MTS ramp or manual weight placement (provided the
+placement transient has decayed before t = 0.5 s — confirmed by C1 sanity
+check).
+
+**Consequences of Position B in physical terms:** If Position B prevails,
+Ch0–Ch4 remain tagged INADMISSIBLE indefinitely. Benchmark metrics 3, 4, and 5
+— all tracing to Contact Force under Amendment 1 — are blocked. Stage 0 cannot
+close under Amendment 2. The project is halted by an equipment-access constraint
+that has a physically traceable, metrologically adequate substitute.
+
+#### Arguments — Position B (filed by Attorney-B, 2026-05-19)
+
+Attorney-B argued that:
+
+**Amendment invoked:** Amendment 1 (Domain Primitives) and Amendment 7
+(Calibration Discipline). The MTS path was ratified in Case 1 specifically
+because it provides a controlled, repeatable ramp rate — the controlled ramp
+rate (≤ 0.5 s to target) is what ensures the calibration acquisition window
+(0.5–2.5 s) begins after the load is mechanically settled but before
+logarithmic creep advances significantly. Manual weight placement cannot
+guarantee ramp completion before t = 0.5 s; placement transient dynamics
+are operator-dependent and uncharacterized.
+
+**Precedent:** Case 1 (2026-05-15). Case 1's entire physical argument for
+the 0.5–2.5 s window rested on the MTS's ability to deliver load in ≤ 0.5 s.
+Substituting a manual placement procedure without first characterizing the
+placement transient risks the window beginning before the signal has settled,
+which would absorb a transient artifact into the calibration point — the
+precise failure mode Case 1 was constructed to prevent.
+
+**Physical outcome protected:** A calibration produced with an uncharacterized
+placement transient could have RMS residuals that pass the 0.088 N criterion
+at calibration time but carry a systematic bias that emerges as force readings
+drift during trials. The MTS path's mechanical reproducibility is the physical
+guarantor of the window's validity.
+
+**Consequences of Position A in physical terms:** An inadequately characterized
+placement transient that contaminates calibration points would produce fitted
+coefficients (a, b) that absorb the transient artifact. Trial force readings
+would exhibit a systematic offset whose sign and magnitude cannot be determined
+without the characterization Position B requires first.
+
+**Residual conditions (adopted as Case 2 C1):**
+1. Run a one-shot placement-transient capture before the first calibration
+   point is acquired (200 frames baseline + 500 frames post-placement at one
+   mid-range weight). Confirm transient decays within the is_stationary
+   criterion before t = 0.5 s.
+2. Physical justification required for any window shift — moot; window remains
+   0.5–2.5 s unchanged.
+3. Revert to 0.5–2.5 s if transient decays before 0.5 s — moot; C1 sanity
+   check confirms this assumption holds before calibration begins.
+
+---
+
 ## Frozen Precedents
 
 *(Populated by stage-compactor at each stage gate.)*

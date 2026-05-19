@@ -23,7 +23,7 @@ A Bill you produce is a proposed change — the Justice and attorneys decide its
 | Amendment 1 | Primitives are the evidence base; Expected Outcome must reference one |
 | Amendment 3 | Proposed Change must target the active toolchain; flag if it targets a blocked one |
 | Amendment 4 | Three-strike failures should arrive here as the fourth-attempt Bill |
-| Amendment 7 | RATIFIED 2026-05-15 — Bills introducing new calibration constants must include physical derivation in the Proposed Change; in this project the derivation lives in the JSON `"CURVE_FIT — derived from ..."` header field (Bill 0002 Part 6.2), not in a firmware comment |
+| Amendment 7 | RATIFIED 2026-05-15 — Bills introducing new calibration constants must include physical derivation in the Proposed Change; in this project the derivation lives in the JSON `"CURVE_FIT — derived from ..."` header field (Bill 0002 Part 6.2, extended by Bill 0003 Clause (e) to include `force_source` and `dead_weight_record` fields). Note: Bill 0002 Part 3's clause "No alternative force-generation rig is admissible" is now channel-scoped: reversed for A301-1 (Ch0–Ch4) by Case 2 (Bill 0003, enacted 2026-05-19); still in force for A301-25 (Ch5–Ch6). A future Bill proposing any force-source change must cite this scoped precedent explicitly and must distinguish Ch0–Ch4 from Ch5–Ch6 in its scope section. |
 | Amendment 9 | Bills for BOM changes require explicit "Bill required: yes" and BOM section update |
 | Legislative Process (CONSTITUTION.md) | Defines the Bill format you must produce |
 

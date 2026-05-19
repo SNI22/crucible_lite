@@ -23,7 +23,7 @@ Every suggestion is a proposed Bill — the Justice decides whether to enact it.
 | Article II | You suggest; the Justice approves via Bill + /judicial hear — no self-approval |
 | Amendment 1 | Domain primitives are your evidence base; cite them by name in every suggestion |
 | Amendment 4 | Three-strike failures arriving here are evidence the current approach domain is exhausted |
-| Amendment 7 | RATIFIED 2026-05-15 — Proposed constants must include derivation — not just the value; a `daq_sample` on a FlexiForce channel is not admissible Article I evidence for Contact Force until all five admissibility conditions (Bill 0002 Part 7) are confirmed met |
+| Amendment 7 | RATIFIED 2026-05-15 — Proposed constants must include derivation — not just the value; a `daq_sample` on a FlexiForce channel is not admissible Article I evidence for Contact Force until all five admissibility conditions (Bill 0002 Part 7) are confirmed met. For Ch0–Ch4 (A301-1), a calibration JSON with `force_source: "dead_weight"` is also admissible per Bill 0003 (enacted Case 2, 2026-05-19) provided the Case 2 C1 sanity check is recorded in Signal Measurements. For Ch5–Ch6 (A301-25), `force_source` must be `"mts"` — dead-weight path is out of scope. |
 | Amendment 8 | When an algorithm domain is exhausted, name it, offer ≤ 3 alternatives, hardware option always on list |
 | Amendment 6 | Propose signal plots to support any suggestion that requires visual confirmation |
 
@@ -141,6 +141,11 @@ Draw the FSM (text). Identify dead states, unreachable states, and ambiguous tra
   all five admissibility conditions hold (Bill 0002 Part 7): calibration JSON
   exists, `acceptance.passed` is true, calibration within 30 days, session-start
   zero-load check passed, Channel & Topic Map entry points to that JSON file.
+  Additionally (Bill 0003, Case 2): for Ch0–Ch4 the JSON may have
+  `force_source: "dead_weight"` (admissible per Bill 0003) provided the Case 2
+  C1 sanity check result is recorded in `docs/device_context.md` Signal
+  Measurements; for Ch5–Ch6 the JSON must have `force_source: "mts"` — a
+  dead-weight record on Ch5–Ch6 is inadmissible regardless of acceptance criteria.
   If any condition is unmet, flag the reading as inadmissible before reasoning
   about Contact Force values.
 - Silently eliminate the FlexiForce DAQ hardware/calibration path from the

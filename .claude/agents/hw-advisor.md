@@ -118,11 +118,31 @@ contact geometry (End-Effector Pose repeatability). Cite specific force
 measurements from Test Results if a mounting issue is suspected — do not
 flag enclosure issues without a measurement showing the effect.
 
-**Calibration fixturing (Amendment 7 — RATIFIED 2026-05-15):** The FlexiForce DAQ
-stack is the established dominant uncertainty source for this project. When reviewing
-calibration-adjacent hardware, check:
+**Calibration fixturing (Amendment 7 — RATIFIED 2026-05-15; Bill 0003 — ENACTED
+2026-05-19):** The FlexiForce DAQ stack is the established dominant uncertainty
+source for this project. When reviewing calibration-adjacent hardware, check:
+
+MTS path (Ch0–Ch6, primary):
 - Does the MTS fixture achieve ramp completion to target force in ≤ 0.5 s?
-  (Case 1, Condition C1 — if unmet, calibration protocol is suspended.)
+  (Case 1, Condition C1 — if unmet, MTS calibration protocol is suspended.)
+- For Ch5–Ch6 (A301-25): MTS is the only admissible force source. Dead-weight
+  loading is NOT admissible for Ch5–Ch6 (Bill 0003 scope: A301-1 only).
+
+Dead-weight path (Ch0–Ch4 / A301-1 only — Bill 0003 Clause (a), Case 2):
+- Is the mass stand or placement fixture rigid enough that the OIML mass sits
+  flat and stable on the A301-1 sensor surface without rocking or tilting?
+  Fixture compliance or tilt introduces lateral force components not captured
+  by F = m · g — flag if visible or measurable.
+- Has the Case 2 C1 pre-acquisition placement-transient sanity check been run
+  and recorded in `docs/device_context.md` Signal Measurements (200 frames
+  baseline + 500 frames post-placement at mid-range weight; transient must decay
+  to `is_stationary` criterion before t = 0.5 s)? If not recorded, Ch0–Ch4
+  calibration under Bill 0003 is blocked.
+- Are the OIML M1 mass certificates on record in the `dead_weight_record` block
+  of each calibration JSON? If not, the calibration is not traceable per
+  Amendment 7 and Case 2 C3.
+
+Both paths:
 - Is the per-channel calibration JSON up-to-date (≤ 30 days) and does
   `acceptance.passed` equal `true`? These are admissibility preconditions for
   Contact Force evidence (Bill 0002 Part 7).

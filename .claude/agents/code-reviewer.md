@@ -107,7 +107,7 @@ End-Effector Pose (mm position, deg orientation).
 
 **Project-specific carrier:** This project has no firmware source files. Amendment 7's
 documentation format is implemented as a JSON header field in each per-channel
-calibration JSON (Bill 0002 Part 6.2). Look for:
+calibration JSON (Bill 0002 Part 6.2, extended by Bill 0003 Clause (e)). Look for:
   `"CURVE_FIT — derived from Contact Force primitive (Amendment 1)": "..."`
 A C-style inline comment is not expected and not required; the JSON field is the
 authoritative trace.
@@ -117,17 +117,35 @@ For each calibration JSON file present under `docs/calibration/`:
 - Does `acceptance.passed` equal `true`?
 - Does the `calibration_date` fall within the last 30 days?
 - Is the file referenced by the Channel & Topic Map entry in `docs/toolchain_config.md`?
+- Does it contain a `force_source` field with value `"mts"` or `"dead_weight"`?
+
+**Force-source channel scope (Bill 0003 Clause (a), Case 2):**
+- Ch0–Ch4 (A301-1): `force_source` may be `"mts"` (Bill 0002) or `"dead_weight"`
+  (Bill 0003). If `"dead_weight"`, a `dead_weight_record` block must be present with
+  fields `mass_kg`, `oiml_class`, `certificate_id`, `traceable_to`, `g_m_per_s2`.
+- Ch5–Ch6 (A301-25): `force_source` MUST be `"mts"`. `force_source: "dead_weight"`
+  is inadmissible for Ch5–Ch6 regardless of JSON acceptance criteria (Case 2, scope
+  of Bill 0003 reversal is A301-1 only).
+- If a Ch0–Ch4 JSON has `force_source: "dead_weight"`, also confirm that the
+  Case 2 C1 placement-transient sanity check result is recorded in
+  `docs/device_context.md` Signal Measurements table before treating the JSON
+  as admissible. If the C1 record is absent, flag as AMENDMENT-7-WARNING.
 
 Flag as **AMENDMENT-7-VIOLATION** if:
 - A calibration JSON lacks the `"CURVE_FIT — derived from ..."` header field.
 - `acceptance.passed` is `false` or absent.
+- A Ch5–Ch6 JSON has `force_source: "dead_weight"` or a `dead_weight_record` block.
+- A Ch0–Ch4 JSON has `force_source: "dead_weight"` but is missing the
+  `dead_weight_record` block or any of its required subfields.
 
 Flag as **AMENDMENT-7-WARNING** if:
 - `calibration_date` is more than 30 days old.
 - A Channel & Topic Map entry in `docs/toolchain_config.md` names a JSON file
   that does not exist in the repo.
+- A Ch0–Ch4 JSON has `force_source: "dead_weight"` but no Case 2 C1
+  sanity-check entry exists in `docs/device_context.md` Signal Measurements.
 
-**Contact Force admissibility binding (Bill 0002 Part 7):**
+**Contact Force admissibility binding (Bill 0002 Part 7, extended by Bill 0003):**
 A `daq_sample` reading on channel N is admissible Article I evidence for Contact
 Force only if ALL FIVE conditions hold:
   1. Per-channel calibration JSON exists for channel N.
@@ -137,8 +155,19 @@ Force only if ALL FIVE conditions hold:
   5. The `toolchain_config.md` Channel & Topic Map entry for channel N points to
      that specific JSON file.
 
+Additionally (Bill 0003 Clause (a) / Case 2):
+  6. If channel N is Ch0–Ch4 and the JSON has `force_source: "dead_weight"`:
+     the Case 2 C1 placement-transient sanity check result must be recorded in
+     `docs/device_context.md` Signal Measurements (confirming transient decays
+     within `is_stationary` criterion before t = 0.5 s). If absent, the JSON is
+     not yet admissible — flag as AMENDMENT-7-WARNING.
+  7. If channel N is Ch5 or Ch6: `force_source` in the JSON must be `"mts"`.
+     A `force_source: "dead_weight"` value on Ch5–Ch6 is an AMENDMENT-7-VIOLATION
+     regardless of whether acceptance criteria pass.
+
 Flag as **AMENDMENT-7-VIOLATION** if any code converts a `daq_sample` to Contact
-Force (N) without all five conditions demonstrably met at review time.
+Force (N) without all five base conditions demonstrably met at review time, or if
+conditions 6–7 above are violated.
 
 ### Scaffold module audit (Amendment 11 — at Stage 1 gate only)
 
