@@ -4,3 +4,4 @@
 - [A301 calibration via MTS](a301_calibration_mts.md) — MTS machine in lab is the planned force-generation source for A301 FlexiForce calibration
 - [Dominant error source — FlexiForce](dominant_error_source_flexiforce.md) — FlexiForce DAQ stack is the only tunable error source in the benchmark; all other errors are fixed
 - [MTS access unknown](mts_access_unknown.md) — lab MTS control mode (vendor GUI only vs Python API) is unconfirmed; blocks Task #5 (C1 feasibility check)
+- [Calibration blocked — repeatability](calibration_blocked_repeatability.md) — A301-1 calibration blocked by non-monotonic/non-repeatable raw response; suspected TPU 90A foot spreading load off the active area
