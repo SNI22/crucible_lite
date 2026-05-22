@@ -5,3 +5,5 @@
 - [Dominant error source — FlexiForce](dominant_error_source_flexiforce.md) — FlexiForce DAQ stack is the only tunable error source in the benchmark; all other errors are fixed
 - [MTS access unknown](mts_access_unknown.md) — lab MTS control mode (vendor GUI only vs Python API) is unconfirmed; blocks Task #5 (C1 feasibility check)
 - [Calibration blocked — repeatability](calibration_blocked_repeatability.md) — A301-1 calibration blocked by non-monotonic/non-repeatable raw response; suspected TPU 90A foot spreading load off the active area
+- [F_ext Contact Force pivot](fext_contact_force_pivot.md) — Franka F_ext is the first-pass Contact Force source while A301 is blocked; pose-dependent bias; gripper reports no force
+- [Soft-vs-rigid preliminary](soft_vs_rigid_preliminary.md) — finray grips at ~17 N vs rigid ~33 N (half the force); first benchmark result
