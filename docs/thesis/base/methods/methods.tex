@@ -1,0 +1,244 @@
+\chapter{\rm\bfseries Experimental Setup and Methodology}
+\label{ch:methods}
+
+\section{Hardware Configuration}
+
+\subsection{Robot Manipulator}
+
+A Franka Emika FR3 7-DOF cobot served as the manipulator throughout this work.
+The arm was operated through the Franka Control Interface (FCI) using
+\texttt{libfranka 0.18.1} and the ROS\,2 Humble control stack. Cartesian
+pose tracking was performed by a custom \texttt{fr3\_pose\_controller}
+\TODO{cite controller author / repo}, parameterised in
+\path{config/controllers/fr3_pose/default.yaml}. The controller accepts a
+sequence of (pose, twist) waypoints with associated time stamps and
+interpolates between them using a quintic polynomial; for the in-place
+re-orientation and the final precision descent phases, a cosine half-cycle
+S-curve interpolator (the so-called ``sine descent'' implemented in
+\path{run_trial.py::_safe_traj}) is used to ensure zero start- and end-state
+velocities.
+
+\subsection{Gripper Variants Tested}
+
+\begin{table}[ht]
+\centering
+\caption[Gripper variants]{Five gripper variants benchmarked.}
+\label{tab:variants}
+\begin{tabular}{lll}
+\toprule
+Variant & Type & Key parameter \\
+\midrule
+\texttt{parallel\_jaw\_stock}    & Rigid two-finger (Franka Hand)        & --- \\
+\texttt{parallel\_jaw\_TPU}      & Rigid two-finger + TPU 90A pad        & 2.0\,mm pad thickness \\
+\texttt{finray\_18}              & Finray-effect 3D-printed              & 18\,mm finger thickness \\
+\texttt{finray\_26}              & Finray-effect 3D-printed              & 26\,mm finger thickness \\
+\texttt{finray\_26\_5deg}        & Finray-26 on inclined-seat fixture    & $+5^{\circ}$ seat angle \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The Shore hardness of the finray finger material was \TODO{Shore-A durometer of
+3D-printed TPU}. The TPU pad on the parallel-jaw variant was \TODO{material and
+manufacturer}. The 5-degree inclined-seat fixture was manufactured in
+\TODO{lab name / process} to introduce a fixed asymmetric mounting condition
+for the third finray variant.
+
+\subsection{Cloth Specimen}
+
+\TODO{Describe the cloth used: material composition, thickness, weave,
+dimensions, surface treatment. Photograph if available.}
+
+\subsection{Test Surface}
+
+\TODO{Describe the table / fixture geometry the cloth rests on, including
+material, flatness specification, and probe position relative to the cloth
+edge.}
+
+\section{Reference Frame and Tool-Centre Calibration}
+
+\subsection{Frame Convention}
+\label{sec:frames}
+
+Three frames are relevant: the world (robot base) frame $\mathcal{W}$,
+the gripper flange frame $\mathcal{F}$, and the gripper tip frame $\mathcal{T}$.
+The Franka URDF defines $\mathcal{F}$ at the mechanical hand mounting flange;
+the Franka API \texttt{robot.end\_effector\_pose} reports the pose of
+$\mathcal{F}$ in $\mathcal{W}$. The tip frame $\mathcal{T}$ is located along
+the local $+z$ axis of $\mathcal{F}$ by a per-variant offset $z_{\text{TCP}}$,
+which depends on the physical gripper (finger length, mounting fixtures, pads).
+
+For a gripper at orientation $R \in SO(3)$, the world-frame relationship is
+\begin{equation}
+  \mathbf{p}_\mathcal{T} = \mathbf{p}_\mathcal{F} + R \begin{bmatrix} 0 \\ 0 \\ z_{\text{TCP}} \end{bmatrix}.
+  \label{eq:tip-from-flange}
+\end{equation}
+For the rigid-down-pointing nominal orientation $R_0 = R_x(180^{\circ})$,
+the tip lies directly below the flange and
+$\mathbf{p}_\mathcal{T} = \mathbf{p}_\mathcal{F} - z_{\text{TCP}} \hat{\mathbf{z}}$.
+
+The gripper-frame convention adopted here is: the gripping axis (along which
+the fingers close) is $\mathcal{F}$'s local $y$ axis; the gripper is
+mirror-symmetric about the $xz$ plane; consequently, rotation of the gripper
+about the local $y$ axis is rotation about the geometrically asymmetric
+axis, while rotation about $x$ is rotation about the symmetric axis.
+
+\subsection{TCP Offset Calibration}
+\label{sec:tcp-calib}
+
+The $z_{\text{TCP}}$ value differs by variant because different fingers
+attach to the same flange. To calibrate, each variant was driven to a
+common probe position $(x_0, y_0)$ on a known rigid table and a force-feedback
+touch-off was performed: the gripper descended slowly in $z$ until the
+external force in $z$ exceeded a $-3$\,N threshold (debounced for three
+consecutive 50\,Hz samples). The flange $z$ at the latch moment was
+recorded as $z_{\text{tcp}}^{\text{measured}}$.
+
+Taking the rigid \texttt{parallel\_jaw\_stock} variant as the URDF reference
+($z_{\text{TCP}} \equiv 0$ by definition), the per-variant TCP offset is
+\begin{equation}
+  z_{\text{TCP}}^{(v)} = z_{\text{tcp}}^{(v),\text{measured}}
+                       - z_{\text{tcp}}^{\text{stock},\text{measured}}.
+  \label{eq:tcp-calib}
+\end{equation}
+
+Table~\ref{tab:tcp-calib} summarises the calibrated values used throughout
+this work.
+
+\begin{table}[ht]
+\centering
+\caption[Calibrated TCP offsets]{Calibrated per-variant TCP offsets from
+differential touch-off against the stock parallel jaw.}
+\label{tab:tcp-calib}
+\begin{tabular}{lrr}
+\toprule
+Variant & $z_{\text{tcp}}^{\text{measured}}$ (mm) & $z_{\text{TCP}}^{(v)}$ (mm) \\
+\midrule
+\texttt{parallel\_jaw\_stock}    & 37.871 & 0.000 \\
+\texttt{parallel\_jaw\_TPU}      & 39.916 & 2.044 \\
+\texttt{finray\_18}              & 131.842 & 93.971 \\
+\texttt{finray\_26}              & 132.782 & 94.911 \\
+\texttt{finray\_26\_5deg}        & 130.094 & 92.223 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The reproducibility of the touch-off was measured as the across-tap standard
+deviation $\sigma_z$ in mm. For \texttt{finray\_26\_5deg}, $\sigma_z =
+183$\,\textmu m owing to a wobble component introduced by the inclined
+seat; the other four variants had $\sigma_z \leq 102$\,\textmu m.
+
+\section{Force Measurement}
+
+External forces $\mathbf{F}_{\text{ext}}$ at the flange were estimated by the
+Franka internal model from joint torques, available via the \texttt{libfranka}
+RobotState API at 1\,kHz and subsampled to 30\,Hz for session logging.
+A free-air bias capture was performed at the start of every session: the
+gripper was held at a known pose 30--80\,mm above the cloth surface and
+30 samples were averaged over 1 second to provide $F_z^{\text{bias}}$.
+This bias was recorded in each session JSON but \emph{not} subtracted from
+the raw force time series at acquisition time; downstream analyses subtract
+it where appropriate.
+
+\section{Tilt-Aware Pose Targeting}
+\label{sec:tilt-pose}
+
+When the gripper is tilted, the flange position required to place the tip at
+a fixed probe location $(x_0, y_0, z_{\text{surf}}^{\text{tip}})$ shifts
+laterally. From equation~\eqref{eq:tip-from-flange}, the required flange
+position is
+\begin{equation}
+  \mathbf{p}_\mathcal{F}^{*} = \mathbf{p}_\mathcal{T}^{\text{target}} -
+                              R\,\begin{bmatrix} 0 \\ 0 \\ z_{\text{TCP}} \end{bmatrix}.
+  \label{eq:flange-target-tilted}
+\end{equation}
+
+This relation is implemented in the trial controller \path{run_trial.py}:
+the target orientation $R = R_{\text{tilt}} \circ R_0$ is constructed at
+session start by composing the requested tilt rotation
+$R_{\text{tilt}} = R_y(\theta_y) R_x(\theta_x)$ (extrinsic, world frame)
+onto the base orientation $R_0 = R_x(180^{\circ})$, and the flange position
+target is updated accordingly. The orientation is then held constant
+through all subsequent descent and grasp phases, so the tip XY remains at
+$(x_0, y_0)$ throughout the trial.
+
+For a $+2.5^{\circ}$ tilt about $x$ on the \texttt{finray\_26} variant
+($z_{\text{TCP}} = 94.911$\,mm), the predicted flange offset is
+\begin{equation}
+  \Delta y_\mathcal{F} = -z_{\text{TCP}}\sin(2.5^{\circ})
+                       \approx -4.14\,\mathrm{mm}.
+\end{equation}
+Chapter~\ref{ch:experiments} reports the empirical lateral offsets measured under
+load and the residuals from this geometric prediction, which we attribute to
+finger compliance under press.
+
+\section{Data Pipeline}
+
+\subsection{Per-Trial Recording}
+
+Each trial directory \path{trial_NNN/} contains:
+\begin{itemize}
+  \item \path{config.yaml} --- snapshot of the variant config at trial time;
+  \item \path{run_config.json} --- depth, tilt, ground-truth source,
+        speeds, gripper mode;
+  \item \path{pose_wrench.csv} --- high-rate (30\,Hz) actual + commanded
+        pose, RPY, wrench, gripper width per row, tagged with the current
+        trial stage.
+\end{itemize}
+
+\subsection{Per-Session Recording}
+
+Each session directory \path{depth_*/} contains in addition:
+\begin{itemize}
+  \item \path{depth_summary.json} --- header metadata + array of per-trial
+        verdicts (\texttt{success}, \texttt{fail\_reason}); operator notes;
+  \item \path{ground_truth_used.json} --- snapshot of the GT JSON loaded;
+  \item \path{session_log_*.npz} --- numpy archive of the 30\,Hz background
+        sample stream, with stage labels and tap indices.
+\end{itemize}
+
+\subsection{Verdict Recording}
+
+After each trial, the operator was prompted to enter a binary verdict (grasp
+success vs failure). Trials where the operator entered no verdict (typically
+because the FCI control daemon crashed mid-trial owing to a known
+acceleration-discontinuity reflex \TODO{cite the issue if available}) were
+recorded with \texttt{success = null} and excluded from all aggregate
+analyses.
+
+\section{Trial Procedure}
+
+A single trial proceeds:
+\begin{enumerate}
+  \item Open gripper (Franka Hand or finray release width);
+  \item Bulk descent: smooth multi-waypoint trajectory from the lifted pose
+        down to a fine clearance ($+5$\,mm above surface), filtered to
+        exclude any upward leg (preventing direction reversals at zero-twist
+        interior waypoints);
+  \item Settle: 2\,s pause at the fine-clearance pose;
+  \item Final approach: cosine-S-curve descent from the fine clearance to
+        the press target $z_{\text{surf}} - d$, where $d$ is the trial press
+        depth;
+  \item Grasp: force-controlled close (Franka grasp action at 80\,N or
+        20\,N nominal, with $\pm 100$\,mm $\epsilon$ to disable the
+        position-acceptance check that would otherwise cause auto-release
+        on a sub-spec final width);
+  \item Settle: 1\,s pause;
+  \item Stationary sample: 30 samples of $\mathbf{F}_{\text{ext}}$
+        captured over 1\,s during the \texttt{grasp\_stationary\_sample}
+        stage;
+  \item Lift to $\sim +80$\,mm above surface for visual inspection;
+  \item Operator verdict prompt;
+  \item Open gripper and reset for next trial.
+\end{enumerate}
+
+\section{Statistical Treatment}
+
+For each (variant, depth, tilt) cell, the contact force is reported as
+\begin{equation}
+  \bar{F}_z = \frac{1}{N}\sum_{i=1}^{N} F_z^{(i)}, \qquad
+  \sigma_{F_z} = \sqrt{\frac{1}{N}\sum (F_z^{(i)} - \bar{F}_z)^2},
+\end{equation}
+where $N$ is the total number of stationary samples pooled across all
+clean trials in the cell. Trials with null verdict (FCI crash) are
+excluded. Trial-to-trial variance is the dominant source of dispersion;
+the within-trial sample variance ($\sim 0.1$\,N) is small compared to it.

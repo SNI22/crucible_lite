@@ -49,7 +49,7 @@ variants (rigid vs soft) to quantify the soft-grasper advantage for thin cloth.
 | G1 | Parallel jaw, standard (rigid) | force-close, 20 N command |
 | G2 | Parallel jaw + TPU 90 A pad | force-close, 20 N command |
 | G3 | Finray, 33 mm | fixed gap, 60 mm |
-| G4 | Finray, 18 mm | fixed gap, TBD |
+| G4 | Finray, 18 mm | fixed gap, 60 mm |
 
 ---
 
@@ -88,6 +88,14 @@ Two depth levels per gripper:
 - `d_min` = `d_min_success` — marginal-grasp fragility under tilt
 - `d_safe` = (`d_min_success` + `max_depth_safe`) / 2 — comfortable-grasp margin under tilt
 
+**Axis convention (confirmed 2026-06-04):** the gripper-closing
+direction is **y**; the gripper is mirror-symmetric across **xz**. By
+choice (operator directive 2026-06-04), all three axes are tested
+**single-sided at {0, 2.5, 5°}** — x and z by mirror symmetry, y by
+electing to characterise one tilt direction only (into the cloth body,
+not off the edge). If the −y side turns out to differ materially, a
+follow-up bill can extend it.
+
 Per-gripper tilt conditions (one axis at a time):
 
 | # | rx (°) | ry (°) | rz (°) | Depth |
@@ -99,15 +107,58 @@ Per-gripper tilt conditions (one axis at a time):
 | T5a | 0 | 5 | 0 | `d_min` |
 | T6a | 0 | 0 | 2.5 | `d_min` |
 | T7a | 0 | 0 | 5 | `d_min` |
-| T1b | 0 | 0 | 0 | `d_safe` |
-| T2b | 2.5 | 0 | 0 | `d_safe` |
-| T3b | 5 | 0 | 0 | `d_safe` |
-| T4b | 0 | 2.5 | 0 | `d_safe` |
-| T5b | 0 | 5 | 0 | `d_safe` |
-| T6b | 0 | 0 | 2.5 | `d_safe` |
-| T7b | 0 | 0 | 5 | `d_safe` |
+| T1b–T7b | (same tilts) |  |  | `d_safe` |
 
-14 conditions × 3 reps × 4 grippers = **168 trials**.
+7 conditions × 2 depths × 3 reps × 4 grippers = **168 trials**.
+
+---
+
+## Study 3 — inclined-seat finray sub-study
+
+The mounting fixture between the Franka Hand carriage and the finray blades
+is a CAD design parameter. Two fixture variants under comparison (finray
+33 mm only):
+
+| Variant | Seat angle | Notes |
+|---|---|---|
+| G3-S2.5 | 2.5° | finray 33 mm on inclined seat |
+| G3-S5 | 5° | finray 33 mm on inclined seat |
+
+The standard (flat-seat) **G3** from the main study provides a third
+0°-seat reference at no extra cost (data is already collected by Study 1
+and Study 2).
+
+### Protocol (Option B — targeted)
+
+Per fixture variant: a depth sweep at tilt = 0 plus a tilt sweep on
+the **y axis only** (the gripping direction; the inclined seat
+geometrically biases this exact axis, which is why this slice is the
+publishable test). Single-sided per the Study 2 axis convention.
+
+| Block | Levels | Trials per variant |
+|---|---|---|
+| Depth sweep (tilt = 0) | −1, 0, 2, 4, 6, 8 mm × 3 reps | 18 |
+| y-axis tilt × depth | 3 angles (ry = 0, 2.5, 5°) × 2 depths (`d_min`, `d_safe`) × 3 reps | 18 |
+
+**36 trials × 2 variants = 72 trials.**
+
+*Detection note:* with one-sided sweeps, the seat-shift hypothesis is
+detectable only if the bias goes in the +y direction. If the data is
+consistent with a negative shift, a follow-up bill can extend the
+sweep to ±5° on the inclined-seat variants.
+
+### Hypothesis
+
+The seat tilt is a built-in geometric offset on the asymmetric tilt axis.
+If it acts as a **passive alignment correction**, the tilt-tolerance
+curve should shift along that axis by approximately the seat-angle
+difference (G3-S5 vs G3-S2.5 ⇒ ~2.5° shift). If the curves change
+shape without shifting, the seat is changing blade compliance, not
+alignment — a different (also useful) story.
+
+Adding the flat G3 as a 0° reference gives three points (0°, 2.5°, 5°
+seat) for a linear or saturating fit on tilt-tolerance shift vs seat
+angle.
 
 ---
 
@@ -117,22 +168,32 @@ Per-gripper tilt conditions (one axis at a time):
 |---|---|
 | Pilot (P1–P3) | ~35 |
 | Study 1 (depth × tilt 0) | 78 |
-| Study 2 (tilt × depth) | 168 |
-| **Total** | **≈ 280 trials** |
+| Study 2 (tilt × depth, all axes single-sided) | 168 |
+| Study 3 (inclined-seat sub-study, single-sided) | 72 |
+| **Total** | **≈ 353 trials** |
 
-Estimated runtime: 3–4 sessions.
+Estimated runtime: 4–6 sessions.
 
 ---
 
 ## Open items (to confirm with supervisor)
 
-1. **Gripping direction** in EEF frame (x or y) — determines which tilt axis is
-   *asymmetric* under gripper mirror symmetry. Once confirmed, that axis extends
-   to ±5° (adds ~24 trials).
-2. `GRASP_WIDTH_M` for the **finray 18 mm**.
-3. Whether to **empirically validate** the gripper mirror symmetry on the two
-   "supposed-to-be-symmetric" axes for G1 (full ±5° on those axes — adds 12
-   trials, provides a "verified" line for the report).
+1. ~~**Gripping direction** in EEF frame.~~ **RESOLVED 2026-06-04:**
+   gripping direction = **y**; mirror plane = **xz**; asymmetric tilt
+   axis = rotation about **y**. By operator directive 2026-06-04, all
+   three axes (including y) are tested single-sided at {0, 2.5, 5°};
+   the −y side is deferred to a follow-up bill if motivated by data.
+2. ~~`GRASP_WIDTH_M` for the **finray 18 mm**.~~ **RESOLVED 2026-06-04:**
+   `GRASP_WIDTH_M = 0.060` (same as G3, finray 33 mm).
+3. ~~Whether to **empirically validate** the gripper mirror symmetry on the two
+   symmetric axes (x and z) for G1 (full ±5° on those axes — adds 12
+   trials, provides a "verified" line for the report).~~ **DECLINED 2026-06-04:**
+   x and z sweep at {0, 2.5, 5°} only, on the theoretical symmetry
+   argument; the y-axis already covers both signs in the main matrix.
+   If a reviewer pushes back, the validation can be added as a
+   targeted 12-trial follow-up at that point.
+
+All open items resolved or declined. Matrix locked at **≈ 425 trials**.
 
 ---
 
@@ -147,16 +208,24 @@ Estimated runtime: 3–4 sessions.
 
 ## Symmetry argument (rationale for tilt-level choice)
 
-Each gripper is mirror-symmetric across the plane perpendicular to the gripping
-direction (the two fingers / blades are identical). Combined with the cloth
-edge being approximately straight (mirror-symmetric about its perpendicular),
-two of three tilt axes have +θ ⇔ −θ outcomes — the rotations whose axes lie
-*in* the mirror plane. Only the rotation about the gripping direction itself
-breaks this symmetry (both fingers tilt together → not mirror-equivalent).
+Each gripper is mirror-symmetric across the **xz** plane (perpendicular
+to the y-axis gripping direction; the two fingers / blades are
+identical). Combined with the cloth edge being approximately straight
+(mirror-symmetric about its perpendicular), the two rotations whose
+axes lie *in* the xz plane — rotation about **x** and rotation about
+**z** — have +θ ⇔ −θ outcomes under the combined reflection. Only
+rotation about **y** (the gripping direction itself, perpendicular to
+the xz plane) breaks this symmetry: both fingers tilt together
+(fore/aft about the gripping line), and the +y / −y directions
+correspond to physically different conditions (one tilts the contact
+toward the cloth body, the other off the edge).
 
-Levels {0, 2.5°, 5°} therefore cover the symmetric range. The asymmetric axis
-(to be identified in item 1 above) will be extended to negative angles in a
-later patch.
+x and z are swept at {0, 2.5°, 5°} (3 levels) by symmetry. y is
+**physically** asymmetric (the +y and −y tilts are different
+conditions), but by operator directive (2026-06-04) is swept
+single-sided at {0, 2.5°, 5°} as well — characterising one tilt
+direction (into the cloth body) without the −y side. The −y side
+becomes a follow-up question if the +y data motivates it.
 
 ---
 

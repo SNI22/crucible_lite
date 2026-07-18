@@ -7,3 +7,16 @@
 - [Calibration blocked — repeatability](calibration_blocked_repeatability.md) — A301-1 calibration blocked by non-monotonic/non-repeatable raw response; suspected TPU 90A foot spreading load off the active area
 - [F_ext Contact Force pivot](fext_contact_force_pivot.md) — Franka F_ext is the first-pass Contact Force source while A301 is blocked; pose-dependent bias; gripper reports no force
 - [Soft-vs-rigid preliminary](soft_vs_rigid_preliminary.md) — finray grips at ~17 N vs rigid ~33 N (half the force); first benchmark result
+- [Experiment matrix locked](experiment_matrix_locked.md) — 4-gripper tilt × depth benchmark, ≈ 280 trials across Pilot / Study 1 / Study 2
+- [Per-gripper TCP via touch-off](per_gripper_tcp_via_touchoff.md) — differential touch-off (not CAD) is the locked method for the per-gripper contact-point z-offset
+- [Gripper frame convention](gripper_frame_convention.md) — gripping direction = y; mirror plane = xz; asymmetric tilt axis = rotation about y
+- [Franka FCI launch](franka_fci_launch.md) — every session: `ssh franka-pc` then `fr3-launch` BEFORE any arm_client script; otherwise wait_until_ready hangs
+- [Franka DDS VPN conflict](franka_dds_vpn_conflict.md) — arm_client "Missing messages on ..." with FCI confirmed running = bring VPN (ZeroTier/Tailscale) DOWN; Fast-DDS announces VPN locator, franka-pc can't reply
+- [Exp2 sign-flip findings 2026-06-24](exp2_sign_flip_findings_2026_06_24.md) — y-tilt ±2.5° on stock+TPU decomposes into sign-invariant slope (<1%) + constant offset (1-3 N); TPU is most tilt-tolerant at boundary
+- [Gripper variants layout](gripper_variants_layout.md) — four variants (parallel_jaw_{stock,TPU}, finray_{33,18}) over two family libs; experiment1/<variant>/ holds per-variant config_<variant>.py + scripts
+- [move_to is a no-op in fr3_pose](move_to_noop_in_fr3_pose.md) — arm_client Robot.move_to() silently fails under fr3_pose_controller; use set_target + arrival poll
+- [Finray naming convention](finray_naming_convention.md) — finray_18 / finray_33 number = finger THICKNESS, NOT Shore-A hardness
+- [No-hide without explicit ask](no_hide_without_explicit_ask.md) — never hide/rename experiment cells unless user names that specific cell; flag bar-removal first; don't infer cascading hides
+- [Cloth-grasp coverage matrix 2026-06-26](cloth_grasp_coverage_matrix_2026_06_26.md) — **CRUCIAL** full depth × angle × variant coverage table; fr18_model2 added for mfg-defect comparison; always re-verify against fs (drifts fast)
+- [Trial outcome taxonomy](trial_outcome_taxonomy.md) — distinguish success / no-grasp / failed-trial; no-grasp has valid Fz and counts as data
+- [Never rm without double-confirm](never_rm_without_double_confirm.md) — bulk delete = always ask "stage or rm"; experiments/cloth_grasp/ not git-tracked, no recovery

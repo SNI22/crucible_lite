@@ -1,0 +1,93 @@
+\chapter{\rm\bfseries Experiment 1: Depth Sweep at Zero Tilt}
+\label{ch:exp1}
+
+\section{Objective}
+
+Establish the contact-force vs.~press-depth relationship for each gripper
+variant at the nominal $R_0 = R_x(180^{\circ})$ orientation. This is the
+single-axis ``baseline'' against which the tilt-perturbed conditions in
+Chapter~\ref{ch:exp2} are compared.
+
+\section{Depth Grid}
+
+The depth grid was chosen adaptively per variant. For the rigid parallel
+jaws, depths were spaced at 0.5\,mm intervals over $-1$ to $+3.5$\,mm,
+near the narrow force-limited working range. For the finrays, depths were
+spaced at 1--2\,mm intervals over $-1$ to $+14$\,mm, covering both the
+no-contact transition and the soft-plateau regime.
+
+\section{Results}
+
+\subsection{All-Variant Comparison}
+
+Figure~\ref{fig:all-variants} overlays the stationary contact force
+vs.~depth for all five variants at $0^{\circ}$ tilt.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.95\linewidth]{all_variants_Fz_vs_depth_0deg.png}
+\caption[Cross-variant baseline]{Stationary contact force versus press depth
+for all five gripper variants at $0^{\circ}$ tilt. Error bars show
+within-cell standard deviation across $n \geq 3$ trials. The rigid parallel
+jaws exhibit narrow working ranges with steep force-depth slopes
+(\texttt{stock}: $-25.7$\,N/mm; \texttt{TPU}: $-19.2$\,N/mm); the finray
+variants exhibit broad working ranges with a near-flat ``soft plateau''
+(slope $-1.2$\,N/mm for \texttt{finray\_18}).}
+\label{fig:all-variants}
+\end{figure}
+
+The qualitative grouping by gripper class is unambiguous: rigid parallel
+jaws hit the $-60$\,N safety reflex within 4\,mm of the no-contact boundary,
+while finrays sustain a near-constant $-37$ to $-44$\,N press over a
+$\geq 6$\,mm depth window before the structure begins to bottom out.
+
+\subsection{Per-Variant Detail}
+
+For each variant the working range $[d_{\min}, d_{\max}]$ was defined as the
+deepest depth where all trials succeeded and the mean $|F_z| < 40$\,N (the
+operator-set safety budget below the 60\,N reflex). The boundary depth
+was defined as the next-deeper depth where either the success rate dropped
+below $3/3$ or $|F_z|$ exceeded 40\,N. Table~\ref{tab:working-range}
+summarises.
+
+\begin{table}[ht]
+\centering
+\caption[Working ranges]{Per-variant working ranges and force-depth slopes
+in the linear regime, from Experiment 1.}
+\label{tab:working-range}
+\begin{tabular}{lcccc}
+\toprule
+Variant & Working range (mm) & $F_z$ at safe depth (N) &
+        Slope (N/mm) & Width \\
+\midrule
+\texttt{parallel\_jaw\_stock}   & $+1.5$ to $+2.5$ & $-28.9$ & $-25.7$ & 1.0\,mm \\
+\texttt{parallel\_jaw\_TPU}     & $+1.0$ to $+3.0$ & $-24.1$ & $-19.2$ & 2.0\,mm \\
+\texttt{finray\_18}             & $-0.5$ to $+12$  & $-25.8$ & $-1.2$  & 12.5\,mm \\
+\texttt{finray\_26}             & $-0.5$ to $+10$  & $-36.5$ & $-1.2$  & 10.5\,mm \\
+\texttt{finray\_26\_5deg}       & $-0.5$ to $+6$   & $-39.1$ & $-1.5$  & 6.5\,mm \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The finrays achieve a 6--12$\times$ wider working range than the rigid jaws,
+at the cost of a roughly 2$\times$ lower stationary force at comparable
+depths. The $5^{\circ}$ inclined fixture on \texttt{finray\_26\_5deg}
+narrows its working range relative to the flat-mounted \texttt{finray\_26},
+suggesting that even modest baseline asymmetries propagate into the
+force-depth response.
+
+\section{Discussion of Experiment 1}
+
+The cross-variant comparison reproduces the standard textbook claim that
+finray-effect grippers extend the operational envelope of force-controlled
+grasping at the cost of force precision. The new information here is the
+quantitative characterisation: a $20\times$ reduction in effective
+contact stiffness ($-1.2$\,N/mm vs.~$-25.7$\,N/mm) buys a $12\times$ wider
+working range (from 1\,mm to 12\,mm). The trade-off is asymmetric in
+favour of the compliant geometry when the application tolerates a wider
+range of approach depths.
+
+The next chapter addresses the obvious follow-up question: does the wider
+working range mean the finray also tolerates tilt better, or does its
+compliance introduce orientation-dependent biases that only emerge under
+tilt?

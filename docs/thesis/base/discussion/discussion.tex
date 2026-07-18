@@ -1,0 +1,229 @@
+\chapter{\rm\bfseries Discussion}
+\label{ch:discussion}
+
+The results reported in Chapter~\ref{ch:results} are interpreted in the
+same six thematic groups, with an emphasis on the physical mechanisms
+that produce the observed force behaviour and the implications for
+cloth-handling system design.
+
+\section{Bell-Plus-Valley Curve Shape}
+\label{sec:bell-plus-valley}
+
+The bell-plus-valley force-depth shape observed on all four finray
+variants (Section~\ref{sec:zero-tilt-results}) is consistent with the
+finray finger operating in three sequential contact regimes as press
+depth increases. In the boundary regime, only the distal tip of the
+finger contacts the cloth; force rises roughly linearly with penetration
+because the contact area grows in proportion to displacement. At the
+knee, the full ridged section of the finger is engaged and the finger
+resists compression through its cross-web structure, producing the peak
+force. Past the peak, the ribs partially buckle and the finger folds
+back on itself; contact area increases but effective stiffness drops,
+producing the valley. At recovery depths, the finger has fully wrapped
+and further penetration is resisted by structural compression through
+the finger base, producing the second rise.
+
+The finding that the four features (boundary knee, peak, valley,
+recovery) occur at the same command depths ($\pm 1$\,mm) across all
+four finray variants indicates that this three-regime response is a
+geometric property of the finray shape itself and not sensitive to
+finger thickness ($18$ vs $26$\,mm) or to a $5^{\circ}$ mount tilt.
+Force magnitudes scale with contact area, as expected, but the depth
+locations of the transitions do not.
+
+\section{Cross-Axis Sign Reversal: Mechanism}
+\label{sec:cross-axis-mechanism}
+
+The finray finger has \emph{mirror symmetry} about the x-axis (the
+mirror plane between the two opposing fingers) but not about the y-axis
+(the gripping direction, which breaks left-right equivalence by
+construction). The observed y-axis bias at boundary depths is therefore
+consistent with the intrinsic finger geometry: a $+2.5^{\circ}$ rotation
+about the gripping axis loads the two fingers differently and produces
+a signed force difference.
+
+The x-axis bias is more surprising. If the finger and cloth were both
+symmetric about the mirror plane, a $\pm 2.5^{\circ}$ rotation about
+the mirror axis should produce zero bias by symmetry. That the x-bias
+is nonzero \emph{and of opposite sign to the y-bias} indicates the
+symmetry-breaking is not on the finger side. The most parsimonious
+explanation is that the cloth specimen has a directional weave-warp
+axis that is not aligned with the mirror plane of the gripper. A
+$+2.5^{\circ}$ x-rotation of the gripper then produces a systematic
+cloth-load asymmetry that couples through the whole-hand contact into a
+signed force difference. The finding that this x-bias is reproducible
+across two independently mounted variants (\texttt{finray\_18} and
+\texttt{finray\_26\_5deg}) is consistent with a shared external source
+(cloth or table) rather than a per-print effect.
+
+The prediction from this mechanism is that rotating the cloth specimen
+$90^{\circ}$ in the lab frame should flip the sign of the x-bias while
+leaving the y-bias approximately unchanged (because the intrinsic
+finger asymmetry does not depend on the cloth orientation). This is the
+single most important follow-up experiment to isolate the cloth
+contribution.
+
+\section{Mount-Tilt Equivalence: Geometric Interpretation}
+\label{sec:mount-tilt-mechanism}
+
+The observation that a $5^{\circ}$ pre-tilt of the finray mount is
+equivalent to a $-1.13$\,mm depth shift, with axis-independent shift
+within $0.03$\,mm on the two axes (Table~\ref{tab:mount-tilt-alignment}),
+admits a simple geometric interpretation. A $5^{\circ}$ tilt of a rigid
+finger of length $L$ produces a projected vertical offset at the
+contact tip of $L\sin(5^{\circ}) = 0.087 L$. Setting this equal to the
+observed $1.13$\,mm shift gives $L_{\mathrm{eff}} \approx 13$\,mm.
+Because the finray finger is physically $\sim 50$\,mm long, this
+$L_{\mathrm{eff}}$ corresponds to a contact-engagement point roughly
+$25\%$ up the length of the finger from its distal tip, consistent with
+the load being concentrated on the proximal portion of the finray's
+curved contact surface rather than at the tip.
+
+The axis-independence of the shift (0.02\,mm apart on the two axes) is
+a strong constraint: it rules out any mechanism in which the pre-tilt
+produces a different effective load-bearing length on the two axes.
+The $5^{\circ}$ mount therefore acts as a strictly rigid translation
+of the operating point in the depth dimension, independent of the tilt
+axis applied at runtime. This makes the $5^{\circ}$ mount a useful
+design lever: the finray's operating envelope can be shifted a chosen
+$1.13$\,mm in depth without altering the underlying force-depth
+sensitivity, at the cost of the $\sim 3$\,N vertical force offset.
+
+\section{Manufacturing Variability vs Session Drift}
+\label{sec:manufacturing-mechanism}
+
+The finding that same-day print-to-print variability ($5.5$\,N) is
+\emph{smaller} than same-print cross-session drift ($7$--$10$\,N) has
+two consequences worth stating explicitly.
+
+First, from a design-decision perspective, print-to-print variability
+is well within the range where any bias claim below $2 \sigma \approx
+1$--$2$\,N is unlikely to reproduce across different physical instances
+of the same CAD. Any cross-variant force-magnitude claim in this
+thesis with an effect size below approximately $2$\,N should be
+regarded as tentative and requires cross-print replication before
+being carried into product decisions.
+
+Second, from an experimental-methodology perspective, session drift is
+the dominant noise source in cloth-grasping benchmarks of this kind.
+Any measurement campaign that pools data across days must either
+report cross-day drift as a separate variance component or restrict
+its headline claims to same-session pairs. In this thesis, all bias
+values are reported for same-session pairs unless explicitly labelled
+otherwise; cross-day comparisons are used only for shape-consistency
+observations, not for headline effect sizes.
+
+The qualitative x-axis bias sign flip between \texttt{finray\_18} and
+\texttt{finray\_18\_model2} (bipolar vs monotonically negative) is a
+puzzle that this thesis cannot resolve with the current data. Two
+prints from the same slicer, same infill, same material, and same
+printer produced measurably different tilt-response behaviours on the
+x-axis but similar behaviour on the y-axis. The most likely mechanism
+is small differences in rib-wall thickness or infill density that
+manifest as asymmetric buckling behaviour under x-axis load, but
+verifying this requires post-hoc CT-scanning or a controlled study
+with more prints. The finding is noted here as an interesting boundary
+condition on manufacturing-invariance claims for compliant grippers.
+
+\section{Failure-Mode Taxonomy: Why the Distinction Matters}
+\label{sec:failure-mode-discussion}
+
+The trial-outcome taxonomy of success, no-grasp, and failed trial
+(Section~\ref{sec:trial-outcomes}) is deliberately three-valued rather
+than binary because the three categories map to physically distinct
+regimes with distinct control implications.
+
+Treating no-grasp trials as failed trials would systematically delete
+data from the boundary regime, where cloth engagement is intermittent
+but force measurement is clean. Boundary-regime force values are
+essential for characterising the low end of the working range, so
+their exclusion would truncate the observed force-depth curves and
+mask the boundary-tilt biases that are one of the headline findings.
+
+Treating failed trials as no-grasps in the opposite direction would
+pollute the force averages with spurious near-zero readings from
+aborted controllers, inflating apparent variance and eroding the
+signal-to-noise of the bias estimates. The three-way taxonomy is the
+minimum classification that separates ``the trial produced valid
+measurement'' from ``the grasp was successful'' from ``the trial was
+invalid.''
+
+For deployment implications, the no-grasp regime is precisely where a
+force-feedback grasp controller could intervene productively: the
+contact force is being measured and the depth is known, but the lift
+is failing. A closed-loop controller monitoring $|F_z|$ during lift
+could detect the impending slip and either deepen the press or abort
+before dropping the cloth outside the pick zone. Distinguishing
+no-grasp from failed-trial in the data record makes this control
+strategy visible in the offline analysis.
+
+\section{Deployment-Envelope Implications for Cloth-Handling Systems}
+\label{sec:deployment-envelope}
+
+The parallel-jaw versus finray comparison
+(Section~\ref{sec:pj-vs-finray-results}) puts an approximately
+$8\times$ factor between the two classes in tolerance to depth command
+noise. This factor is large enough that any cloth-handling system
+whose depth uncertainty exceeds $1$\,mm should default to a finray
+class gripper unless there is a specific force-precision requirement
+that the finray cannot meet.
+
+The absence of excess-force safety events on any finray variant across
+the full $-2$ to $+16$\,mm range indicates that finray-based systems
+can be deployed open-loop with no depth clipping controller and no
+safety-limit tuning. Parallel-jaw systems require an active depth
+governor whose accuracy budget must be at least a factor of two
+tighter than the successful-grasp window, i.e. sub-half-millimeter
+command precision, to avoid frequent aborts.
+
+The three-position design envelope proposed in the earlier version of
+this discussion (safe-plateau finray, boundary finray with tilt
+control, and rigid jaw with compliant pad) survives the expanded
+dataset but with a refinement: the compliant-pad variant
+(\texttt{parallel\_jaw\_TPU}) has narrower successful-grasp coverage
+than the discussion originally suggested, and its excess-force
+susceptibility is closer to \texttt{parallel\_jaw\_stock} than to
+finray. The compliant-pad design remains a useful hybrid but its
+robustness benefit is qualitative (better boundary behaviour) rather
+than transforming the parallel jaw into a finray substitute.
+
+\section{Limitations}
+\label{sec:limitations}
+
+\textbf{Single cloth specimen and single surface.} The reported working
+ranges and cloth-fixture asymmetries were measured on one cotton cloth
+specimen on one acrylic table surface. The absolute numbers will shift
+with cloth thickness, weave direction, friction, and surface compliance.
+The specific cross-axis sign reversal attributed to cloth weave in
+Section~\ref{sec:cross-axis-mechanism} requires a $90^{\circ}$-rotated
+cloth control to isolate the cloth contribution from the fixture
+contribution.
+
+\textbf{Cross-session drift.} The dominant noise source in this
+dataset is cross-session drift on the same specimen, exceeding
+print-to-print manufacturing variability. All same-day comparisons
+reported here are internally valid; cross-day claims are qualified
+throughout.
+
+\textbf{Parallel-jaw x-axis coverage.} The parallel-jaw variants were
+not swept across the x-axis tilt sign; the parallel-jaw bias values
+are restricted to the y-axis. Whether the x-axis bipolar bias observed
+on the finrays has an analogue on the rigid grippers is untested.
+
+\textbf{Boundary-depth sample sizes.} Boundary-depth cells frequently
+have $n=3$ and inter-trial standard deviations of $0.5$--$1.5$\,N
+driven by cloth-fold state variability that is not further
+characterised. Boundary values are honest measurements with
+correspondingly wide error bars.
+
+\textbf{Success rate as a binary rating.} The success/no-grasp
+distinction is operator-assessed after the lift stage; a
+finer-grained grip-force-during-lift measurement would resolve
+marginal cases that the current binary rating collapses.
+
+\section{Code and Data Availability}
+
+All source code, raw trial data, ground-truth JSON files, and analysis
+scripts are published in the project repository at
+\TODO{public GitHub URL}. The thesis was written against commit
+\TODO{commit hash}.

@@ -1,0 +1,123 @@
+{
+  "channel": 0,
+  "sensor_model": "A301-1",
+  "physical_location": "table-foot ch0",
+  "calibration_date": "2026-05-21",
+  "operator": "shiyao",
+  "mts_used": false,
+  "force_source": "dead_weight",
+  "primitive": "Contact Force",
+  "amendment_grounding": "Amendment 1, Amendment 7, Bill 0003 (Case 2)",
+  "CURVE_FIT \u2014 derived from Contact Force primitive (Amendment 1), dead-weight path (Bill 0003)": "Physical derivation: F = m * g, g = 9.80665 m/s^2 (CGPM 1901). Mass uncertainty for OIML M1 at 0.5 kg is <= 0.025 g -> force uncertainty <= 0.00025 N. Curve fit: F(raw) = a * raw^b; fit in log-log space via OLS. Value: a = 5.71316e-09 N*ADC^-b, b = 2.94309 dimensionless. Traces to: Amendment 1 primitive 1 (Contact Force), Amendment 7 (Calibration Discipline).",
+  "a": 5.713156005267498e-09,
+  "b": 2.943086596098839,
+  "full_scale_N": 15.0,
+  "quiescent_load_N": 0.0,
+  "acquisition_window_s": [
+    0.5,
+    2.5
+  ],
+  "acceptance": {
+    "rms_residual_N": 1.554932984457715,
+    "max_residual_N": 2.782165805087899,
+    "adj_r_squared_loglog": 0.2389094099448894,
+    "rms_criterion_N": 0.3,
+    "max_criterion_N": 0.6,
+    "r_squared_criterion": 0.998,
+    "passed": false,
+    "failures": [
+      "RMS 1.5549 N > criterion 0.3000 N",
+      "max |residual| 2.7822 N > criterion 0.6000 N",
+      "adj-R^2 0.23891 < criterion 0.998"
+    ]
+  },
+  "calibration_points": [
+    {
+      "level_index": 0,
+      "applied_N": 0.5197524499999999,
+      "raw_mean": 518.335,
+      "raw_std": 301.0738519034823,
+      "repeats": 5,
+      "dead_weight_record": {
+        "mass_kg": 0.053,
+        "oiml_class": "uncertified",
+        "certificate_id": "measured-53.0g",
+        "traceable_to": "bench scale (operator-measured)",
+        "g_m_per_s2": 9.80665
+      }
+    },
+    {
+      "level_index": 1,
+      "applied_N": 1.018910935,
+      "raw_mean": 850.43375,
+      "raw_std": 21.028014795743346,
+      "repeats": 4,
+      "dead_weight_record": {
+        "mass_kg": 0.1039,
+        "oiml_class": "uncertified",
+        "certificate_id": "measured-103.9g",
+        "traceable_to": "bench scale (operator-measured)",
+        "g_m_per_s2": 9.80665
+      }
+    },
+    {
+      "level_index": 2,
+      "applied_N": 2.009382585,
+      "raw_mean": 773.489,
+      "raw_std": 119.05546057405347,
+      "repeats": 5,
+      "dead_weight_record": {
+        "mass_kg": 0.2049,
+        "oiml_class": "uncertified",
+        "certificate_id": "measured-204.9g",
+        "traceable_to": "bench scale (operator-measured)",
+        "g_m_per_s2": 9.80665
+      }
+    },
+    {
+      "level_index": 3,
+      "applied_N": 4.97197155,
+      "raw_mean": 825.09875,
+      "raw_std": 14.976420564229196,
+      "repeats": 4,
+      "dead_weight_record": {
+        "mass_kg": 0.507,
+        "oiml_class": "uncertified",
+        "certificate_id": "measured-507.0g",
+        "traceable_to": "bench scale (operator-measured)",
+        "g_m_per_s2": 9.80665
+      }
+    }
+  ],
+  "dead_weight_records": [
+    {
+      "mass_kg": 0.053,
+      "oiml_class": "uncertified",
+      "certificate_id": "measured-53.0g",
+      "traceable_to": "bench scale (operator-measured)",
+      "g_m_per_s2": 9.80665
+    },
+    {
+      "mass_kg": 0.1039,
+      "oiml_class": "uncertified",
+      "certificate_id": "measured-103.9g",
+      "traceable_to": "bench scale (operator-measured)",
+      "g_m_per_s2": 9.80665
+    },
+    {
+      "mass_kg": 0.2049,
+      "oiml_class": "uncertified",
+      "certificate_id": "measured-204.9g",
+      "traceable_to": "bench scale (operator-measured)",
+      "g_m_per_s2": 9.80665
+    },
+    {
+      "mass_kg": 0.507,
+      "oiml_class": "uncertified",
+      "certificate_id": "measured-507.0g",
+      "traceable_to": "bench scale (operator-measured)",
+      "g_m_per_s2": 9.80665
+    }
+  ],
+  "fixture_note": "Bench calibration feet TPU 90A in load path; weights used singly (no stacking); masses operator-measured."
+}

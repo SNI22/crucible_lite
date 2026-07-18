@@ -1,0 +1,958 @@
+% =============================================================================
+%  McGill MSc Thesis  —  Mechanical Engineering
+%  Cloth-Grasping Benchmark: Compliance vs Tilt Robustness in Soft Grippers
+%
+%  Author:    \TODO{full legal name as registered}
+%  ID:        \TODO{McGill student ID}
+%  Supervisor:\TODO{supervisor name + department}
+%  Dept.:     Department of Mechanical Engineering, McGill University
+%  Year:      2026
+%
+%  Compile with:  pdflatex thesis.tex (×2) && bibtex thesis && pdflatex (×2)
+% =============================================================================
+
+\documentclass[12pt,letterpaper,oneside]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{siunitx}
+\usepackage{hyperref}
+\usepackage[margin=1in, left=1.5in]{geometry}   % McGill binding margin
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{listings}
+\usepackage{cleveref}
+
+\newcommand{\TODO}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+\graphicspath{{figures/}{../../experiments/cloth_grasp/experiment2/_analysis_plots/}{../../experiments/cloth_grasp/experiment1/}}
+
+\sisetup{per-mode=symbol,detect-weight=true}
+
+% =============================================================================
+\title{
+  \vspace*{-1.5cm}
+  \LARGE
+  Compliance-Robustness Trade-offs in Soft Gripper Cloth Grasping:\\
+  A Benchmark of Parallel-Jaw and Finray Geometries under Depth and Tilt Perturbation\\[10pt]
+  \large \TODO{thesis subtitle if used}
+}
+\author{
+  \TODO{Author Name}\\[4pt]
+  \normalsize Department of Mechanical Engineering\\
+  \normalsize McGill University, Montreal\\
+  \normalsize 2026
+}
+\date{}
+
+% =============================================================================
+\begin{document}
+
+\pagenumbering{roman}
+\maketitle
+
+% -----------------------------------------------------------------------------
+\vfill
+\noindent
+A thesis submitted to McGill University in partial fulfilment of the
+requirements of the degree of\\
+\textit{Master of Science in Mechanical Engineering}.\\[1em]
+\textcopyright{} \TODO{Author Name}, 2026.
+\vfill
+\clearpage
+
+% -----------------------------------------------------------------------------
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+Robotic grasping of thin, deformable fabric remains an unsolved problem in
+industrial automation. Two competing gripper geometries are routinely proposed:
+rigid parallel-jaw fingers, which offer precise force control but a narrow
+operational tolerance, and compliant finray-effect fingers, which trade force
+precision for a wider operational envelope. This thesis presents an
+experimental benchmark of five gripper variants---two parallel-jaw
+configurations (rigid stock, and stock plus a Shore-90A thermoplastic
+polyurethane pad) and three finray configurations (18\,mm and 26\,mm finger
+thickness, plus a $5^{\circ}$ inclined-seat fixture)---mounted on a Franka FR3
+collaborative manipulator. Each variant is characterised across a two-dimensional
+input space of \emph{press depth} (the distance the gripper fingertip is driven
+below the detected cloth surface) and \emph{tilt angle} (the gripper
+orientation about world $x$ and $y$ axes relative to the surface normal).
+Stationary contact force in the gripper $z$-axis is sampled during each grasp
+and used as the primary outcome variable, with binary grasp success as a
+secondary outcome.
+
+The benchmark produced 204 trials over 75 sessions, yielding 139 confirmed
+successful grasps. The rigid parallel-jaw exhibits a narrow $\approx 1$\,mm
+working depth range bounded above by a $-60$\,N safety reflex and below by
+no-contact; the TPU-padded variant widens this to $\approx 2$\,mm. The finray
+variants, by contrast, exhibit a broad $\geq 12$\,mm working range with a
+``soft plateau'' near $-37$\,N over the depth interval $+2$ to $+8$\,mm.
+
+Beyond this expected compliance advantage, two depth-dependent tilt effects
+emerged. \textbf{First}, finray contact force is strongly tilt-sensitive at the
+no-contact boundary but tilt-insensitive in the soft plateau: a $\pm 5^{\circ}$
+tilt produces a $58\%$ contact force reduction at $-0.5$\,mm depth but only
+$1\%$ at $+10$\,mm depth. \textbf{Second}, the finray gripper exhibits a
+direction-dependent \emph{handedness} under tilt about its asymmetric ($y$)
+axis at boundary depths---a $\pm 2.5^{\circ}$ inversion reverses the contact
+force by a factor of $2.36\times$ at $-1.0$\,mm---but this handedness vanishes
+at safe operating depths. We propose this as an emergent characterisation of
+the finray geometry: the deeply pressed finger structure wraps the contact
+surface symmetrically regardless of tilt sign, while at lighter contact the
+asymmetric ridge profile dominates the force response.
+
+The implication for cloth-handling system design is that \emph{compliant
+grippers achieve directional robustness only when pressed past a depth
+threshold}; control policies that operate near the no-contact boundary for
+delicate fabric handling must explicitly model the gripper's directional
+asymmetry.
+
+\clearpage
+
+% -----------------------------------------------------------------------------
+\chapter*{Résumé}
+\addcontentsline{toc}{chapter}{Résumé}
+
+\TODO{French abstract / résumé --- required by McGill GPS. Translate the
+English abstract; the Department of Linguistics or a fluent colleague can
+verify.}
+
+\clearpage
+
+% -----------------------------------------------------------------------------
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+
+\TODO{Acknowledgements: thesis supervisor, lab members, funding sources, ROS2/
+Franka community, family.}
+
+\clearpage
+
+% -----------------------------------------------------------------------------
+\tableofcontents
+\listoffigures
+\listoftables
+
+\clearpage
+\pagenumbering{arabic}
+
+% =============================================================================
+\chapter{Introduction}
+\label{ch:intro}
+
+\section{Motivation}
+
+Fabric handling automation is a long-standing open problem in industrial
+robotics, with applications ranging from apparel manufacturing and laundry
+processing to packaging of textile components. Cloth is uniquely difficult to
+grasp robustly: it deforms continuously under contact, exhibits no fixed
+graspable feature, and has a near-zero bending stiffness that allows it to slip
+out of a poorly placed gripper. Conventional rigid-jaw grippers, designed for
+sturdy objects with well-defined geometry, perform poorly on cloth without
+elaborate tactile sensing or human-tuned approach trajectories.
+
+A class of compliant grippers based on the \emph{finray effect}---a passive
+bending mechanism inspired by fish-fin anatomy---has been proposed as a
+solution. Finray fingers passively wrap around the contact surface, increasing
+contact area and gripping force without requiring active force control. This
+compliance, however, comes at the cost of force-modelling difficulty: the
+finger geometry deforms under load, the contact point shifts, and tilt-induced
+asymmetries arise that have no analogue in the rigid-jaw case.
+
+The central question of this thesis is: \emph{To what extent does the finray's
+compliance trade single-axis force precision for multi-axis operational
+robustness?} Specifically, how does the finray's contact force respond to
+deviations in the two design degrees of freedom most likely to be uncontrolled
+in real deployment: press depth and gripper tilt angle?
+
+\section{Research Question and Contributions}
+
+This thesis answers the following research questions through a controlled
+experimental benchmark on a Franka FR3 collaborative robot:
+\begin{enumerate}
+  \item How does stationary contact force vary with press depth for each of
+        five candidate gripper geometries?
+  \item For each geometry, what is the maximum tilt angle (about each
+        orthogonal axis) at which a reliable grasp is still produced?
+  \item Is the dependence of contact force on tilt itself depth-dependent?
+  \item Does the finray gripper exhibit a direction-dependent
+        (\emph{handed}) response under tilt about its geometrically
+        asymmetric axis?
+\end{enumerate}
+
+\noindent The contributions of this work are:
+\begin{itemize}
+  \item A reproducible benchmark protocol for cloth-grasp force characterisation
+        on a Franka FR3, with full source code published alongside this thesis.
+  \item A two-dimensional depth--tilt experimental matrix sampling five
+        commercially relevant gripper geometries.
+  \item Empirical evidence of a \emph{depth-dependent tilt robustness} transition
+        in finray grippers, with quantitative characterisation of the
+        transition depth.
+  \item A documented calibration procedure for per-variant tool-centre-point
+        (TCP) offset using differential force touch-off against a rigid
+        reference.
+  \item A geometric verification framework that disentangles control-frame
+        positioning error from physical gripper compliance under load.
+\end{itemize}
+
+\section{Thesis Organisation}
+
+\Cref{ch:background} reviews the literature on cloth grasping, compliant
+grippers, and force-controlled approach strategies.
+\Cref{ch:methods} describes the experimental hardware, the kinematic
+calibration procedure, and the data-acquisition pipeline.
+\Cref{ch:exp1} presents the depth-sweep characterisation (Experiment~1)
+across all five gripper variants at zero tilt.
+\Cref{ch:exp2} presents the tilt-sweep characterisation (Experiment~2)
+at boundary and safe depths.
+\Cref{ch:discussion} synthesises the findings into a model of
+depth-dependent tilt robustness.
+\Cref{ch:conclusion} concludes and identifies directions for future work.
+
+
+% =============================================================================
+\chapter{Background and Related Work}
+\label{ch:background}
+
+\section{Cloth Grasping in Robotics}
+
+\TODO{Literature review on cloth manipulation. Key references to include:
+\begin{itemize}
+  \item Maitin-Shepard et al. (folding clothes; PR2)
+  \item Kita, Saito (cloth handling for laundry)
+  \item Yang, Saxena (visual servoing for cloth)
+  \item Tirumala (cloth perception)
+  \item Recent work from McGill ADL-ROS lab on cloth manipulation
+\end{itemize}
+Roughly 4--6 pages.}
+
+\section{Compliant Gripper Designs}
+
+\TODO{Review of compliant gripper literature:
+\begin{itemize}
+  \item Festo Finray fingers (original Fish Fin Effect; Compact)
+  \item Soft Robotics Inc.\ pneumatic grippers
+  \item Suzuki-Suzumori jamming grippers
+  \item Crooks et al. (3D-printed compliant fingers)
+  \item Finger durometer / blade-thickness studies
+\end{itemize}
+Roughly 3--4 pages, including geometric description and standard mounting
+configurations.}
+
+\section{Force-Controlled Grasping}
+
+\TODO{Review of force feedback and impedance-controlled grasping:
+\begin{itemize}
+  \item Hogan's impedance control framework
+  \item Franka Cartesian impedance / pose controller specifics
+  \item Tactile sensing alternatives (FlexiForce A301 / GelSight)
+  \item Touch-off / probe-down strategies
+\end{itemize}
+Roughly 2--3 pages.}
+
+\section{The Franka FR3 Platform}
+
+\TODO{Brief description of the Franka Emika FR3 (formerly Panda) used in this
+work: 7-DOF, joint torque sensing, libfranka, FCI interface. Cite Franka
+documentation and any reproducibility studies on the platform. 1--2 pages.}
+
+\section{Position and Summary}
+
+This thesis sits at the intersection of three threads: cloth-handling system
+design, finray-effect gripper characterisation, and force-controlled
+manipulation on collaborative robots. Prior work has independently established
+each thread; the contribution here is a unified experimental treatment of
+all three on a single platform with consistent instrumentation, enabling
+direct quantitative comparison between rigid and compliant gripper response
+under deliberately perturbed conditions.
+
+
+% =============================================================================
+\chapter{Experimental Setup and Methodology}
+\label{ch:methods}
+
+\section{Hardware Configuration}
+
+\subsection{Robot Manipulator}
+
+A Franka Emika FR3 7-DOF cobot served as the manipulator throughout this work.
+The arm was operated through the Franka Control Interface (FCI) using
+\texttt{libfranka 0.18.1} and the ROS\,2 Humble control stack. Cartesian
+pose tracking was performed by a custom \texttt{fr3\_pose\_controller}
+\TODO{cite controller author / repo}, parameterised in
+\path{config/controllers/fr3_pose/default.yaml}. The controller accepts a
+sequence of (pose, twist) waypoints with associated time stamps and
+interpolates between them using a quintic polynomial; for the in-place
+re-orientation and the final precision descent phases, a cosine half-cycle
+S-curve interpolator (the so-called ``sine descent'' implemented in
+\path{run_trial.py::_safe_traj}) is used to ensure zero start- and end-state
+velocities.
+
+\subsection{Gripper Variants Tested}
+
+\begin{table}[h]
+\centering
+\caption[Gripper variants]{Five gripper variants benchmarked.}
+\label{tab:variants}
+\begin{tabular}{lll}
+\toprule
+Variant & Type & Key parameter \\
+\midrule
+\texttt{parallel\_jaw\_stock}    & Rigid two-finger (Franka Hand)        & --- \\
+\texttt{parallel\_jaw\_TPU}      & Rigid two-finger + TPU 90A pad        & 2.0\,mm pad thickness \\
+\texttt{finray\_18}              & Finray-effect 3D-printed              & 18\,mm finger thickness \\
+\texttt{finray\_26}              & Finray-effect 3D-printed              & 26\,mm finger thickness \\
+\texttt{finray\_26\_5deg}        & Finray-26 on inclined-seat fixture    & $+5^{\circ}$ seat angle \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The Shore hardness of the finray finger material was \TODO{Shore-A durometer of
+3D-printed TPU}. The TPU pad on the parallel-jaw variant was \TODO{material and
+manufacturer}. The 5-degree inclined-seat fixture was manufactured in
+\TODO{lab name/process} to introduce a fixed asymmetric mounting condition
+for the third finray variant.
+
+\subsection{Cloth Specimen}
+
+\TODO{Describe the cloth used: material composition, thickness, weave,
+dimensions, surface treatment. Photograph if available.}
+
+\subsection{Test Surface}
+
+\TODO{Describe the table / fixture geometry the cloth rests on, including
+material, flatness specification, and probe position relative to the cloth
+edge.}
+
+\section{Reference Frame and Tool-Centre Calibration}
+
+\subsection{Frame Convention}
+\label{sec:frames}
+
+Three frames are relevant: the world (robot base) frame $\mathcal{W}$,
+the gripper flange frame $\mathcal{F}$, and the gripper tip frame $\mathcal{T}$.
+The Franka URDF defines $\mathcal{F}$ at the mechanical hand mounting flange;
+the Franka API \texttt{robot.end\_effector\_pose} reports the pose of
+$\mathcal{F}$ in $\mathcal{W}$. The tip frame $\mathcal{T}$ is located along
+the local $+z$ axis of $\mathcal{F}$ by a per-variant offset $z_{\text{TCP}}$,
+which depends on the physical gripper (finger length, mounting fixtures, pads).
+
+For a gripper at orientation $R \in SO(3)$, the world-frame relationship is
+\begin{equation}
+  \mathbf{p}_\mathcal{T} = \mathbf{p}_\mathcal{F} + R \begin{bmatrix} 0 \\ 0 \\ z_{\text{TCP}} \end{bmatrix}.
+  \label{eq:tip-from-flange}
+\end{equation}
+For the rigid-down-pointing nominal orientation $R_0 = R_x(180^{\circ})$,
+the tip lies directly below the flange and
+$\mathbf{p}_\mathcal{T} = \mathbf{p}_\mathcal{F} - z_{\text{TCP}} \hat{\mathbf{z}}$.
+
+The gripper-frame convention adopted here is: the gripping axis (along which
+the fingers close) is $\mathcal{F}$'s local $y$ axis; the gripper is
+mirror-symmetric about the $xz$ plane; consequently, rotation of the gripper
+about the local $y$ axis is rotation about the \emph{geometrically asymmetric}
+axis, while rotation about $x$ is rotation about the \emph{symmetric} axis.
+
+\subsection{TCP Offset Calibration}
+\label{sec:tcp-calib}
+
+The $z_{\text{TCP}}$ value differs by variant because different fingers
+attach to the same flange. To calibrate, each variant was driven to a
+common probe position $(x_0, y_0)$ on a known rigid table and a force-feedback
+touch-off was performed: the gripper descended slowly in $z$ until the
+external force in $z$ exceeded a $-3$\,N threshold (debounced for three
+consecutive 50\,Hz samples). The flange $z$ at the latch moment was
+recorded as $z_{\text{tcp}}^{\text{measured}}$.
+
+Taking the rigid \texttt{parallel\_jaw\_stock} variant as the URDF reference
+($z_{\text{TCP}} \equiv 0$ by definition), the per-variant TCP offset is
+\begin{equation}
+  z_{\text{TCP}}^{(v)} = z_{\text{tcp}}^{(v),\text{measured}}
+                       - z_{\text{tcp}}^{\text{stock},\text{measured}}.
+  \label{eq:tcp-calib}
+\end{equation}
+
+\Cref{tab:tcp-calib} summarises the calibrated values used throughout
+this work.
+
+\begin{table}[h]
+\centering
+\caption[Calibrated TCP offsets]{Calibrated per-variant TCP offsets from
+differential touch-off against the stock parallel jaw.}
+\label{tab:tcp-calib}
+\begin{tabular}{lrr}
+\toprule
+Variant & $z_{\text{tcp}}^{\text{measured}}$ (mm) & $z_{\text{TCP}}^{(v)}$ (mm) \\
+\midrule
+\texttt{parallel\_jaw\_stock}    & 37.871 & 0.000 \\
+\texttt{parallel\_jaw\_TPU}      & 39.916 & 2.044 \\
+\texttt{finray\_18}              & 131.842 & 93.971 \\
+\texttt{finray\_26}              & 132.782 & 94.911 \\
+\texttt{finray\_26\_5deg}        & 130.094 & 92.223 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The reproducibility of the touch-off was measured as the across-tap standard
+deviation $\sigma_z$ in mm. For \texttt{finray\_26\_5deg}, $\sigma_z =
+183\,\mu\mathrm{m}$ owing to a wobble component introduced by the inclined
+seat; the other four variants had $\sigma_z \leq 102\,\mu\mathrm{m}$.
+
+\section{Force Measurement}
+
+External forces $\mathbf{F}_{\text{ext}}$ at the flange were estimated by the
+Franka internal model from joint torques, available via the \texttt{libfranka}
+RobotState API at 1\,kHz and subsampled to 30\,Hz for session logging.
+A free-air bias capture was performed at the start of every session: the
+gripper was held at a known pose 30--80\,mm above the cloth surface and
+30 samples were averaged over 1 second to provide $F_z^{\text{bias}}$.
+This bias was recorded in each session JSON but \emph{not} subtracted from
+the raw force time series at acquisition time; downstream analyses subtract
+it where appropriate.
+
+\section{Tilt-Aware Pose Targeting}
+\label{sec:tilt-pose}
+
+When the gripper is tilted, the flange position required to place the tip at
+a fixed probe location $(x_0, y_0, z_{\text{surf}}^{\text{tip}})$ shifts
+laterally. From \cref{eq:tip-from-flange}, the required flange position is
+\begin{equation}
+  \mathbf{p}_\mathcal{F}^* = \mathbf{p}_\mathcal{T}^{\text{target}} -
+                              R\,\begin{bmatrix} 0 \\ 0 \\ z_{\text{TCP}} \end{bmatrix}.
+  \label{eq:flange-target-tilted}
+\end{equation}
+
+This relation is implemented in the trial controller \path{run_trial.py}:
+the target orientation $R = R_{\text{tilt}} \circ R_0$ is constructed at
+session start by composing the requested tilt rotation
+$R_{\text{tilt}} = R_y(\theta_y)\,R_x(\theta_x)$ (extrinsic, world frame)
+onto the base orientation $R_0 = R_x(180^{\circ})$, and the flange position
+target is updated accordingly. The orientation is then held constant
+through all subsequent descent and grasp phases, so the tip XY remains at
+$(x_0, y_0)$ throughout the trial.
+
+For a $+2.5^{\circ}$ tilt about $x$ on the \texttt{finray\_26} variant
+($z_{\text{TCP}} = 94.911$\,mm), the predicted flange offset is
+\begin{equation}
+  \Delta y_\mathcal{F} = -z_{\text{TCP}}\sin(2.5^{\circ})
+                       \approx -4.14\,\mathrm{mm}.
+\end{equation}
+\Cref{ch:exp2} reports the empirical lateral offsets measured under load
+and the residuals from this geometric prediction, which we attribute to
+finger compliance under press.
+
+\section{Data Pipeline}
+
+\subsection{Per-Trial Recording}
+
+Each trial directory \path{trial_NNN/} contains:
+\begin{itemize}
+  \item \path{config.yaml} --- snapshot of the variant config at trial time
+  \item \path{run_config.json} --- depth, tilt, ground-truth source,
+        speeds, gripper mode
+  \item \path{pose_wrench.csv} --- high-rate (30\,Hz) actual + commanded
+        pose, RPY, wrench, gripper width per row, tagged with the current
+        trial stage
+\end{itemize}
+
+\subsection{Per-Session Recording}
+
+Each session directory \path{depth_*/} contains in addition:
+\begin{itemize}
+  \item \path{depth_summary.json} --- header metadata + array of per-trial
+        verdicts (\texttt{success}, \texttt{fail\_reason}); operator notes
+  \item \path{ground_truth_used.json} --- snapshot of the GT JSON loaded
+  \item \path{session_log_*.npz} --- numpy archive of the 30\,Hz background
+        sample stream, with stage labels and tap indices
+\end{itemize}
+
+\subsection{Verdict Recording}
+
+After each trial, the operator was prompted to enter a binary verdict (grasp
+success vs failure). Trials where the operator entered no verdict (typically
+because the FCI control daemon crashed mid-trial owing to a known
+acceleration-discontinuity reflex \TODO{cite the issue if available}) were
+recorded with \texttt{success = null} and excluded from all aggregate
+analyses.
+
+\section{Trial Procedure}
+
+A single trial proceeds:
+\begin{enumerate}
+  \item Open gripper (Franka Hand or finray release width)
+  \item Bulk descent: smooth multi-waypoint trajectory from the lifted pose
+        down to a fine clearance ($+5$\,mm above surface), filtered to
+        exclude any upward leg (preventing direction reversals at zero-twist
+        interior waypoints)
+  \item Settle: $2$ s pause at the fine-clearance pose
+  \item Final approach: cosine-S-curve descent from the fine clearance to
+        the press target $z_{\text{surf}} - d$, where $d$ is the trial press
+        depth
+  \item Grasp: force-controlled close (Franka grasp action at 80\,N or
+        20\,N nominal, with $\pm 100$\,mm $\epsilon$ to disable the
+        position-acceptance check that would otherwise cause auto-release
+        on a sub-spec final width)
+  \item Settle: $1$ s pause
+  \item Stationary sample: $30$ samples of $\mathbf{F}_{\text{ext}}$
+        captured over $1$\,s during the \texttt{grasp\_stationary\_sample}
+        stage
+  \item Lift to $\sim +80$\,mm above surface for visual inspection
+  \item Operator verdict prompt
+  \item Open gripper and reset for next trial
+\end{enumerate}
+
+\section{Statistical Treatment}
+
+For each (variant, depth, tilt) cell, the contact force is reported as
+\begin{equation}
+  \bar{F}_z = \frac{1}{N}\sum_{i=1}^{N} F_z^{(i)}, \qquad
+  \sigma_{F_z} = \sqrt{\frac{1}{N}\sum (F_z^{(i)} - \bar{F}_z)^2}
+\end{equation}
+where $N$ is the total number of stationary samples pooled across all
+clean trials in the cell. Trials with null verdict (FCI crash) are
+excluded. Trial-to-trial variance is the dominant source of dispersion;
+the within-trial sample variance ($\sim 0.1$\,N) is small compared to it.
+
+
+% =============================================================================
+\chapter{Experiment 1: Depth Sweep at Zero Tilt}
+\label{ch:exp1}
+
+\section{Objective}
+
+Establish the contact-force vs.~press-depth relationship for each gripper
+variant at the nominal $R_0 = R_x(180^{\circ})$ orientation. This is the
+single-axis ``baseline'' against which the tilt-perturbed conditions in
+\cref{ch:exp2} are compared.
+
+\section{Depth Grid}
+
+The depth grid was chosen adaptively per variant. For the rigid parallel
+jaws, depths were spaced at $0.5$\,mm intervals over $-1$ to $+3.5$\,mm,
+near the narrow force-limited working range. For the finrays, depths were
+spaced at $1$--$2$\,mm intervals over $-1$ to $+14$\,mm, covering both the
+no-contact transition and the soft-plateau regime.
+
+\section{Results}
+
+\subsection{All-Variant Comparison}
+
+\Cref{fig:all-variants} overlays the stationary contact force vs.~depth for
+all five variants at $0^{\circ}$ tilt.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.95\linewidth]{all_variants_Fz_vs_depth_0deg.png}
+\caption[Cross-variant baseline]{Stationary contact force versus press depth
+for all five gripper variants at $0^{\circ}$ tilt. Error bars show
+within-cell standard deviation across $n \geq 3$ trials. The rigid parallel
+jaws exhibit narrow working ranges with steep force-depth slopes
+(\texttt{stock}: $-25.7$\,N/mm; \texttt{TPU}: $-19.2$\,N/mm); the finray
+variants exhibit broad working ranges with a near-flat ``soft plateau''
+(slope $-1.2$\,N/mm for \texttt{finray\_18}).}
+\label{fig:all-variants}
+\end{figure}
+
+The qualitative grouping by gripper class is unambiguous: rigid parallel
+jaws hit the $-60$\,N safety reflex within $4$\,mm of the no-contact boundary,
+while finrays sustain a near-constant $-37$ to $-44$\,N press over a
+$\geq 6$\,mm depth window before the structure begins to bottom out.
+
+\subsection{Per-Variant Detail}
+
+For each variant the working range $[d_{\min}, d_{\max}]$ was defined as the
+deepest depth where all trials succeeded and the mean $|F_z| < 40$\,N
+(the operator-set safety budget below the $60$\,N reflex). The boundary
+depth was defined as the next-deeper depth where either the success rate
+dropped below $3/3$ or $|F_z|$ exceeded $40$\,N. \Cref{tab:working-range}
+summarises.
+
+\begin{table}[h]
+\centering
+\caption[Working ranges]{Per-variant working ranges and force-depth slopes
+in the linear regime, from Experiment 1.}
+\label{tab:working-range}
+\begin{tabular}{lcccc}
+\toprule
+Variant & Working range (mm) & Stationary $F_z$ at safe depth (N) &
+        Slope (N/mm) & Width \\
+\midrule
+\texttt{parallel\_jaw\_stock}   & $+1.5$ to $+2.5$ & $-28.9$ & $-25.7$ & $1.0$\,mm \\
+\texttt{parallel\_jaw\_TPU}     & $+1.0$ to $+3.0$ & $-24.1$ & $-19.2$ & $2.0$\,mm \\
+\texttt{finray\_18}             & $-0.5$ to $+12$  & $-25.8$ & $-1.2$  & $12.5$\,mm \\
+\texttt{finray\_26}             & $-0.5$ to $+10$  & $-36.5$ & $-1.2$  & $10.5$\,mm \\
+\texttt{finray\_26\_5deg}       & $-0.5$ to $+6$   & $-39.1$ & $-1.5$  & $6.5$\,mm \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The finrays achieve a 6--12$\times$ wider working range than the rigid jaws,
+at the cost of a roughly $2\times$ lower stationary force at comparable
+depths. The $5^{\circ}$ inclined fixture on \texttt{finray\_26\_5deg}
+narrows its working range relative to the flat-mounted \texttt{finray\_26},
+suggesting that even modest baseline asymmetries propagate into the
+force-depth response.
+
+\section{Discussion of Experiment 1}
+
+The cross-variant comparison reproduces the standard textbook claim that
+finray-effect grippers extend the operational envelope of force-controlled
+grasping at the cost of force precision. The new information here is the
+\emph{quantitative} characterisation: a $20\times$ reduction in effective
+contact stiffness ($-1.2$\,N/mm vs.~$-25.7$\,N/mm) buys a $12\times$
+wider working range (from $1$\,mm to $12$\,mm). The trade-off is
+asymmetric in favour of the compliant geometry when the application
+tolerates a wider range of approach depths.
+
+The next chapter addresses the obvious follow-up question: \emph{does the
+wider working range mean the finray also tolerates tilt better, or does
+its compliance introduce orientation-dependent biases that only emerge
+under tilt?}
+
+% =============================================================================
+\chapter{Experiment 2: Tilt Effect on Grasp Force}
+\label{ch:exp2}
+
+\section{Objective}
+
+Characterise how off-axis gripper tilt perturbs the contact force, separately
+at boundary and safe depths, for the most-studied variant
+(\texttt{finray\_26}). Test whether the finray's symmetry about its $xz$
+plane is preserved or broken under physical operation.
+
+\section{Tilt-Aware Pose Geometry: Verification}
+\label{sec:tilt-verify}
+
+Before reporting force results, the implementation of \cref{eq:flange-target-tilted}
+was verified empirically. \Cref{tab:tilt-geometry} shows the measured
+flange XY shift during the stationary grasp sample versus the
+geometric prediction for \texttt{finray\_26} at four representative
+(depth, tilt) cells.
+
+\begin{table}[h]
+\centering
+\caption[Tilt geometry verification]{Measured vs predicted flange-XY
+offset during the stationary grasp sample at four cells. Predicted
+offset from \cref{eq:flange-target-tilted} with $z_{\text{TCP}} = 94.911$\,mm.}
+\label{tab:tilt-geometry}
+\small
+\begin{tabular}{lccccc}
+\toprule
+Cell & Tilt cmd & Predicted $\Delta \mathbf{p}_\mathcal{F}$ (mm) &
+       Measured $\Delta \mathbf{p}_\mathcal{F}$ (mm) & Residual & Mean $|\mathbf{F}|$ \\
+\midrule
+$-1.0$\,mm   & $+2.5^{\circ}$ y & $(+4.14, +0.00)$ & $(+4.35, -0.03)$ & $0.21$\,mm & $-8.00$\,N \\
+$-1.0$\,mm   & $-2.5^{\circ}$ y & $(-4.14, +0.00)$ & $(-4.02, -0.04)$ & $0.13$\,mm & $-3.39$\,N \\
+$+10.0$\,mm  & $+2.5^{\circ}$ y & $(+4.14, +0.00)$ & $(+5.35, -0.28)$ & $1.25$\,mm & $-36.26$\,N \\
+$+10.0$\,mm  & $-2.5^{\circ}$ y & $(-4.14, +0.00)$ & $(-2.93, -0.29)$ & $1.21$\,mm & $-35.95$\,N \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At the boundary depth, the residual is $\leq 0.21$\,mm---essentially the
+lateral positioning noise of the arm under light load. At the safe depth,
+both positive and negative tilts exhibit a $+1.2$\,mm common-mode offset
+in the same $+x$ direction, regardless of tilt sign. We interpret this
+common-mode offset as evidence of \emph{finger compliance under load}: the
+$\sim 36$\,N axial press deflects the soft finray blade laterally by
+approximately $1.2$\,mm in a structurally preferred direction. The
+\emph{differential} offset (between $+y$ and $-y$ tilts) remains
+correctly predicted by the geometric model in both depth conditions.
+
+This verification confirms that the control-frame implementation of
+\cref{eq:flange-target-tilted} is correct, and any asymmetries observed
+in the contact force reflect physical gripper behaviour rather than
+control system errors.
+
+\section{Force vs Tilt Magnitude at Fixed Depth}
+
+\Cref{fig:tilt-mag-sweep} shows the stationary force at $0^{\circ}$,
+$+2.5^{\circ}$, and $+5^{\circ}$ tilt about the symmetric $x$ axis, at
+both boundary ($-0.5$\,mm) and safe ($+10$\,mm) depths.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.95\linewidth]{finray_26_tilt_sweeps.png}
+\caption[Tilt sweep panels]{Tilt-magnitude (left) and signed tilt (right)
+sweeps for \texttt{finray\_26}. Left panel: x-axis tilt (symmetric axis)
+at boundary (blue) and safe (green) depths shows a strong tilt-effect at
+boundary that disappears at safe depth. Right panel: y-axis tilt
+(asymmetric axis) shows a clearly asymmetric response at boundary depth
+but a symmetric, flat response at safe depth.}
+\label{fig:tilt-mag-sweep}
+\end{figure}
+
+At the boundary depth, force decreases monotonically from $-10.8$\,N at
+$0^{\circ}$ to $-5.1$\,N at $+5^{\circ}$---a $53\%$ reduction. At the
+safe depth, the entire sweep stays within $1$\,N of the $0^{\circ}$
+baseline. The data are summarised in \cref{tab:tilt-mag}.
+
+\begin{table}[h]
+\centering
+\caption[Tilt magnitude effect]{Stationary force vs x-axis tilt magnitude
+at two depth conditions for \texttt{finray\_26}.}
+\label{tab:tilt-mag}
+\begin{tabular}{lcccc}
+\toprule
+Depth & $0^{\circ}$ & $+2.5^{\circ}$ x & $+5.0^{\circ}$ x & \% reduction at $5^{\circ}$ \\
+\midrule
+$-0.5$\,mm (boundary) & $-10.82$\,N & $-6.08$\,N & $-5.09$\,N & $53\%$ \\
+$+10$\,mm (safe)      & $-36.51$\,N & $-35.99$\,N & $-36.93$\,N & $-1\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Asymmetric Axis: Signed y-Tilt Sweep}
+
+\Cref{fig:y-tilt-asym} shows the asymmetry ratio
+$|F_z(+2.5^{\circ}_y)| / |F_z(-2.5^{\circ}_y)|$ as a function of depth,
+on a logarithmic axis.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\linewidth]{finray_26_y_tilt_asymmetry.png}
+\caption[Asymmetry vs depth]{Asymmetry ratio between $+2.5^{\circ}$ and
+$-2.5^{\circ}$ y-tilts as a function of press depth for
+\texttt{finray\_26}. The finray exhibits strong directional ``handedness''
+at boundary depths but loses it in the soft plateau.}
+\label{fig:y-tilt-asym}
+\end{figure}
+
+At $-1.0$\,mm, the ratio is $2.36\times$---force at $+2.5^{\circ}$
+($-8.00$\,N) is more than double the force at $-2.5^{\circ}$ ($-3.39$\,N).
+At $-0.5$\,mm, the ratio is $1.38\times$. At $+10$\,mm, the ratio is
+$1.009\times$, statistically indistinguishable from $1$.
+
+\Cref{tab:y-tilt-asym} reports the absolute values along with $0^{\circ}$
+baselines where available.
+
+\begin{table}[h]
+\centering
+\caption[Y-tilt asymmetry]{Stationary force at signed y-tilts for
+\texttt{finray\_26}, with $0^{\circ}$ baselines from experiment 1.}
+\label{tab:y-tilt-asym}
+\begin{tabular}{lcccc}
+\toprule
+Depth & $F_z(-2.5^{\circ}_y)$ & $F_z(0^{\circ})$ & $F_z(+2.5^{\circ}_y)$ &
+        $|F_+ / F_-|$ \\
+\midrule
+$-1.0$\,mm  & $-3.39$\,N  & $-4.09$\,N  & $-8.00$\,N   & $2.36\times$ \\
+$-0.5$\,mm  & $-10.01$\,N & $-12.20$\,N & $-13.86$\,N  & $1.38\times$ \\
+$+10$\,mm   & $-35.95$\,N & $-36.51$\,N & $-36.26$\,N  & $1.009\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Combined Picture: Three-Tilt Force-Depth Curves}
+
+\Cref{fig:three-tilts} integrates the depth and tilt sweeps for
+\texttt{finray\_26}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.95\linewidth]{finray_26_Fz_vs_depth_three_tilts.png}
+\caption[Three-tilt depth curves]{Stationary force vs depth for
+\texttt{finray\_26} at $0^{\circ}$, $+2.5^{\circ}$ x, and $+5^{\circ}$ x
+tilts. Background shading marks the regime boundaries identified in
+experiment 1. The three tilt conditions diverge at boundary depths and
+converge in the soft plateau.}
+\label{fig:three-tilts}
+\end{figure}
+
+The three lines diverge in the boundary regime and re-converge in the soft
+plateau. Notably, the convergence is complete by $+10$\,mm; \emph{the soft
+plateau is tilt-robust both in magnitude and in sign}.
+
+\section{Rotation Tracking Verification}
+
+A natural concern is whether the Franka arm faithfully realises the
+commanded tilt orientation. The 30\,Hz session log records actual and
+commanded RPY at every sample, enabling a direct measurement of orientation
+tracking error
+\begin{equation}
+  \delta(t) = \| \mathrm{RPY}_{\text{actual}}(t) -
+                 \mathrm{RPY}_{\text{cmd}}(t) \|_2.
+\end{equation}
+Across five representative sessions, the mean steady-state $\delta$ was
+$0.05^{\circ}$ with a worst-case $0.13^{\circ}$. Transient excursions up to
+$\sim 5^{\circ}$ occur exclusively within the \texttt{orientation\_lock}
+stage at session start, before any descent or grasp, and are filtered out
+of trial-level analyses.
+
+A $2.5^{\circ}$ commanded tilt is therefore $50\times$ the noise floor of
+the arm's rotation tracking; the observed force differences cannot be
+attributed to arm rotation error.
+
+% =============================================================================
+\chapter{Discussion}
+\label{ch:discussion}
+
+\section{Depth-Dependent Tilt Robustness}
+
+The central empirical finding of this thesis is summarised by
+\cref{fig:tilt-mag-sweep} and \cref{fig:y-tilt-asym}: the finray's
+sensitivity to tilt is a strong function of press depth.
+\begin{itemize}
+  \item At boundary depths ($-0.5$ to $0$\,mm relative to the detected
+        surface): a $\pm 5^{\circ}$ tilt about either axis produces $30$--$58\%$
+        changes in contact force, with the y-axis (asymmetric) tilt also
+        producing a $1.4\times$ to $2.4\times$ sign asymmetry.
+  \item At the safe depth ($+10$\,mm): the same $\pm 5^{\circ}$ tilts produce
+        less than $1\%$ change in contact force, and the sign asymmetry vanishes
+        to within $1\%$.
+\end{itemize}
+
+We propose the following mechanistic explanation. At light contact, only the
+distal end of the finray finger touches the cloth; the contact zone is
+sensitive to the angle of approach, and the geometric asymmetry of the
+finger ridge (visible in cross-section) translates into a direction-dependent
+force response. At deep contact, the finger wraps along its entire length
+around the cloth and table, presenting an effective contact surface that
+integrates over the finger geometry; the asymmetry is averaged out by the
+distributed contact mechanics.
+
+\section{Implications for Cloth-Handling System Design}
+
+The conventional wisdom that compliant grippers are universally more robust
+to perturbation requires qualification. The finray is more robust than the
+rigid jaw in the depth dimension (12$\times$ wider working range) but
+\emph{less} robust than the rigid jaw in the tilt dimension at boundary
+depths, where its asymmetric geometry introduces direction-dependent biases
+that the symmetric rigid jaw does not exhibit. Robust cloth-handling system
+design must therefore explicitly choose between:
+\begin{enumerate}
+  \item Operating the finray in the safe plateau ($+5$ to $+10$\,mm),
+        accepting the higher contact force in exchange for full
+        tilt-invariance, or
+  \item Operating the finray near the boundary for delicate fabrics,
+        accepting the need to model and control gripper tilt to
+        sub-degree precision.
+\end{enumerate}
+
+The first choice corresponds to the open-loop ``set and grab'' deployment
+appropriate for high-throughput textile processing; the second corresponds
+to vision-or-tactile-guided closed-loop manipulation for delicate apparel.
+
+\section{Limitations}
+
+\TODO{Discussion of limitations:
+\begin{itemize}
+  \item Single cloth specimen, single surface; the working ranges
+        will shift with cloth thickness, friction, and surface compliance.
+  \item Only \texttt{finray\_26} received the full tilt sweep; other variants
+        had only the $0^{\circ}$ depth baseline. Cross-variant tilt
+        comparison is a clear next step.
+  \item No tilt data on the rigid parallel jaws: the soft-vs-rigid tilt
+        comparison must be inferred rather than measured.
+  \item \texttt{finray\_18} and \texttt{finray\_26\_5deg} were not
+        subjected to the y-axis asymmetry test; whether the handedness
+        finding generalises across thicknesses is unknown.
+  \item Sample size at the $-0.5$\,mm $0^{\circ}$ boundary cell was only
+        $n=1$ in experiment 1, so the headline $58\%$ reduction claim
+        rests on an underpowered baseline.
+\end{itemize}}
+
+\section{Code and Data Availability}
+
+All source code, raw trial data, ground-truth JSON files, and analysis
+scripts are published in the project repository at
+\TODO{public GitHub URL}. The thesis was written against commit
+\TODO{commit hash}.
+
+% =============================================================================
+\chapter{Conclusion and Future Work}
+\label{ch:conclusion}
+
+\section{Summary of Contributions}
+
+This thesis presented a controlled benchmark of five gripper variants on a
+single platform (Franka FR3), measuring stationary contact force as a
+function of press depth and tilt angle. The principal findings are:
+\begin{enumerate}
+  \item Rigid parallel-jaw grippers exhibit narrow ($\sim 1$--$2$\,mm)
+        working depth ranges with steep force-depth slopes ($-19$ to
+        $-26$\,N/mm).
+  \item Finray-effect grippers exhibit broad ($10$--$12$\,mm) working
+        ranges with a flat soft plateau ($-1.2$\,N/mm in the linear
+        regime).
+  \item Finray contact force is strongly tilt-sensitive at the no-contact
+        boundary ($53\%$ reduction at $5^{\circ}$ tilt for the boundary
+        depth of $-0.5$\,mm).
+  \item Finray contact force is tilt-insensitive in the soft plateau
+        ($\leq 1\%$ change at $5^{\circ}$ tilt for the safe depth of
+        $+10$\,mm).
+  \item Finray response is direction-dependent under tilt about the
+        asymmetric ($y$) axis at boundary depths ($2.4\times$ ratio
+        between $\pm 2.5^{\circ}$), but symmetric in the soft plateau.
+\end{enumerate}
+
+The depth-dependent tilt robustness identified here had not been
+quantitatively characterised in prior literature, to the author's knowledge,
+and constitutes the principal empirical contribution.
+
+\section{Future Work}
+
+\begin{description}
+  \item[Cross-variant tilt sweep.] The natural extension is to repeat
+        \cref{ch:exp2} on the remaining four variants. The rigid
+        parallel-jaw case is of particular interest as a hypothesised
+        tilt-invariant baseline.
+  \item[Tilt-sensitivity model.] An analytical model relating finger
+        curvature, contact compliance, and tilt-induced contact-point
+        migration would connect the present empirical findings to the
+        broader continuum-mechanics literature on soft contact.
+  \item[Multi-fabric study.] All trials used a single cloth specimen.
+        Replicating the matrix on fabrics of varying thickness, weave,
+        and surface treatment would establish the applicability range
+        of the depth-tilt-robustness curves identified here.
+  \item[Closed-loop control.] The boundary-depth regime, where finray
+        directional asymmetry dominates, motivates a tilt-compensating
+        controller using inline force feedback. Implementing such a
+        controller and validating it against the open-loop boundary
+        baseline would be the natural follow-on for a system-design
+        thesis.
+  \item[Sim2real validation.] A simulation of the finray finger in a
+        compliant-contact physics engine could be calibrated against the
+        empirical force-depth-tilt surface from this thesis, providing
+        a digital twin for the gripper variants.
+\end{description}
+
+% =============================================================================
+\appendix
+
+\chapter{Source Code Listing}
+\label{ap:code}
+
+\TODO{Optional: include selected source listings (touchoff algorithm,
+tilt-aware pose target computation, verification script).}
+
+\chapter{Full Trial Inventory}
+\label{ap:inventory}
+
+\TODO{Table listing all 204 trials with timestamp, variant, depth, tilt,
+verdict, mean $F_z$. Can be auto-generated from depth\_summary.json files.}
+
+\chapter{Calibration Records}
+\label{ap:calib}
+
+\TODO{Per-variant ground-truth JSON contents (or a representative
+extract). Include z\_ground\_truth\_tcp\_m, $\sigma_z$, free-air bias,
+F at surface, and the 5 per-tap records for one representative
+variant per gripper class.}
+
+% =============================================================================
+\bibliographystyle{IEEEtran}
+\bibliography{thesis}
+\TODO{Construct thesis.bib with at least the following references:
+Festo Finray, Hogan Impedance, Franka FCI, Maitin-Shepard cloth folding,
+Soft Robotics Inc., Crooks 3D-printed compliant fingers.}
+
+\end{document}

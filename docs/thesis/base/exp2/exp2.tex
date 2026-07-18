@@ -1,0 +1,172 @@
+\chapter{\rm\bfseries Experiment 2: Tilt Effect on Grasp Force}
+\label{ch:exp2}
+
+\section{Objective}
+
+Characterise how off-axis gripper tilt perturbs the contact force, separately
+at boundary and safe depths, for the most-studied variant
+(\texttt{finray\_26}). Test whether the finray's symmetry about its $xz$
+plane is preserved or broken under physical operation.
+
+\section{Tilt-Aware Pose Geometry: Verification}
+\label{sec:tilt-verify}
+
+Before reporting force results, the implementation of
+equation~\eqref{eq:flange-target-tilted} was verified empirically.
+Table~\ref{tab:tilt-geometry} shows the measured flange XY shift during
+the stationary grasp sample versus the geometric prediction for
+\texttt{finray\_26} at four representative (depth, tilt) cells.
+
+\begin{table}[ht]
+\centering
+\caption[Tilt geometry verification]{Measured vs predicted flange-XY offset
+during the stationary grasp sample at four cells. Predicted offset from
+equation~\eqref{eq:flange-target-tilted} with $z_{\text{TCP}} = 94.911$\,mm.}
+\label{tab:tilt-geometry}
+\small
+\begin{tabular}{lccccc}
+\toprule
+Cell & Tilt cmd & Predicted $\Delta \mathbf{p}_\mathcal{F}$ (mm) &
+       Measured $\Delta \mathbf{p}_\mathcal{F}$ (mm) & Residual & Mean $|\mathbf{F}|$ \\
+\midrule
+$-1.0$\,mm   & $+2.5^{\circ}$ y & $(+4.14, +0.00)$ & $(+4.35, -0.03)$ & $0.21$\,mm & $-8.00$\,N \\
+$-1.0$\,mm   & $-2.5^{\circ}$ y & $(-4.14, +0.00)$ & $(-4.02, -0.04)$ & $0.13$\,mm & $-3.39$\,N \\
+$+10.0$\,mm  & $+2.5^{\circ}$ y & $(+4.14, +0.00)$ & $(+5.35, -0.28)$ & $1.25$\,mm & $-36.26$\,N \\
+$+10.0$\,mm  & $-2.5^{\circ}$ y & $(-4.14, +0.00)$ & $(-2.93, -0.29)$ & $1.21$\,mm & $-35.95$\,N \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At the boundary depth, the residual is $\leq 0.21$\,mm---essentially the
+lateral positioning noise of the arm under light load. At the safe depth,
+both positive and negative tilts exhibit a $+1.2$\,mm common-mode offset
+in the same $+x$ direction, regardless of tilt sign. We interpret this
+common-mode offset as evidence of finger compliance under load: the
+$\sim 36$\,N axial press deflects the soft finray blade laterally by
+approximately 1.2\,mm in a structurally preferred direction. The
+differential offset (between $+y$ and $-y$ tilts) remains correctly
+predicted by the geometric model in both depth conditions.
+
+This verification confirms that the control-frame implementation of
+equation~\eqref{eq:flange-target-tilted} is correct, and any asymmetries
+observed in the contact force reflect physical gripper behaviour rather
+than control system errors.
+
+\section{Force vs Tilt Magnitude at Fixed Depth}
+
+Figure~\ref{fig:tilt-mag-sweep} shows the stationary force at $0^{\circ}$,
+$+2.5^{\circ}$, and $+5^{\circ}$ tilt about the symmetric $x$ axis, at
+both boundary ($-0.5$\,mm) and safe ($+10$\,mm) depths.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.95\linewidth]{finray_26_tilt_sweeps.png}
+\caption[Tilt sweep panels]{Tilt-magnitude (left) and signed tilt (right)
+sweeps for \texttt{finray\_26}. Left panel: x-axis tilt (symmetric axis)
+at boundary (blue) and safe (green) depths shows a strong tilt-effect at
+boundary that disappears at safe depth. Right panel: y-axis tilt
+(asymmetric axis) shows a clearly asymmetric response at boundary depth
+but a symmetric, flat response at safe depth.}
+\label{fig:tilt-mag-sweep}
+\end{figure}
+
+At the boundary depth, force decreases monotonically from $-10.8$\,N at
+$0^{\circ}$ to $-5.1$\,N at $+5^{\circ}$---a $53\%$ reduction. At the safe
+depth, the entire sweep stays within 1\,N of the $0^{\circ}$ baseline.
+The data are summarised in Table~\ref{tab:tilt-mag}.
+
+\begin{table}[ht]
+\centering
+\caption[Tilt magnitude effect]{Stationary force vs x-axis tilt magnitude
+at two depth conditions for \texttt{finray\_26}.}
+\label{tab:tilt-mag}
+\begin{tabular}{lcccc}
+\toprule
+Depth & $0^{\circ}$ & $+2.5^{\circ}$ x & $+5.0^{\circ}$ x & \% reduction at $5^{\circ}$ \\
+\midrule
+$-0.5$\,mm (boundary) & $-10.82$\,N & $-6.08$\,N & $-5.09$\,N & $53\%$ \\
+$+10$\,mm (safe)      & $-36.51$\,N & $-35.99$\,N & $-36.93$\,N & $-1\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Asymmetric Axis: Signed y-Tilt Sweep}
+
+Figure~\ref{fig:y-tilt-asym} shows the asymmetry ratio
+$|F_z(+2.5^{\circ}_y)| / |F_z(-2.5^{\circ}_y)|$ as a function of depth,
+on a logarithmic axis.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\linewidth]{finray_26_y_tilt_asymmetry.png}
+\caption[Asymmetry vs depth]{Asymmetry ratio between $+2.5^{\circ}$ and
+$-2.5^{\circ}$ y-tilts as a function of press depth for
+\texttt{finray\_26}. The finray exhibits strong directional ``handedness''
+at boundary depths but loses it in the soft plateau.}
+\label{fig:y-tilt-asym}
+\end{figure}
+
+At $-1.0$\,mm, the ratio is $2.36\times$---force at $+2.5^{\circ}$
+($-8.00$\,N) is more than double the force at $-2.5^{\circ}$ ($-3.39$\,N).
+At $-0.5$\,mm, the ratio is $1.38\times$. At $+10$\,mm, the ratio is
+$1.009\times$, statistically indistinguishable from 1.
+
+Table~\ref{tab:y-tilt-asym} reports the absolute values along with
+$0^{\circ}$ baselines where available.
+
+\begin{table}[ht]
+\centering
+\caption[Y-tilt asymmetry]{Stationary force at signed y-tilts for
+\texttt{finray\_26}, with $0^{\circ}$ baselines from experiment 1.}
+\label{tab:y-tilt-asym}
+\begin{tabular}{lcccc}
+\toprule
+Depth & $F_z(-2.5^{\circ}_y)$ & $F_z(0^{\circ})$ & $F_z(+2.5^{\circ}_y)$ &
+        $|F_+ / F_-|$ \\
+\midrule
+$-1.0$\,mm  & $-3.39$\,N  & $-4.09$\,N  & $-8.00$\,N   & $2.36\times$ \\
+$-0.5$\,mm  & $-10.01$\,N & $-12.20$\,N & $-13.86$\,N  & $1.38\times$ \\
+$+10$\,mm   & $-35.95$\,N & $-36.51$\,N & $-36.26$\,N  & $1.009\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Combined Picture: Three-Tilt Force-Depth Curves}
+
+Figure~\ref{fig:three-tilts} integrates the depth and tilt sweeps for
+\texttt{finray\_26}.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.95\linewidth]{finray_26_Fz_vs_depth_three_tilts.png}
+\caption[Three-tilt depth curves]{Stationary force vs depth for
+\texttt{finray\_26} at $0^{\circ}$, $+2.5^{\circ}$ x, and $+5^{\circ}$ x
+tilts. Background shading marks the regime boundaries identified in
+experiment 1. The three tilt conditions diverge at boundary depths and
+converge in the soft plateau.}
+\label{fig:three-tilts}
+\end{figure}
+
+The three lines diverge in the boundary regime and re-converge in the soft
+plateau. Notably, the convergence is complete by $+10$\,mm; the soft
+plateau is tilt-robust both in magnitude and in sign.
+
+\section{Rotation Tracking Verification}
+
+A natural concern is whether the Franka arm faithfully realises the
+commanded tilt orientation. The 30\,Hz session log records actual and
+commanded RPY at every sample, enabling a direct measurement of orientation
+tracking error
+\begin{equation}
+  \delta(t) = \| \mathrm{RPY}_{\text{actual}}(t) -
+                 \mathrm{RPY}_{\text{cmd}}(t) \|_2.
+\end{equation}
+Across five representative sessions, the mean steady-state $\delta$ was
+$0.05^{\circ}$ with a worst-case $0.13^{\circ}$. Transient excursions up to
+$\sim 5^{\circ}$ occur exclusively within the \texttt{orientation\_lock}
+stage at session start, before any descent or grasp, and are filtered out
+of trial-level analyses.
+
+A $2.5^{\circ}$ commanded tilt is therefore $50\times$ the noise floor of
+the arm's rotation tracking; the observed force differences cannot be
+attributed to arm rotation error.

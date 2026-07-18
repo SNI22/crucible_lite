@@ -1,0 +1,293 @@
+% Adapted from the McGill thesis template by Peter Kabal / Simon Geoffroy-Gagnon.
+% Trimmed for a mechanical-engineering experimental thesis (no algorithm typesetting
+% or biology sequence display). The template's defaultcustom.tex margin block
+% is preserved so McGill GPS margin requirements still hold.
+\documentclass[letter,12pt,oneside]{book}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amstext,bm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{rotating}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{xspace}
+\usepackage{setspace}
+\usepackage{makeidx}
+\usepackage{fancyhdr}
+\usepackage{fancyvrb}
+\usepackage{vmargin}        % for \setmarginsrb (McGill margins, set below)
+\usepackage[bf,rm,medium,compact]{titlesec}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue]{hyperref}
+\usepackage{url}
+\usepackage{calc}
+\usepackage{theorem}
+\usepackage[grey]{latex-pkg/quotchap}    % chapter heading style from McGill template
+% ltcaption \CaptionLabelFont / \CaptionTextFont are not used in this trimmed
+% version (the caption package handles caption styling instead).
+
+%
+%  Brown  Maroon  NavyBlue  MidnightBlue  
+%
+
+% INCLUDE HVs CUSTOMIZATIONS
+\input{latex-pkg/defaultcustom.tex}
+% INCLUDE LATEX PACKAGES
+
+\makeatletter
+\newcommand\arraybslash{\let\\\@arraycr}
+%\@addtoreset{chapter}{part}
+\makeatother
+
+
+
+\lstset{basicstyle=\normalsize\ttfamily,breaklines=true}
+\lstset{framextopmargin=5pt,frame=bottomline}
+
+
+%[latin1]
+% INCLUDE LATEX PREAMBLE
+% SETTINGS FOR listings PACKAGE
+\lstset{
+    numberstyle=\tiny,
+    numbers=left,
+    stepnumber=1,
+    numbersep=5pt,
+    tabsize=2,
+    showstringspaces=false,
+    aboveskip=\smallskipamount,
+    belowskip=\smallskipamount,
+    lineskip=-2pt
+}
+
+% PAGE COLOR and SETTINGSx
+\pagecolor{white}
+
+% \setlength{\headheight}{2cm}
+% \setlength{\marginparwidth}{1.9cm}
+% MAKE INDEX
+\makeindex
+
+% CUSTOM COMMANDS
+\newcommand{\linka}[1]{{\tt\htmladdnormallink{#1}{#1}}}
+\newcommand{\linkb}[2]{{\tt\htmladdnormallink{#1}{#2}}}
+\newcommand{\parcomment}[1]{\marginpar{\scriptsize{\textcolor{blue}{#1}}}}
+\newcommand{\defn}[2]{{\begin{minipage}{\textwidth}\vspace{2pt}\emph{\textbf{#1}}:\vspace{1pt}\begin{center}\fbox{\begin{minipage}{5.5in}#2\end{minipage}}\end{center}\vspace{2pt}\end{minipage}}}
+
+% lgrind FONTS
+\def\BGfont{\small\tt}
+\def\CMfont{\small\tt}
+\def\NOfont{\small\tt}
+\def\KWfont{\small\tt}
+\def\STfont{\small\tt}
+\def\TTfont{\small\tt}
+\def\VRfont{\small\tt}
+
+% KZ definitions
+\input{content/thesisparams.tex}
+
+% Custom TODO marker (search/grep for "TODO" to find open items in the manuscript)
+\newcommand{\TODO}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+
+% DOCUMENT BEGINS
+\begin{document}
+
+
+\pagestyle{empty} %defines the general contents of the headers and footers (e.g. where the page number will be printed)
+
+%%%%%%%%%%%%%%%%%%%
+%
+% TITLE PAGE
+%
+%%%%%%%%%%%%%%%%%%%
+\begin{onehalfspacing}
+\input{content/FirstPage.tex}
+\cleardoublepage
+\end{onehalfspacing}
+
+
+%%%%%%%%%%%%%%%%%%%
+%
+% SPACING
+%
+%%%%%%%%%%%%%%%%%%%
+%
+% \singlespacing
+% \doublespacing
+% \onehalfspacing 
+%
+% \setstretch{1.8}
+%
+
+\onehalfspacing 
+
+% \doublespacing
+
+% ROMAN PAGE NUMBERING
+\pagenumbering{roman}
+\pagestyle{plain}
+
+\begin{Large}
+\end{Large}
+
+%%%%%%%%%%%%%%%%%%%
+%
+% ABSTRACT
+%
+%%%%%%%%%%%%%%%%%%%
+
+\input{content/en_Absract.tex}
+\clearpage
+
+%\bigskip \bigskip
+
+\input{content/fr_Absract.tex}
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%
+%
+% ACKNOWLEDGEMENT
+%
+%%%%%%%%%%%%%%%%%%%
+\input{content/contributions.tex}
+
+\input{content/Acknowledgements.tex}
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%
+%
+%  Table Of Content
+%  List Of Figures
+%  List Of Tables
+%
+%%%%%%%%%%%%%%%%%%%
+
+%\setstretch{0.0}
+% \begin{singlespacing}
+% \begin{spacing}{0.5}
+% KZ WORKING BEFORE AUG 11 \setstretch{0.5}
+
+\setstretch{0.7}
+
+\tableofcontents
+% \end{spacing}
+\listoffigures
+% \end{singlespacing}
+
+\begin{onehalfspacing}
+
+\listoftables
+
+%\listofalgorithms
+
+\end{onehalfspacing}
+
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%
+%
+%  ABBREVIATIONS
+%
+%%%%%%%%%%%%%%%%%%%%
+% \nomenclature{RC}{Read Committed}
+% \nomenclature{SI}{Snapshot Isolation}
+% \nomenclature{JOCC}{JPA Optimistic Concurrency Control}
+% \nomenclature{\textsc{colAgent}}{Collector Agent}
+
+% ARABIC PAGE NUMBERING
+\pagenumbering{arabic}
+\pagestyle{fancyplain}
+
+% INCLUDE HVs DEFAULT FORMATTING
+\input{latex-pkg/latexformat.tex}
+
+\interfootnotelinepenalty=10000 %priority, to make sure the footnote is not dvided between pages.
+
+\onehalfspacing
+
+
+% ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% BEGIN_Chapters
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%
+% MTT
+%%%%%%%%%%%%%%%%%%%%
+
+\graphicspath{{img/}}
+
+%\part{Scalable Cheat-Resistant Multiplayer Online Games}
+%\label{part:intro}
+
+\input{base/intro/intro.tex}
+
+\input{base/background/background.tex}
+
+\input{base/methods/methods.tex}
+
+\input{base/experiments/experiments.tex}
+
+\input{base/results/results.tex}
+
+\input{base/discussion/discussion.tex}
+
+\chapter{\rm\bfseries Conclusion and Future Work}
+\input{base/conclusion/conclusion.tex}
+
+
+\begin{onehalfspacing}
+\input{content/publications.tex}
+\end{onehalfspacing}
+
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%
+%
+% BIBLIOGRAPHY
+%
+%%%%%%%%%%%%%%%%%%%
+
+
+%\chapter*{\rm\bfseries Bibliography}
+\chaptermark{{\rm\bfseries Bibliography}}
+\addcontentsline{toc}{chapter}{Bibliography}
+
+\bibliographystyle{alpha}
+\bibliography{Thesis}
+
+%\addcontentsline{toc}{chapter}{\numberline{}\rm\bfseries{Bibliography}}
+
+\begin{onehalfspacing}
+\input{content/acronyms.tex}
+\end{onehalfspacing}
+
+\normalsize
+\printindex
+
+%%%%%%%%%%%%%%%%%%%
+%
+% APPENDICES
+%
+%%%%%%%%%%%%%%%%%%%
+
+% \appendix
+
+
+% \input{content/ConsADExamples.tex}
+
+\end{document}

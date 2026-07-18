@@ -1,0 +1,71 @@
+\chapter{\rm\bfseries Introduction}
+\label{ch:introduction}
+
+\section{Motivation}
+
+Fabric handling automation is a long-standing open problem in industrial
+robotics, with applications ranging from apparel manufacturing and laundry
+processing to packaging of textile components. Cloth is uniquely difficult to
+grasp robustly: it deforms continuously under contact, exhibits no fixed
+graspable feature, and has a near-zero bending stiffness that allows it to slip
+out of a poorly placed gripper. Conventional rigid-jaw grippers, designed for
+sturdy objects with well-defined geometry, perform poorly on cloth without
+elaborate tactile sensing or human-tuned approach trajectories.
+
+A class of compliant grippers based on the finray effect---a passive
+bending mechanism inspired by fish-fin anatomy---has been proposed as a
+solution. Finray fingers passively wrap around the contact surface, increasing
+contact area and gripping force without requiring active force control. This
+compliance, however, comes at the cost of force-modelling difficulty: the
+finger geometry deforms under load, the contact point shifts, and tilt-induced
+asymmetries arise that have no analogue in the rigid-jaw case.
+
+The central question of this thesis is: \emph{to what extent does the finray's
+compliance trade single-axis force precision for multi-axis operational
+robustness?} Specifically, how does the finray's contact force respond to
+deviations in the two design degrees of freedom most likely to be uncontrolled
+in real deployment: press depth and gripper tilt angle?
+
+\section{Research Question and Contributions}
+
+This thesis answers the following research questions through a controlled
+experimental benchmark on a Franka FR3 collaborative robot:
+\begin{enumerate}
+  \item How does stationary contact force vary with press depth for each of
+        five candidate gripper geometries?
+  \item For each geometry, what is the maximum tilt angle (about each
+        orthogonal axis) at which a reliable grasp is still produced?
+  \item Is the dependence of contact force on tilt itself depth-dependent?
+  \item Does the finray gripper exhibit a direction-dependent (handed)
+        response under tilt about its geometrically asymmetric axis?
+\end{enumerate}
+
+\noindent The contributions of this work are:
+\begin{itemize}
+  \item A reproducible benchmark protocol for cloth-grasp force characterisation
+        on a Franka FR3, with full source code published alongside this thesis.
+  \item A two-dimensional depth--tilt experimental matrix sampling five
+        commercially relevant gripper geometries.
+  \item Empirical evidence of a depth-dependent tilt robustness transition
+        in finray grippers, with quantitative characterisation of the
+        transition depth.
+  \item A documented calibration procedure for per-variant tool-centre-point
+        (TCP) offset using differential force touch-off against a rigid
+        reference.
+  \item A geometric verification framework that disentangles control-frame
+        positioning error from physical gripper compliance under load.
+\end{itemize}
+
+\section{Thesis Organisation}
+
+Chapter~\ref{ch:background} reviews the literature on cloth grasping,
+compliant grippers, and force-controlled approach strategies.
+Chapter~\ref{ch:methods} describes the experimental hardware, the kinematic
+calibration procedure, and the data-acquisition pipeline.
+Chapter~\ref{ch:experiments} presents the depth-sweep characterisation (Experiment~1)
+across all five gripper variants at zero tilt.
+Chapter~\ref{ch:experiments} presents the tilt-sweep characterisation (Experiment~2)
+at boundary and safe depths.
+Chapter~\ref{ch:discussion} synthesises the findings into a model of
+depth-dependent tilt robustness.
+Chapter~\ref{ch:conclusion} concludes and identifies directions for future work.

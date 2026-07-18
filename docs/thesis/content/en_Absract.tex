@@ -1,0 +1,45 @@
+\chapter*{\rm\bfseries Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+Robotic grasping of thin, deformable fabric remains an unsolved problem in
+industrial automation. Two competing gripper geometries are routinely proposed:
+rigid parallel-jaw fingers, which offer precise force control but a narrow
+operational tolerance, and compliant finray-effect fingers, which trade force
+precision for a wider operational envelope. This thesis presents an
+experimental benchmark of five gripper variants---two parallel-jaw
+configurations (rigid stock, and stock plus a Shore-90A thermoplastic
+polyurethane pad) and three finray configurations (18\,mm and 26\,mm finger
+thickness, plus a $5^{\circ}$ inclined-seat fixture)---mounted on a Franka FR3
+collaborative manipulator. Each variant is characterised across a two-dimensional
+input space of press depth (the distance the gripper fingertip is driven
+below the detected cloth surface) and tilt angle (the gripper
+orientation about world $x$ and $y$ axes relative to the surface normal).
+Stationary contact force in the gripper $z$-axis is sampled during each grasp
+and used as the primary outcome variable, with binary grasp success as a
+secondary outcome.
+
+The benchmark produced 204 trials over 75 sessions, yielding 139 confirmed
+successful grasps. The rigid parallel-jaw exhibits a narrow $\approx 1$\,mm
+working depth range bounded above by a $-60$\,N safety reflex and below by
+no-contact; the TPU-padded variant widens this to $\approx 2$\,mm. The finray
+variants, by contrast, exhibit a broad $\geq 12$\,mm working range with a
+soft plateau near $-37$\,N over the depth interval $+2$ to $+8$\,mm.
+
+Beyond this expected compliance advantage, two depth-dependent tilt effects
+emerged. First, finray contact force is strongly tilt-sensitive at the
+no-contact boundary but tilt-insensitive in the soft plateau: a $\pm 5^{\circ}$
+tilt produces a $58\%$ contact force reduction at $-0.5$\,mm depth but only
+$1\%$ at $+10$\,mm depth. Second, the finray gripper exhibits a
+direction-dependent handedness under tilt about its asymmetric ($y$)
+axis at boundary depths---a $\pm 2.5^{\circ}$ inversion reverses the contact
+force by a factor of $2.36\times$ at $-1.0$\,mm---but this handedness vanishes
+at safe operating depths. We propose this as an emergent characterisation of
+the finray geometry: the deeply pressed finger structure wraps the contact
+surface symmetrically regardless of tilt sign, while at lighter contact the
+asymmetric ridge profile dominates the force response.
+
+The implication for cloth-handling system design is that compliant
+grippers achieve directional robustness only when pressed past a depth
+threshold; control policies that operate near the no-contact boundary for
+delicate fabric handling must explicitly model the gripper's directional
+asymmetry.

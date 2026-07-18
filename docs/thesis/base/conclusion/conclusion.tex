@@ -1,0 +1,55 @@
+\label{ch:conclusion}
+
+\section{Summary of Contributions}
+
+This thesis presented a controlled benchmark of five gripper variants on a
+single platform (Franka FR3), measuring stationary contact force as a
+function of press depth and tilt angle. The principal findings are:
+\begin{enumerate}
+  \item Rigid parallel-jaw grippers exhibit narrow ($\sim 1$--$2$\,mm)
+        working depth ranges with steep force-depth slopes ($-19$ to
+        $-26$\,N/mm).
+  \item Finray-effect grippers exhibit broad ($10$--$12$\,mm) working
+        ranges with a flat soft plateau ($-1.2$\,N/mm in the linear
+        regime).
+  \item Finray contact force is strongly tilt-sensitive at the no-contact
+        boundary ($53\%$ reduction at $5^{\circ}$ tilt for the boundary
+        depth of $-0.5$\,mm).
+  \item Finray contact force is tilt-insensitive in the soft plateau
+        ($\leq 1\%$ change at $5^{\circ}$ tilt for the safe depth of
+        $+10$\,mm).
+  \item Finray response is direction-dependent under tilt about the
+        asymmetric ($y$) axis at boundary depths ($2.4\times$ ratio
+        between $\pm 2.5^{\circ}$), but symmetric in the soft plateau.
+\end{enumerate}
+
+The depth-dependent tilt robustness identified here had not been
+quantitatively characterised in prior literature, to the author's knowledge,
+and constitutes the principal empirical contribution.
+
+\section{Future Work}
+
+\begin{description}
+  \item[Cross-variant tilt sweep.] The natural extension is to repeat
+        Chapter~\ref{ch:experiments} on the remaining four variants. The rigid
+        parallel-jaw case is of particular interest as a hypothesised
+        tilt-invariant baseline.
+  \item[Tilt-sensitivity model.] An analytical model relating finger
+        curvature, contact compliance, and tilt-induced contact-point
+        migration would connect the present empirical findings to the
+        broader continuum-mechanics literature on soft contact.
+  \item[Multi-fabric study.] All trials used a single cloth specimen.
+        Replicating the matrix on fabrics of varying thickness, weave,
+        and surface treatment would establish the applicability range
+        of the depth-tilt-robustness curves identified here.
+  \item[Closed-loop control.] The boundary-depth regime, where finray
+        directional asymmetry dominates, motivates a tilt-compensating
+        controller using inline force feedback. Implementing such a
+        controller and validating it against the open-loop boundary
+        baseline would be the natural follow-on for a system-design
+        thesis.
+  \item[Sim2real validation.] A simulation of the finray finger in a
+        compliant-contact physics engine could be calibrated against the
+        empirical force-depth-tilt surface from this thesis, providing
+        a digital twin for the gripper variants.
+\end{description}

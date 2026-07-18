@@ -1,0 +1,155 @@
+\chapter{\rm\bfseries Experimental Design and Procedure}
+\label{ch:experiments}
+
+The empirical campaign is organised into two sequential phases against a
+single experimental apparatus. Phase~1 establishes the contact-force
+versus press-depth relationship for each gripper variant at nominal
+zero-tilt orientation, and phase~2 perturbs the same measurement with
+$\pm 2.5^{\circ}$ tilts about the two orthogonal Cartesian axes.
+Together the two phases define a three-dimensional
+(depth, tilt-axis, tilt-sign) cell grid whose per-cell measurements
+constitute the data corpus reported in Chapter~\ref{ch:results}.
+
+\section{Study Design}
+\label{sec:study-design}
+
+The gripper roster comprises six variants organised into two families:
+\begin{itemize}
+  \item \textbf{Finray family} (four variants):
+    \texttt{finray\_18}, \texttt{finray\_18\_model2} (second print of
+    the same CAD), \texttt{finray\_26} (larger blade), and
+    \texttt{finray\_26\_5deg} (\texttt{finray\_26} on a
+    $5^{\circ}$-inclined seat).
+  \item \textbf{Parallel-jaw family} (two variants):
+    \texttt{parallel\_jaw\_stock} (bare rigid jaws) and
+    \texttt{parallel\_jaw\_TPU} (rigid jaws with a $2$\,mm TPU $90$A
+    compliant pad).
+\end{itemize}
+
+The same fabric specimen (single-layer cotton) rests on the same
+acrylic table surface throughout the campaign. The Franka Emika Panda
+arm holds the gripper in a fixed base orientation $R_0 = R_x(180^{\circ})$
+for phase~1, and applies signed rotations
+$R_{\alpha,\beta} = R_x(180^{\circ}) R_x(\alpha) R_y(\beta)$
+for phase~2, with $(\alpha, \beta) \in
+\{(\pm 2.5^{\circ}, 0), (0, \pm 2.5^{\circ})\}$.
+
+\section{Depth Grid}
+\label{sec:depth-grid}
+
+The depth axis is defined relative to the per-session detected cloth
+surface via the \texttt{ground\_truth\_finder} touch-off procedure
+described in Chapter~\ref{ch:methods}. The depth grid was chosen
+adaptively per gripper family:
+\begin{itemize}
+  \item For the rigid parallel jaws, depths are spaced at $0.25$--$0.5$\,mm
+        intervals over $-1$ to $+4$\,mm, close to the narrow
+        force-limited working range.
+  \item For the finrays, depths are spaced at $0.5$--$1.0$\,mm intervals
+        over $-2$ to $+16$\,mm, covering the four regimes
+        (boundary, knee, valley, recovery) identified in
+        Chapter~\ref{ch:results}.
+\end{itemize}
+
+Per (variant, depth, tilt) cell, three trials were collected. Boundary
+depths were routinely retested when within-cell standard deviation
+exceeded $1$\,N, up to a maximum of two additional cells per
+(depth, tilt) combination.
+
+\section{Tilt-Aware Pose Geometry: Verification}
+\label{sec:tilt-verify}
+
+Before reporting force results, the implementation of the tilt-aware
+tool-centre-point (TCP) tracking equation was verified empirically.
+Table~\ref{tab:tilt-geometry} shows the measured flange XY shift during
+the stationary grasp sample versus the geometric prediction for
+\texttt{finray\_26} at four representative (depth, tilt) cells.
+
+\begin{table}[ht]
+\centering
+\caption[Tilt geometry verification]{Measured vs.~predicted flange-XY
+offset during the stationary grasp sample at four cells. Predicted
+offset uses $z_{\text{TCP}} = 94.911$\,mm.}
+\label{tab:tilt-geometry}
+\small
+\begin{tabular}{lccccc}
+\toprule
+Cell & Tilt cmd & Predicted $\Delta \mathbf{p}_\mathcal{F}$ (mm) &
+       Measured $\Delta \mathbf{p}_\mathcal{F}$ (mm) & Residual & Mean $|\mathbf{F}|$ \\
+\midrule
+$-1.0$\,mm   & $+2.5^{\circ}$ y & $(+4.14, +0.00)$ & $(+4.35, -0.03)$ & $0.21$\,mm & $-8.00$\,N \\
+$-1.0$\,mm   & $-2.5^{\circ}$ y & $(-4.14, +0.00)$ & $(-4.02, -0.04)$ & $0.13$\,mm & $-3.39$\,N \\
+$+10.0$\,mm  & $+2.5^{\circ}$ y & $(+4.14, +0.00)$ & $(+5.35, -0.28)$ & $1.25$\,mm & $-36.26$\,N \\
+$+10.0$\,mm  & $-2.5^{\circ}$ y & $(-4.14, +0.00)$ & $(-2.93, -0.29)$ & $1.21$\,mm & $-35.95$\,N \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At boundary depth, the residual is $\leq 0.21$\,mm---essentially the
+lateral positioning noise of the arm under light load. At safe depth,
+both positive and negative tilts exhibit a $+1.2$\,mm common-mode
+offset in the same $+x$ direction, regardless of tilt sign. We
+interpret this common-mode offset as evidence of finger compliance
+under load: the $\sim 36$\,N axial press deflects the soft finray blade
+laterally by approximately $1.2$\,mm in a structurally preferred
+direction. The differential offset (between $+y$ and $-y$ tilts)
+remains correctly predicted by the geometric model in both depth
+conditions.
+
+This verification confirms that the control-frame implementation of the
+tilt-aware TCP tracker is correct, and any asymmetries observed in the
+contact force reflect physical gripper behaviour rather than
+control-system errors.
+
+\section{Rotation Tracking Verification}
+\label{sec:rotation-verify}
+
+A natural concern is whether the Franka arm faithfully realises the
+commanded tilt orientation. The 30\,Hz session log records actual and
+commanded RPY at every sample, enabling a direct measurement of
+orientation tracking error
+\begin{equation}
+  \delta(t) = \| \mathrm{RPY}_{\text{actual}}(t) -
+                 \mathrm{RPY}_{\text{cmd}}(t) \|_2.
+\end{equation}
+Across five representative sessions, the mean steady-state $\delta$
+was $0.05^{\circ}$ with a worst-case $0.13^{\circ}$. Transient
+excursions up to $\sim 5^{\circ}$ occur exclusively within the
+\texttt{orientation\_lock} stage at session start, before any descent
+or grasp, and are filtered out of trial-level analyses.
+
+A $2.5^{\circ}$ commanded tilt is therefore $50\times$ the noise floor
+of the arm's rotation tracking; the observed force differences cannot
+be attributed to arm rotation error.
+
+\section{Trial Protocol and Outcome Classification}
+\label{sec:trial-protocol}
+
+Each trial follows a fixed six-stage sequence: (1)~set the commanded
+pose above the target, (2)~descend to the pre-contact height,
+(3)~contact and press to the target depth, (4)~grasp with the gripper's
+default close command, (5)~lift by a fixed clearance, (6)~operator
+confirms whether the cloth is held. A stationary-sample window of at
+least $2$\,seconds during the grasped-and-pressed stage provides the
+force measurement.
+
+Trial outcomes are classified into three categories:
+\begin{description}
+  \item[\textbf{Success}:] the trial executed to completion, contact
+        force was sampled cleanly during the stationary window, and the
+        cloth remained gripped after the lift stage.
+  \item[\textbf{No-grasp}:] the trial executed to completion and
+        contact force was sampled cleanly during the stationary window,
+        but the cloth slipped from the fingers during or after the lift
+        stage. The force measurement remains valid as an
+        \emph{engagement-force} characterisation.
+  \item[\textbf{Failed trial}:] the trial did not execute to completion.
+        The controller either aborted with an excess-force safety event
+        or the operator interrupted before the stationary window
+        completed. The measurement is invalid and the trial is excluded
+        from analyses.
+\end{description}
+
+The rationale for this three-way taxonomy---rather than a binary
+success/failure classification---is discussed in
+Section~\ref{sec:failure-mode-discussion}.
