@@ -9,8 +9,9 @@ A Franka Emika FR3 7-DOF cobot served as the manipulator throughout this work.
 The arm was operated through the Franka Control Interface (FCI) using
 \texttt{libfranka 0.18.1} and the ROS\,2 Humble control stack. Cartesian
 pose tracking was performed by a custom \texttt{fr3\_pose\_controller}
-\TODO{cite controller author / repo}, parameterised in
-\path{config/controllers/fr3_pose/default.yaml}. The controller accepts a
+maintained by the McGill Applied Dynamics Lab at
+\url{https://github.com/McGill-Applied-Dynamics-Lab/adl-ros2},
+parameterised in \path{config/controllers/fr3_pose/default.yaml}. The controller accepts a
 sequence of (pose, twist) waypoints with associated time stamps and
 interpolates between them using a quintic polynomial; for the in-place
 re-orientation and the final precision descent phases, a cosine half-cycle
@@ -22,37 +23,66 @@ velocities.
 
 \begin{table}[ht]
 \centering
-\caption[Gripper variants]{Five gripper variants benchmarked.}
+\caption[Gripper variants]{Six gripper variants benchmarked. All finray
+variants share the same 3D-printed inclined-seat mount; only the seat
+angle changes between the $+2.5^{\circ}$ baseline and the $+5.0^{\circ}$
+variant. The parallel-jaw variants do not use an inclined seat.}
 \label{tab:variants}
-\begin{tabular}{lll}
+\begin{tabular}{llll}
 \toprule
-Variant & Type & Key parameter \\
+Variant & Type & Key parameter & Seat angle \\
 \midrule
-\texttt{parallel\_jaw\_stock}    & Rigid two-finger (Franka Hand)        & --- \\
-\texttt{parallel\_jaw\_TPU}      & Rigid two-finger + TPU 90A pad        & 2.0\,mm pad thickness \\
-\texttt{finray\_18}              & Finray-effect 3D-printed              & 18\,mm finger thickness \\
-\texttt{finray\_26}              & Finray-effect 3D-printed              & 26\,mm finger thickness \\
-\texttt{finray\_26\_5deg}        & Finray-26 on inclined-seat fixture    & $+5^{\circ}$ seat angle \\
+\texttt{parallel\_jaw\_stock}    & Rigid two-finger (Franka Hand)      & ---                    & --- \\
+\texttt{parallel\_jaw\_TPU}      & Rigid two-finger + TPU 90A pad      & 2.0\,mm pad thickness  & --- \\
+\texttt{finray\_18}              & Finray-effect 3D-printed            & 18\,mm finger thickness & $+2.5^{\circ}$ \\
+\texttt{finray\_18\_model2}      & Second print of \texttt{finray\_18} & 18\,mm finger thickness & $+2.5^{\circ}$ \\
+\texttt{finray\_26}              & Finray-effect 3D-printed            & 26\,mm finger thickness & $+2.5^{\circ}$ \\
+\texttt{finray\_26\_5deg}        & Finray-26 on 5$^{\circ}$-seat mount & 26\,mm finger thickness & $+5.0^{\circ}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The Shore hardness of the finray finger material was \TODO{Shore-A durometer of
-3D-printed TPU}. The TPU pad on the parallel-jaw variant was \TODO{material and
-manufacturer}. The 5-degree inclined-seat fixture was manufactured in
-\TODO{lab name / process} to introduce a fixed asymmetric mounting condition
-for the third finray variant.
+The finray fingers and the parallel-jaw compliant pad were 3D-printed from
+Bambu Lab TPU 90A (Shore-A hardness 90) on a Bambu Lab X1 Carbon printer
+using the vendor-default TPU 90A profile in Bambu Studio (0.4\,mm nozzle,
+default layer height, default infill, PEI-textured build plate).
+
+\paragraph{Baseline inclined-seat mount.}
+All finray variants are mounted on the Franka Hand via an inclined seat
+that introduces a fixed $+2.5^{\circ}$ tilt about the gripper $y$ axis
+(the gripping direction). The seat is a 3D-printed adapter and is
+present in \emph{every} variant tested in this thesis unless otherwise
+noted. Variants whose name contains \texttt{\_5deg} substitute a
+$+5.0^{\circ}$ seat in place of the default $+2.5^{\circ}$ seat; all
+other variants (\texttt{finray\_18}, \texttt{finray\_18\_model2},
+\texttt{finray\_26}, and the parallel-jaw variants) inherit the
+$+2.5^{\circ}$ baseline. The $+2.5^{\circ}$ baseline seat angle was chosen so that the two
+opposing finray fingers converge inward toward each other rather than
+splaying apart, closing the residual slit that would otherwise remain
+between the finger tips when the gripper is fully closed. This ensures
+firm contact between the fingers along their full length during a
+successful grasp. Figure~\TODO{ref} shows the mounting stack
+(flange $\to$ seat $\to$ finger) and defines the seat-tilt convention.
+
+\paragraph{Consequence for reported ``$0^{\circ}$'' cells.}
+Cells reported in Chapter~\ref{ch:results} as $0^{\circ}$ tilt refer
+to \emph{zero commanded runtime tilt}; the physical gripper is still
+inclined at the baseline seat angle relative to the flange. All
+runtime tilt values (e.g. $\pm 2.5^{\circ}$ about $x$ or $y$) are
+applied \emph{on top of} the baseline seat tilt.
 
 \subsection{Cloth Specimen}
+\label{sec:cloth}
 
-\TODO{Describe the cloth used: material composition, thickness, weave,
-dimensions, surface treatment. Photograph if available.}
+\TODO{insert photograph of the cloth specimen and short caption
+describing material, thickness, weave, and dimensions.}
 
 \subsection{Test Surface}
+\label{sec:test-surface}
 
-\TODO{Describe the table / fixture geometry the cloth rests on, including
-material, flatness specification, and probe position relative to the cloth
-edge.}
+\TODO{insert photograph of the test bench in situ and short caption
+describing the table material, flatness, and cloth-edge orientation
+relative to the gripper $y$ axis.}
 
 \section{Reference Frame and Tool-Centre Calibration}
 
@@ -196,14 +226,32 @@ Each session directory \path{depth_*/} contains in addition:
         sample stream, with stage labels and tap indices.
 \end{itemize}
 
-\subsection{Verdict Recording}
+\subsection{Verdict Recording and Outcome Classification}
+\label{sec:verdict-recording}
 
-After each trial, the operator was prompted to enter a binary verdict (grasp
-success vs failure). Trials where the operator entered no verdict (typically
-because the FCI control daemon crashed mid-trial owing to a known
-acceleration-discontinuity reflex \TODO{cite the issue if available}) were
-recorded with \texttt{success = null} and excluded from all aggregate
-analyses.
+Trial outcomes were classified into three categories rather than a binary
+success/failure. After each trial the operator was prompted to distinguish
+\emph{success} (the gripper held the cloth throughout the lift stage) from
+\emph{no-grasp} (the trial executed to completion and the stationary
+force sample was valid, but the cloth slipped from the gripper during
+or after the lift). Trials in which the FCI control daemon aborted the
+motion mid-trial were recorded as \emph{failed trials} and excluded
+from all aggregate analyses; the two most common triggers were:
+\begin{itemize}
+  \item the Franka safety reflex firing on excessive predicted joint
+        force (\texttt{auto\_failed\_excess\_force}), which typically
+        occurred when the parallel-jaw variants were commanded to
+        depths beyond their narrow force-limited working range;
+  \item the Franka safety reflex firing on acceleration discontinuity
+        between two consecutive Cartesian trajectory segments, which
+        was observed intermittently during the chunked touch-off
+        descent and mitigated through the trajectory-emission-floor
+        modifications documented in Section~\ref{sec:tcp-calib}.
+\end{itemize}
+Both trigger classes leave the trial's \texttt{success} field as
+\texttt{null} in the per-trial JSON; no-grasp trials, by contrast,
+carry \texttt{success = false} with a valid force record and are
+retained for engagement-force analysis.
 
 \section{Trial Procedure}
 

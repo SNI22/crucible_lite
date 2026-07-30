@@ -1,0 +1,76 @@
+% Standalone build: Methodology + Experimental Design chapters only.
+% For circulation to supervisor to review just the methods/procedure sections.
+% Rebuild:  latexmk -pdf -interaction=nonstopmode Thesis_methods_only.tex
+\documentclass[letter,12pt,oneside]{book}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amstext,bm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{rotating}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{xspace}
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage{fancyvrb}
+\usepackage{vmargin}
+\usepackage[bf,rm,medium,compact]{titlesec}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue]{hyperref}
+\usepackage{url}
+\usepackage{calc}
+
+\input{latex-pkg/defaultcustom.tex}
+
+% Chapter heading style (same as main thesis, without the fancy quotchap block)
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+
+% Custom TODO marker
+\newcommand{\TODO}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+
+% Fallback labels for cross-references to chapters not in this excerpt.
+% The methods+experiments chapters reference the Results and Discussion
+% chapters of the full thesis; here we register placeholder targets so
+% those \ref{} calls resolve to readable text instead of "??" .
+\makeatletter
+\@newl@bel{r}{ch:results}{{Results ch. (full thesis)}{-}{}{}{}}
+\@newl@bel{r}{ch:discussion}{{Discussion ch. (full thesis)}{-}{}{}{}}
+\@newl@bel{r}{sec:failure-mode-discussion}{{Failure-Mode Discussion (full thesis)}{-}{}{}{}}
+\makeatother
+
+\begin{document}
+
+% Cover page
+\begin{titlepage}
+\begin{center}
+\vspace*{3cm}
+{\sf\bfseries\LARGE Methodology + Experimental Design}\\[0.4cm]
+{\sf\bfseries\Large Excerpt from ``Soft vs Rigid Gripper Benchmark for Cloth Grasping''}\\[0.3cm]
+{\large A thesis in progress, McGill University --- for supervisor review}\\[1cm]
+{\large Shiyao Ni}\\[0.5cm]
+Department of Mechanical Engineering\\
+McGill University\\[1cm]
+{\small Compiled \today}\\[0.5cm]
+{\small This standalone document contains only Chapters 3 (Methodology) and 4 (Experimental Design and Procedure) of the thesis manuscript. Chapter and section numbering starts fresh at 1 here; the equivalent chapter numbers in the full thesis are noted in the running header.}
+\end{center}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+% Reset chapter counter so this excerpt reads standalone (Ch 1, Ch 2)
+\setcounter{chapter}{0}
+
+\input{base/methods/methods.tex}
+\input{base/experiments/experiments.tex}
+
+\end{document}
