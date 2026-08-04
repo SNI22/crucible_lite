@@ -1,0 +1,24 @@
+\chapter*{\rm\bfseries Notation}
+\label{ch:notation}
+\addcontentsline{toc}{chapter}{Notation}
+
+\begin{table}[!h]
+\begin{tabular}{l l}
+$F_z$ & Stationary contact force in the gripper $z$-axis (N) \\ [1ex]
+$\bar{F}_z$, $\sigma_{F_z}$ & Per-cell mean and standard deviation of $F_z$ over pooled trials \\ [1ex]
+$\mathbf{F}_{\text{ext}}$ & Franka external wrench force vector at the end-effector flange (N) \\ [1ex]
+$d$ & Press depth: distance the gripper fingertip is driven below the \\
+    & detected cloth/table surface (mm) \\ [1ex]
+$z_{\text{surf}}$ & Detected cloth/table surface height (mm) \\ [1ex]
+$\theta_x$, $\theta_y$ & Gripper tilt angle about the world $x$ / $y$ axis, applied as \\
+                        & $R_{\text{tilt}} = R_y(\theta_y)\,R_x(\theta_x)$ (extrinsic) ($^{\circ}$) \\ [1ex]
+$a$ & Tilt axis identifier ($x$ or $y$) \\ [1ex]
+$b(d,a)$ & Signed tilt bias: $b(d,a) = |F_z^{+2.5^{\circ}}(d,a)| - |F_z^{-2.5^{\circ}}(d,a)|$ (N) \\ [1ex]
+$N$ & Number of stationary force samples pooled in a (variant, depth, tilt) cell \\ [1ex]
+\end{tabular}
+\end{table}
+
+\TODO{Verify this list is complete against the final manuscript --- add any
+symbol introduced in Methods/Results/Discussion that is missing here (e.g.\
+per-variant geometric constants such as $L_{\text{eff}}$ from the mount-tilt
+equivalence finding).}

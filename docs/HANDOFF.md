@@ -28,19 +28,27 @@ crucible/cloth-grasp/
 │   ├── memory/                    # Long-lived memory notes
 │   │   └── MEMORY.md              # Index of memory entries
 │   └── thesis/
-│       ├── Thesis.tex             # Main LaTeX entrypoint
-│       ├── Thesis.pdf             # Built output
-│       ├── content/               # Frontmatter (title page, abstract, etc.)
-│       ├── base/                  # Chapter sources:
-│       │   ├── intro/
-│       │   ├── background/
-│       │   ├── methods/
-│       │   ├── experiments/       # NEW: combined Experiment chapter
-│       │   ├── results/           # NEW: Results-only chapter
-│       │   ├── discussion/        # NEW: Discussion-only chapter (rewritten)
-│       │   ├── conclusion/
-│       │   ├── exp1/ exp2/        # ORPHANED (superseded by experiments/)
-│       └── img/                   # All figures (~40 PNG files, `final_*.png` are canonical)
+│       ├── Thesis.tex             # Main LaTeX entrypoint (McGill_PhD_Thesis_Template-based, since 2026-07-30)
+│       ├── Thesis.pdf             # Built output (stale — last built under the old template)
+│       ├── Thesis_methods_only.tex # Standalone Methods+Experiments excerpt for supervisor review
+│       ├── content/               # ALL chapters + frontmatter now live flat here (one file each):
+│       │   ├── TitlePage.tex, AbstractEnglish.tex, AbstractFrench.tex,
+│       │   │   Contributions.tex, Acknowledgements.tex
+│       │   ├── Introduction.tex, RelevantLiterature.tex, Methods.tex,
+│       │   │   Experiments.tex, Results.tex, Discussion.tex, Conclusions.tex
+│       │   └── Publications.tex, Acronyms.tex
+│       ├── latex-pkg/             # Margin/style .sty files — still used by Thesis_methods_only.tex
+│       └── images/                # All figures (56 PNG files, `final_*.png` are canonical, + McGill logo PDF)
+│
+│       NOTE: the old `base/<chapter>/` directory structure, lowercase-named
+│       content files, and `img/`/`figures/` dirs were retired on 2026-07-30
+│       when the thesis was migrated onto the McGill_PhD_Thesis_Template
+│       (~/Documents/thesis_template/McGill_PhD_Thesis_Template). All real
+│       content was ported verbatim; only leftover generic-template cruft
+│       (unrelated placeholder acronyms/publications/appendix/bib entries,
+│       an orphaned French abstract about an unrelated metamodelling thesis,
+│       a stale .bak draft) was dropped. See git history around that date
+│       for the full diff if anything seems missing.
 ```
 
 ### 1.2 Experimental data repo (NOT tracked by git — separate location)
@@ -91,17 +99,18 @@ year still contain `\TODO{...}` placeholders — fill in before submission.
 
 | Ch | Title | File | Status |
 |----|---|---|---|
-| 1 | Introduction | `base/intro/intro.tex` | Existed before this session, not modified |
-| 2 | Background | `base/background/background.tex` | Existed before, not modified |
-| 3 | Methods | `base/methods/methods.tex` | Existed before, `ch:exp2` refs updated to `ch:experiments` |
-| 4 | Experimental Design and Procedure | `base/experiments/experiments.tex` | **NEW**, combines old exp1 + exp2 |
-| 5 | Results | `base/results/results.tex` | **NEW**, number-heavy, tables only |
-| 6 | Discussion | `base/discussion/discussion.tex` | **REWRITTEN**, interpretation/mechanisms |
-| 7 | Conclusion and Future Work | `base/conclusion/conclusion.tex` | Existed before, `ch:exp2` refs updated |
+| 1 | Introduction | `content/Introduction.tex` | Existed before this session, not modified |
+| 2 | Background | `content/RelevantLiterature.tex` | Existed before, not modified |
+| 3 | Methods | `content/Methods.tex` | Existed before, `ch:exp2` refs updated to `ch:experiments` |
+| 4 | Experimental Design and Procedure | `content/Experiments.tex` | Combines old exp1 + exp2 |
+| 5 | Results | `content/Results.tex` | Number-heavy, tables only |
+| 6 | Discussion | `content/Discussion.tex` | Interpretation/mechanisms |
+| 7 | Conclusion and Future Work | `content/Conclusions.tex` | Existed before, `ch:exp2` refs updated |
 
-Orphaned files kept on disk but not included by `Thesis.tex`:
-- `base/exp1/exp1.tex`
-- `base/exp2/exp2.tex`
+(Paths updated 2026-07-30 — see the note in §1.1. Content is unchanged from the
+prior `base/<chapter>/<chapter>.tex` layout, just relocated. The old orphaned
+`base/exp1/exp1.tex` and `base/exp2/exp2.tex` — superseded by `Experiments.tex`
+above — were deleted in that same migration, not just left on disk.)
 
 ### 2.3 Building the PDF
 
@@ -339,8 +348,16 @@ new laptop, do Option B first.
   duplicate cells that were hard-deleted). Staged cells are retained
   as historical record but are NOT read by any analysis script (all
   pool functions filter out `_depth_*` directories).
-- Two `\TODO` placeholders in `discussion.tex` (public GitHub URL,
+- Two `\TODO` placeholders in `Discussion.tex` (public GitHub URL,
   commit hash) — fill in before final submission.
-- The old `exp1.tex` and `exp2.tex` files are orphaned on disk but not
-  included in the build; safe to delete once you're sure the combined
-  `experiments/experiments.tex` covers everything you need.
+- (2026-07-30) `exp1.tex`/`exp2.tex` and the rest of the old `base/`
+  layout were deleted as part of the McGill_PhD_Thesis_Template migration
+  — see the note in §1.1. No longer just "safe to delete"; already done.
+- **No LaTeX toolchain is available on the Windows machine this migration
+  was done on** — the new `Thesis.tex` has not been build-verified.
+  Package/macro usage was audited manually (every `\usepackage` the active
+  chapters actually need — amsmath, booktabs, url, fontenc/lmodern for
+  `\textmu`, vmargin for GPS margins — was cross-checked against actual
+  command usage in the chapter files), but run
+  `latexmk -pdf -interaction=nonstopmode -halt-on-error Thesis.tex` on the
+  Linux box at the first opportunity and fix anything that surfaces.

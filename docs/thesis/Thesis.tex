@@ -1,8 +1,10 @@
-% Adapted from the McGill thesis template by Peter Kabal / Simon Geoffroy-Gagnon.
-% Trimmed for a mechanical-engineering experimental thesis (no algorithm typesetting
-% or biology sequence display). The template's defaultcustom.tex margin block
-% is preserved so McGill GPS margin requirements still hold.
-\documentclass[letter,12pt,oneside]{book}
+% This structure conforms to the McGill university-wide thesis guidelines:
+% https://www.mcgill.ca/gps/thesis/thesis-guidelines/preparation
+% Based on the McGill_PhD_Thesis_Template (github.com/juliengs/mcgill-thesis-template
+% lineage, author: Maximilian Schiedermeier), adapted for this Master's thesis.
+% Margin block ported from the project's previous template (latex-pkg/defaultcustom.tex)
+% to preserve McGill GPS binding-margin compliance.
+\documentclass[12pt,oneside]{book}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -10,284 +12,114 @@
 \usepackage{amsmath,amssymb,amstext,bm}
 \usepackage{graphicx}
 \usepackage{booktabs}
-\usepackage{multirow}
-\usepackage{array}
-\usepackage{tabularx}
-\usepackage{longtable}
-\usepackage{rotating}
-\usepackage{listings}
-\usepackage{caption}
-\usepackage{subcaption}
-\usepackage{xcolor}
-\usepackage{xspace}
-\usepackage{setspace}
-\usepackage{makeidx}
-\usepackage{fancyhdr}
-\usepackage{fancyvrb}
-\usepackage{vmargin}        % for \setmarginsrb (McGill margins, set below)
-\usepackage[bf,rm,medium,compact]{titlesec}
-\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue]{hyperref}
 \usepackage{url}
-\usepackage{calc}
-\usepackage{theorem}
-\usepackage[grey]{latex-pkg/quotchap}    % chapter heading style from McGill template
-% ltcaption \CaptionLabelFont / \CaptionTextFont are not used in this trimmed
-% version (the caption package handles caption styling instead).
 
-%
-%  Brown  Maroon  NavyBlue  MidnightBlue  
-%
+% enable onehalfspacing etc
+\usepackage{setspace}
 
-% INCLUDE HVs CUSTOMIZATIONS
-\input{latex-pkg/defaultcustom.tex}
-% INCLUDE LATEX PACKAGES
+% Make chapter enumeration big and fat
+\usepackage{fix-cm}
+\usepackage{xcolor}
+\usepackage[bf,rm,medium,compact]{titlesec}
+\definecolor{gray75}{gray}{0.75}
+\newcommand{\hsp}{\hspace{20pt}}
+\titleformat{\chapter}[display]{\filleft\Huge\bfseries}{\fontsize{100}{100}\selectfont\textcolor{gray75}\thechapter}{1ex}{}[]%
 
-\makeatletter
-\newcommand\arraybslash{\let\\\@arraycr}
-%\@addtoreset{chapter}{part}
-\makeatother
+% Enable non-ugly hyperlinks
+\usepackage[hidelinks]{hyperref}
 
-
-
-\lstset{basicstyle=\normalsize\ttfamily,breaklines=true}
-\lstset{framextopmargin=5pt,frame=bottomline}
-
-
-%[latin1]
-% INCLUDE LATEX PREAMBLE
-% SETTINGS FOR listings PACKAGE
-\lstset{
-    numberstyle=\tiny,
-    numbers=left,
-    stepnumber=1,
-    numbersep=5pt,
-    tabsize=2,
-    showstringspaces=false,
-    aboveskip=\smallskipamount,
-    belowskip=\smallskipamount,
-    lineskip=-2pt
-}
-
-% PAGE COLOR and SETTINGSx
-\pagecolor{white}
-
-% \setlength{\headheight}{2cm}
-% \setlength{\marginparwidth}{1.9cm}
-% MAKE INDEX
-\makeindex
-
-% CUSTOM COMMANDS
-\newcommand{\linka}[1]{{\tt\htmladdnormallink{#1}{#1}}}
-\newcommand{\linkb}[2]{{\tt\htmladdnormallink{#1}{#2}}}
-\newcommand{\parcomment}[1]{\marginpar{\scriptsize{\textcolor{blue}{#1}}}}
-\newcommand{\defn}[2]{{\begin{minipage}{\textwidth}\vspace{2pt}\emph{\textbf{#1}}:\vspace{1pt}\begin{center}\fbox{\begin{minipage}{5.5in}#2\end{minipage}}\end{center}\vspace{2pt}\end{minipage}}}
-
-% lgrind FONTS
-\def\BGfont{\small\tt}
-\def\CMfont{\small\tt}
-\def\NOfont{\small\tt}
-\def\KWfont{\small\tt}
-\def\STfont{\small\tt}
-\def\TTfont{\small\tt}
-\def\VRfont{\small\tt}
-
-% KZ definitions
-\input{content/thesisparams.tex}
+% McGill GPS binding-margin compliance (ported from the previous template)
+\usepackage{vmargin}
+\setmarginsrb{36mm}{28mm}{22mm}{35mm}%
+             {30pt}{20pt}{12pt}{40pt}
 
 % Custom TODO marker (search/grep for "TODO" to find open items in the manuscript)
 \newcommand{\TODO}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+
+% Some metadata for your generated PDF
+\title{Soft vs Rigid Gripper Benchmark for Cloth Grasping}
+\author{Shiyao Ni}
+\date{\today}
 
 % DOCUMENT BEGINS
 \begin{document}
 
 
-\pagestyle{empty} %defines the general contents of the headers and footers (e.g. where the page number will be printed)
+% Special command to link to official guidelines:
+\newcommand{\mcgillguidelines}{\href{https://www.mcgill.ca/gps/thesis/thesis-guidelines/preparation}{Official McGill Guidelines: }}
 
-%%%%%%%%%%%%%%%%%%%
-%
+
 % TITLE PAGE
-%
-%%%%%%%%%%%%%%%%%%%
 \begin{onehalfspacing}
-\input{content/FirstPage.tex}
+\pagestyle{empty}
+\input{content/TitlePage.tex}
 \cleardoublepage
 \end{onehalfspacing}
 
 
-%%%%%%%%%%%%%%%%%%%
-%
-% SPACING
-%
-%%%%%%%%%%%%%%%%%%%
-%
-% \singlespacing
-% \doublespacing
-% \onehalfspacing 
-%
-% \setstretch{1.8}
-%
-
-\onehalfspacing 
-
-% \doublespacing
-
-% ROMAN PAGE NUMBERING
+% Pages in all "Chapters" before the actual thesis content are enumerated in roman (i, ii, iii, ...)
 \pagenumbering{roman}
 \pagestyle{plain}
-
-\begin{Large}
-\end{Large}
-
-%%%%%%%%%%%%%%%%%%%
-%
-% ABSTRACT
-%
-%%%%%%%%%%%%%%%%%%%
-
-\input{content/en_Absract.tex}
-\clearpage
-
-%\bigskip \bigskip
-
-\input{content/fr_Absract.tex}
-\cleardoublepage
-
-%%%%%%%%%%%%%%%%%%%
-%
-% ACKNOWLEDGEMENT
-%
-%%%%%%%%%%%%%%%%%%%
-\input{content/contributions.tex}
-
-\input{content/Acknowledgements.tex}
-\cleardoublepage
-
-%%%%%%%%%%%%%%%%%%%
-%
-%  Table Of Content
-%  List Of Figures
-%  List Of Tables
-%
-%%%%%%%%%%%%%%%%%%%
-
-%\setstretch{0.0}
-% \begin{singlespacing}
-% \begin{spacing}{0.5}
-% KZ WORKING BEFORE AUG 11 \setstretch{0.5}
-
-\setstretch{0.7}
-
-\tableofcontents
-% \end{spacing}
-\listoffigures
-% \end{singlespacing}
-
-\begin{onehalfspacing}
-
-\listoftables
-
-%\listofalgorithms
-
-\end{onehalfspacing}
-
-\cleardoublepage
-
-%%%%%%%%%%%%%%%%%%%%
-%
-%  ABBREVIATIONS
-%
-%%%%%%%%%%%%%%%%%%%%
-% \nomenclature{RC}{Read Committed}
-% \nomenclature{SI}{Snapshot Isolation}
-% \nomenclature{JOCC}{JPA Optimistic Concurrency Control}
-% \nomenclature{\textsc{colAgent}}{Collector Agent}
-
-% ARABIC PAGE NUMBERING
-\pagenumbering{arabic}
-\pagestyle{fancyplain}
-
-% INCLUDE HVs DEFAULT FORMATTING
-\input{latex-pkg/latexformat.tex}
-
-\interfootnotelinepenalty=10000 %priority, to make sure the footnote is not dvided between pages.
-
 \onehalfspacing
 
 
-% ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+% Abstracts in English and French
+\input{content/AbstractEnglish}
+\clearpage
+\input{content/AbstractFrench}
+\cleardoublepage
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% BEGIN_Chapters
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Contribution of Authors
+\input{content/contributions}
+\clearpage
+
+% Acknowledgements
+\input{content/Acknowledgements}
+\clearpage
+
+% Next comes the GENERATED list of contents, figures and tables.
+\tableofcontents
+\listoffigures
+\listoftables
+\clearpage
+
+% List of Abbreviations, Notation, Preface (McGill front-matter convention)
+\input{content/acronyms}
+\clearpage
+\input{content/Notation}
+\clearpage
+\input{content/Preface}
+\clearpage
 
 
-%%%%%%%%%%%%%%%%%%%%
-% MTT
-%%%%%%%%%%%%%%%%%%%%
 
-\graphicspath{{img/}}
+% Here comes the actual thesis content, we switch back to arabic page numbers.
+\pagenumbering{arabic}
+\graphicspath{{images/}}
 
-%\part{Scalable Cheat-Resistant Multiplayer Online Games}
-%\label{part:intro}
-
-\input{base/intro/intro.tex}
-
-\input{base/background/background.tex}
-
-\input{base/methods/methods.tex}
-
-\input{base/experiments/experiments.tex}
-
-\input{base/results/results.tex}
-
-\input{base/discussion/discussion.tex}
-
-\chapter{\rm\bfseries Conclusion and Future Work}
-\input{base/conclusion/conclusion.tex}
+\input{content/Introduction}
+\input{content/RelevantLiterature}
+\input{content/Methods}
+\input{content/Experiments}
+\input{content/Results}
+\input{content/Discussion}
+\input{content/Conclusions}
 
 
-\begin{onehalfspacing}
-\input{content/publications.tex}
-\end{onehalfspacing}
+% Appendices
+\appendix
+\input{content/Appendices}
+\clearpage
 
 
-\newpage
+% List of YOUR publications
+\input{content/publications}
 
-%%%%%%%%%%%%%%%%%%%
-%
-% BIBLIOGRAPHY
-%
-%%%%%%%%%%%%%%%%%%%
-
-
-%\chapter*{\rm\bfseries Bibliography}
-\chaptermark{{\rm\bfseries Bibliography}}
-\addcontentsline{toc}{chapter}{Bibliography}
-
-\bibliographystyle{alpha}
-\bibliography{Thesis}
-
-%\addcontentsline{toc}{chapter}{\numberline{}\rm\bfseries{Bibliography}}
-
-\begin{onehalfspacing}
-\input{content/acronyms.tex}
-\end{onehalfspacing}
-
-\normalsize
-\printindex
-
-%%%%%%%%%%%%%%%%%%%
-%
-% APPENDICES
-%
-%%%%%%%%%%%%%%%%%%%
-
-% \appendix
-
-
-% \input{content/ConsADExamples.tex}
+% Finally your references
+% PLEASE use a management system, e.g. Zotero (this works really nice with overleaf, there's seamless referencing of all your organized papers from zotero).
+% To add zotero, use "New file -> From Zotero"
+\bibliographystyle{ieeetr}
+\bibliography{references}
 
 \end{document}
