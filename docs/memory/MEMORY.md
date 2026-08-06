@@ -20,3 +20,5 @@
 - [Cloth-grasp coverage matrix 2026-06-26](cloth_grasp_coverage_matrix_2026_06_26.md) — **CRUCIAL** full depth × angle × variant coverage table; fr18_model2 added for mfg-defect comparison; always re-verify against fs (drifts fast)
 - [Trial outcome taxonomy](trial_outcome_taxonomy.md) — distinguish success / no-grasp / failed-trial; no-grasp has valid Fz and counts as data
 - [Never rm without double-confirm](never_rm_without_double_confirm.md) — bulk delete = always ask "stage or rm"; experiments/cloth_grasp/ not git-tracked, no recovery
+- [MECH609 seminar deck](mech609_seminar_deck.md) — Aug 12 seminar; deck at docs/seminar/, style rules (LaTeX look, no emails, thanks on last page only), artifact URL
+- [Thesis state 2026-08-06](thesis_state_2026_08_06.md) — 63pp clean build; what's done vs user-only TODOs; never invent citations

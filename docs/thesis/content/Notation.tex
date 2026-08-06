@@ -2,23 +2,56 @@
 \label{ch:notation}
 \addcontentsline{toc}{chapter}{Notation}
 
-\begin{table}[!h]
+\noindent
 \begin{tabular}{l l}
-$F_z$ & Stationary contact force in the gripper $z$-axis (N) \\ [1ex]
-$\bar{F}_z$, $\sigma_{F_z}$ & Per-cell mean and standard deviation of $F_z$ over pooled trials \\ [1ex]
-$\mathbf{F}_{\text{ext}}$ & Franka external wrench force vector at the end-effector flange (N) \\ [1ex]
+\multicolumn{2}{l}{\textit{Frames and poses}} \\ [0.5ex]
+$\mathcal{W}$, $\mathcal{F}$, $\mathcal{T}$ & World (robot base), gripper flange, and gripper tip frames \\ [1ex]
+$\mathbf{p}$ & Position vector in $\mathbb{R}^3$ (boldface); $\mathbf{p}_\mathcal{F}$, $\mathbf{p}_\mathcal{T}$ denote the \\
+             & flange and tip positions expressed in $\mathcal{W}$ \\ [1ex]
+$R$, $R_0$ & Orientation of the gripper as a rotation matrix, $R \in SO(3)$; \\
+           & $R_0 = R_x(180^{\circ})$ is the nominal down-pointing orientation \\ [1ex]
+$R_x(\phi)$, $R_y(\phi)$ & Elementary rotation matrix for a rotation by angle $\phi$ about \\
+                          & the fixed world $x$ or $y$ axis \\ [1ex]
+$\hat{\mathbf{z}}$ & Unit vector along $+z$ \\ [1ex]
+$z_{\text{TCP}}$ & Per-variant tool-centre-point offset from flange to tip along \\
+                  & the flange's local $z$ axis (mm); $z_{\text{TCP}}^{(v)}$ denotes the \\
+                  & calibrated value for variant $v$ \\ [1ex]
+$x_0, y_0$ & Fixed probe/target position in the world $xy$ plane (mm) \\ [1ex]
+\end{tabular}
+
+\medskip
+\noindent
+\begin{tabular}{l l}
+\multicolumn{2}{l}{\textit{Design parameters (fixed per variant)}} \\ [0.5ex]
+$t$ & Finray finger blade thickness (mm) \\ [1ex]
+$\alpha$ & Baseline seat-mount tilt angle, about the gripper's local $y$ \\
+         & axis, introduced by the 3D-printed inclined seat ($^{\circ}$) \\ [1ex]
+\multicolumn{2}{l}{\textit{Runtime and trial variables}} \\ [0.5ex]
+$\theta_x$, $\theta_y$ & Commanded robot-arm tilt angle about the world $x$ / $y$ axis \\
+                        & (which coincide with the gripper's local $x$ / $y$ axis lines \\
+                        & at $R_0$), applied as $R_{\text{tilt}} = R_y(\theta_y)\,R_x(\theta_x)$ \\
+                        & (extrinsic) ($^{\circ}$); distinct from, and never summed \\
+                        & with, the seat angle $\alpha$ \\ [1ex]
 $d$ & Press depth: distance the gripper fingertip is driven below the \\
     & detected cloth/table surface (mm) \\ [1ex]
-$z_{\text{surf}}$ & Detected cloth/table surface height (mm) \\ [1ex]
-$\theta_x$, $\theta_y$ & Gripper tilt angle about the world $x$ / $y$ axis, applied as \\
-                        & $R_{\text{tilt}} = R_y(\theta_y)\,R_x(\theta_x)$ (extrinsic) ($^{\circ}$) \\ [1ex]
+$z_{\text{surf}}$ & Detected cloth/table surface height at the tip's $xy$ location (mm) \\ [1ex]
 $a$ & Tilt axis identifier ($x$ or $y$) \\ [1ex]
 $b(d,a)$ & Signed tilt bias: $b(d,a) = |F_z^{+2.5^{\circ}}(d,a)| - |F_z^{-2.5^{\circ}}(d,a)|$ (N) \\ [1ex]
-$N$ & Number of stationary force samples pooled in a (variant, depth, tilt) cell \\ [1ex]
 \end{tabular}
-\end{table}
 
-\TODO{Verify this list is complete against the final manuscript --- add any
-symbol introduced in Methods/Results/Discussion that is missing here (e.g.\
-per-variant geometric constants such as $L_{\text{eff}}$ from the mount-tilt
-equivalence finding).}
+\medskip
+\noindent
+\begin{tabular}{l l}
+\multicolumn{2}{l}{\textit{Force measurement}} \\ [0.5ex]
+$\mathbf{F}_{\text{ext}}$ & Franka external wrench force vector at the end-effector flange (N); \\
+                          & $F_x, F_y, F_z$ denote its components \\ [1ex]
+$F_z^{\text{bias}}$ & Free-air $F_z$ bias captured at session start (N) \\ [1ex]
+$F_z^{(i)}$ & The $i$-th stationary $F_z$ sample within a trial (N) \\ [1ex]
+$N$ & Number of stationary force samples pooled in a (variant, depth, tilt) cell \\ [1ex]
+$\bar{F}_z$, $\sigma_{F_z}$ & Per-cell mean and standard deviation of $F_z$ over pooled trials \\ [1ex]
+$\sigma_{z,\text{tcp}}$ & Across-tap standard deviation of the touch-off $z$ measurement \\
+                         & during TCP calibration (mm; distinct from $\sigma_{F_z}$ above) \\ [1ex]
+\multicolumn{2}{l}{\textit{Derived quantities}} \\ [0.5ex]
+$L_{\mathrm{eff}}$ & Effective finger lever-arm length inferred from the \\
+                    & mount-tilt/depth-shift equivalence (mm) \\ [1ex]
+\end{tabular}

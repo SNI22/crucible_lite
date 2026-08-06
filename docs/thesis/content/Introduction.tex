@@ -4,8 +4,16 @@
 \section{Motivation}
 
 Fabric handling automation is a long-standing open problem in industrial
-robotics, with applications ranging from apparel manufacturing and laundry
-processing to packaging of textile components. Cloth is uniquely difficult to
+robotics, with applications spanning apparel manufacturing and textile
+logistics, laundry processing and folding, hospital bedding management,
+assistive robotics for elderly or disabled individuals, and the packaging
+of soft goods. Yet a striking fraction of published robot-manipulation
+demonstrations sidesteps the hardest step entirely: the object is handed
+to the robot's gripper by a human operator, and the demonstrated
+autonomy begins only after the grasp already exists. For cloth
+specifically, acquiring the first grasp---picking a thin, flat fabric
+directly off a surface---remains the bottleneck that limits how
+autonomous these systems can truly be. Cloth is uniquely difficult to
 grasp robustly: it deforms continuously under contact, exhibits no fixed
 graspable feature, and has a near-zero bending stiffness that allows it to slip
 out of a poorly placed gripper. Conventional rigid-jaw grippers, designed for
@@ -55,6 +63,19 @@ experimental benchmark on a Franka FR3 collaborative robot:
   \item A geometric verification framework that disentangles control-frame
         positioning error from physical gripper compliance under load.
 \end{itemize}
+
+\paragraph{Scope.} The benchmark deliberately isolates the \emph{contact}
+phase of cloth grasping---the interval between first gripper--cloth contact
+and a completed lift---and characterises it over a continuous depth--tilt
+parameter space. Downstream task-level evaluation (e.g.\ folding a cloth
+diagonally from a corner grasp, dropping a centre-grasped cloth onto a
+curved object, or dragging a cloth between positions under the same
+human-defined policy) was part of the original project plan but is
+descoped from this thesis; it is discussed as future work in
+Chapter~\ref{ch:conclusion}. This narrowing is intentional: it is
+precisely because the contact phase is usually bundled inside end-to-end
+task pipelines that its mechanics have not previously been mapped as a
+function of gripper design.
 
 \section{Thesis Organisation}
 

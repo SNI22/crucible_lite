@@ -1,15 +1,17 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {3.1}{\ignorespaces Gripper variants}}{12}{table.3.1}%
-\contentsline {table}{\numberline {3.2}{\ignorespaces Calibrated TCP offsets}}{14}{table.3.2}%
+\contentsline {table}{\numberline {3.1}{\ignorespaces Gripper variants}}{13}{table.caption.14}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces Calibrated TCP offsets}}{16}{table.caption.18}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {4.1}{\ignorespaces Tilt geometry verification}}{21}{table.4.1}%
+\contentsline {table}{\numberline {4.1}{\ignorespaces Tilt geometry verification}}{24}{table.caption.20}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {5.1}{\ignorespaces Zero-tilt curve summary}}{24}{table.5.1}%
-\contentsline {table}{\numberline {5.2}{\ignorespaces Cross-axis bias sign reversal at boundary}}{25}{table.5.2}%
-\contentsline {table}{\numberline {5.3}{\ignorespaces Mount tilt equivalence}}{25}{table.5.3}%
-\contentsline {table}{\numberline {5.4}{\ignorespaces No-grasp fractions at boundary}}{26}{table.5.4}%
+\contentsline {table}{\numberline {5.1}{\ignorespaces Zero-tilt curve summary}}{27}{table.caption.21}%
+\contentsline {table}{\numberline {5.2}{\ignorespaces Cross-axis bias sign reversal at boundary}}{28}{table.caption.22}%
+\contentsline {table}{\numberline {5.3}{\ignorespaces Mount tilt equivalence}}{28}{table.caption.23}%
+\contentsline {table}{\numberline {5.4}{\ignorespaces No-grasp fractions at boundary}}{29}{table.caption.24}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\contentsline {table}{\numberline {A.1}{\ignorespaces Experiment 1 coverage}}{39}{table.caption.25}%
+\contentsline {table}{\numberline {A.2}{\ignorespaces Experiment 2 coverage}}{40}{table.caption.26}%

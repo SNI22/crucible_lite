@@ -29,6 +29,7 @@
 \usepackage{calc}
 
 \input{latex-pkg/defaultcustom.tex}
+\graphicspath{{images/}}
 
 % Chapter heading style (same as main thesis, without the fancy quotchap block)
 \titleformat{\chapter}[display]
@@ -65,6 +66,11 @@ McGill University\\[1cm]
 \end{titlepage}
 
 \tableofcontents
+\clearpage
+
+% Notation table (front matter in the full thesis; included here so the
+% symbols used below are traceable without the rest of the manuscript)
+\input{content/Notation.tex}
 \clearpage
 
 % Reset chapter counter so this excerpt reads standalone (Ch 1, Ch 2)

@@ -20,24 +20,28 @@ S-curve interpolator (the so-called ``sine descent'' implemented in
 velocities.
 
 \subsection{Gripper Variants Tested}
+\label{sec:variants}
 
 \begin{table}[ht]
 \centering
-\caption[Gripper variants]{Six gripper variants benchmarked. All finray
-variants share the same 3D-printed inclined-seat mount; only the seat
-angle changes between the $+2.5^{\circ}$ baseline and the $+5.0^{\circ}$
-variant. The parallel-jaw variants do not use an inclined seat.}
+\caption[Gripper variants]{Six gripper variants benchmarked, indexed by
+blade thickness $t$ and baseline seat-mount tilt $\alpha$
+(Figure~\ref{fig:seat-mount-params}).
+All finray variants share the same 3D-printed inclined-seat mount; only
+$\alpha$ changes between the $+2.5^{\circ}$ baseline and the $+5.0^{\circ}$
+variant. The parallel-jaw variants do not use an inclined seat and have
+no defined $t$ or $\alpha$.}
 \label{tab:variants}
 \begin{tabular}{llll}
 \toprule
-Variant & Type & Key parameter & Seat angle \\
+Variant & Type & $t$ & $\alpha$ \\
 \midrule
-\texttt{parallel\_jaw\_stock}    & Rigid two-finger (Franka Hand)      & ---                    & --- \\
-\texttt{parallel\_jaw\_TPU}      & Rigid two-finger + TPU 90A pad      & 2.0\,mm pad thickness  & --- \\
-\texttt{finray\_18}              & Finray-effect 3D-printed            & 18\,mm finger thickness & $+2.5^{\circ}$ \\
-\texttt{finray\_18\_model2}      & Second print of \texttt{finray\_18} & 18\,mm finger thickness & $+2.5^{\circ}$ \\
-\texttt{finray\_26}              & Finray-effect 3D-printed            & 26\,mm finger thickness & $+2.5^{\circ}$ \\
-\texttt{finray\_26\_5deg}        & Finray-26 on 5$^{\circ}$-seat mount & 26\,mm finger thickness & $+5.0^{\circ}$ \\
+\texttt{parallel\_jaw\_stock}    & Rigid two-finger (Franka Hand)      & --- & --- \\
+\texttt{parallel\_jaw\_TPU}      & Rigid two-finger + 2.0\,mm TPU 90A pad & --- & --- \\
+\texttt{finray\_18}              & Finray-effect 3D-printed            & 18\,mm & $+2.5^{\circ}$ \\
+\texttt{finray\_18\_model2}      & Second print of \texttt{finray\_18} & 18\,mm & $+2.5^{\circ}$ \\
+\texttt{finray\_26}              & Finray-effect 3D-printed            & 26\,mm & $+2.5^{\circ}$ \\
+\texttt{finray\_26\_5deg}        & Finray-26 on 5$^{\circ}$-seat mount & 26\,mm & $+5.0^{\circ}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -48,28 +52,44 @@ using the vendor-default TPU 90A profile in Bambu Studio (0.4\,mm nozzle,
 default layer height, default infill, PEI-textured build plate).
 
 \paragraph{Baseline inclined-seat mount.}
-All finray variants are mounted on the Franka Hand via an inclined seat
-that introduces a fixed $+2.5^{\circ}$ tilt about the gripper $y$ axis
-(the gripping direction). The seat is a 3D-printed adapter and is
-present in \emph{every} variant tested in this thesis unless otherwise
-noted. Variants whose name contains \texttt{\_5deg} substitute a
-$+5.0^{\circ}$ seat in place of the default $+2.5^{\circ}$ seat; all
-other variants (\texttt{finray\_18}, \texttt{finray\_18\_model2},
-\texttt{finray\_26}, and the parallel-jaw variants) inherit the
-$+2.5^{\circ}$ baseline. The $+2.5^{\circ}$ baseline seat angle was chosen so that the two
-opposing finray fingers converge inward toward each other rather than
-splaying apart, closing the residual slit that would otherwise remain
-between the finger tips when the gripper is fully closed. This ensures
-firm contact between the fingers along their full length during a
-successful grasp. Figure~\TODO{ref} shows the mounting stack
-(flange $\to$ seat $\to$ finger) and defines the seat-tilt convention.
+We define $\alpha$ as the baseline seat-mount tilt angle: the fixed
+rotation about the gripper's local $y$ axis (the gripping direction)
+introduced by the 3D-printed seat adapter that carries every finray
+finger. All finray variants were mounted on the Franka Hand via this
+inclined seat; the seat was present in \emph{every} finray variant
+tested in this thesis unless otherwise noted, and is the physical
+realisation of $\alpha$. Variants whose name contains \texttt{\_5deg}
+used a $\alpha = +5.0^{\circ}$ seat in place of the default
+$\alpha = +2.5^{\circ}$ seat; all other finray variants
+(\texttt{finray\_18}, \texttt{finray\_18\_model2}, \texttt{finray\_26})
+used the $\alpha = +2.5^{\circ}$ baseline; the parallel-jaw variants have
+no seat and no defined $\alpha$. The $\alpha = +2.5^{\circ}$ baseline
+was chosen so that the two opposing finray fingers converge inward
+toward each other rather than splaying apart, closing the residual slit
+that would otherwise remain between the finger tips when the gripper is
+fully closed, ensuring firm contact between the fingers along their
+full length during a successful grasp. Figure~\ref{fig:seat-mount-params}
+shows the mounting stack (flange $\to$ seat $\to$ finger) and defines
+the $\alpha$ and $t$ design-parameter convention.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.95\linewidth]{fr3_design_params.pdf}
+\caption[Finray design parameters $\alpha$ and $t$]{Isometric, front, and
+side orthographic views of a finray variant mounted on the Franka Hand.
+The front view (centre) annotates the baseline seat-mount tilt $\alpha$
+at each finger root; the side view (right) annotates the finger blade
+thickness $t$. \TODO{add explicit gripper-frame axis labels ($x$, $y$,
+$z$) to each view once the frame-triad figure is finalised, per
+supervisor request.}}
+\label{fig:seat-mount-params}
+\end{figure}
 
 \paragraph{Consequence for reported ``$0^{\circ}$'' cells.}
-Cells reported in Chapter~\ref{ch:results} as $0^{\circ}$ tilt refer
-to \emph{zero commanded runtime tilt}; the physical gripper is still
-inclined at the baseline seat angle relative to the flange. All
-runtime tilt values (e.g. $\pm 2.5^{\circ}$ about $x$ or $y$) are
-applied \emph{on top of} the baseline seat tilt.
+Cells reported in Chapter~\ref{ch:results} as $0^{\circ}$ tilt mean the
+robot arm is perpendicular to the surface ($\theta_x = \theta_y = 0$).
+Runtime tilt values ($\pm 2.5^{\circ}$ about $x$ or $y$) tilt the arm
+away from this perpendicular pose.
 
 \subsection{Cloth Specimen}
 \label{sec:cloth}
@@ -97,7 +117,13 @@ $\mathcal{F}$ in $\mathcal{W}$. The tip frame $\mathcal{T}$ is located along
 the local $+z$ axis of $\mathcal{F}$ by a per-variant offset $z_{\text{TCP}}$,
 which depends on the physical gripper (finger length, mounting fixtures, pads).
 
-For a gripper at orientation $R \in SO(3)$, the world-frame relationship is
+Throughout, $\mathbf{p} \in \mathbb{R}^3$ (boldface) denotes a position
+vector expressed in $\mathcal{W}$ unless otherwise noted, and
+$R_x(\phi)$, $R_y(\phi)$ denote the elementary rotation matrices for a
+right-handed rotation by angle $\phi$ about the fixed world $x$ or $y$
+axis, so that a general gripper orientation is a composition
+$R \in SO(3)$ of these primitives. For a gripper at orientation $R$,
+the world-frame relationship between the tip and flange positions is
 \begin{equation}
   \mathbf{p}_\mathcal{T} = \mathbf{p}_\mathcal{F} + R \begin{bmatrix} 0 \\ 0 \\ z_{\text{TCP}} \end{bmatrix}.
   \label{eq:tip-from-flange}
@@ -111,6 +137,15 @@ the fingers close) is $\mathcal{F}$'s local $y$ axis; the gripper is
 mirror-symmetric about the $xz$ plane; consequently, rotation of the gripper
 about the local $y$ axis is rotation about the geometrically asymmetric
 axis, while rotation about $x$ is rotation about the symmetric axis.
+Because the nominal orientation $R_0 = R_x(180^{\circ})$ is itself a
+rotation about the world $x$ axis, the world $x$ and $y$ axis \emph{lines}
+coincide with the flange's local symmetric and gripping axis lines at
+$R_0$ (up to sign). The runtime tilt angles $\theta_x, \theta_y$
+introduced in Section~\ref{sec:tilt-pose} are defined as rotations about
+these fixed world axes, and because the axis lines coincide with the
+gripper-local axes at $R_0$, the same symmetric-axis / gripping-axis
+language applies without ambiguity to $\theta_x$ and $\theta_y$
+respectively.
 
 \subsection{TCP Offset Calibration}
 \label{sec:tcp-calib}
@@ -121,13 +156,13 @@ common probe position $(x_0, y_0)$ on a known rigid table and a force-feedback
 touch-off was performed: the gripper descended slowly in $z$ until the
 external force in $z$ exceeded a $-3$\,N threshold (debounced for three
 consecutive 50\,Hz samples). The flange $z$ at the latch moment was
-recorded as $z_{\text{tcp}}^{\text{measured}}$.
+recorded as $z_{\text{TCP}}^{\text{measured}}$.
 
 Taking the rigid \texttt{parallel\_jaw\_stock} variant as the URDF reference
 ($z_{\text{TCP}} \equiv 0$ by definition), the per-variant TCP offset is
 \begin{equation}
-  z_{\text{TCP}}^{(v)} = z_{\text{tcp}}^{(v),\text{measured}}
-                       - z_{\text{tcp}}^{\text{stock},\text{measured}}.
+  z_{\text{TCP}}^{(v)} = z_{\text{TCP}}^{(v),\text{measured}}
+                       - z_{\text{TCP}}^{\text{stock},\text{measured}}.
   \label{eq:tcp-calib}
 \end{equation}
 
@@ -141,7 +176,7 @@ differential touch-off against the stock parallel jaw.}
 \label{tab:tcp-calib}
 \begin{tabular}{lrr}
 \toprule
-Variant & $z_{\text{tcp}}^{\text{measured}}$ (mm) & $z_{\text{TCP}}^{(v)}$ (mm) \\
+Variant & $z_{\text{TCP}}^{\text{measured}}$ (mm) & $z_{\text{TCP}}^{(v)}$ (mm) \\
 \midrule
 \texttt{parallel\_jaw\_stock}    & 37.871 & 0.000 \\
 \texttt{parallel\_jaw\_TPU}      & 39.916 & 2.044 \\
@@ -153,9 +188,12 @@ Variant & $z_{\text{tcp}}^{\text{measured}}$ (mm) & $z_{\text{TCP}}^{(v)}$ (mm) 
 \end{table}
 
 The reproducibility of the touch-off was measured as the across-tap standard
-deviation $\sigma_z$ in mm. For \texttt{finray\_26\_5deg}, $\sigma_z =
-183$\,\textmu m owing to a wobble component introduced by the inclined
-seat; the other four variants had $\sigma_z \leq 102$\,\textmu m.
+deviation $\sigma_{z,\text{tcp}}$ in mm (not to be confused with the
+per-cell force standard deviation $\sigma_{F_z}$ of
+Section~\ref{sec:stats}). For \texttt{finray\_26\_5deg},
+$\sigma_{z,\text{tcp}} = 183$\,\textmu m owing to a wobble component
+introduced by the inclined seat; the other four variants had
+$\sigma_{z,\text{tcp}} \leq 102$\,\textmu m.
 
 \section{Force Measurement}
 
@@ -173,7 +211,7 @@ it where appropriate.
 \label{sec:tilt-pose}
 
 When the gripper is tilted, the flange position required to place the tip at
-a fixed probe location $(x_0, y_0, z_{\text{surf}}^{\text{tip}})$ shifts
+a fixed probe location $(x_0, y_0, z_{\text{surf}})$ shifts
 laterally. From equation~\eqref{eq:tip-from-flange}, the required flange
 position is
 \begin{equation}
@@ -189,7 +227,42 @@ $R_{\text{tilt}} = R_y(\theta_y) R_x(\theta_x)$ (extrinsic, world frame)
 onto the base orientation $R_0 = R_x(180^{\circ})$, and the flange position
 target is updated accordingly. The orientation is then held constant
 through all subsequent descent and grasp phases, so the tip XY remains at
-$(x_0, y_0)$ throughout the trial.
+$(x_0, y_0)$ throughout the trial. Figure~\ref{fig:runtime-tilt}
+illustrates the two runtime tilt angles: $\theta_x$ rotates the gripper
+about the symmetric axis (front view, both fingers move together),
+while $\theta_y$ rotates it about the gripping axis (side view, the
+mirror-symmetric fingers overlap in projection). Both are shown here as
+a general rotation from the world $z$ axis (``Ground''); the runtime
+sweep used in this study is $\theta_x, \theta_y \in
+\{-2.5^{\circ}, 0^{\circ}, +2.5^{\circ}\}$. These arm rotation angles
+are a separate quantity from the seat angle $\alpha$ of
+Section~\ref{sec:variants}: $\alpha$ is a fixed property of the gripper
+hardware (how the fingers meet the flange), while $\theta_x, \theta_y$
+describe how the arm is oriented relative to the surface. The two are
+reported independently throughout this thesis and are never summed.
+
+\begin{figure}[ht]
+\centering
+\begin{subfigure}[b]{0.53\linewidth}
+  \centering
+  \includegraphics[height=0.72\textheight,width=\linewidth,keepaspectratio]{fr3_theta_x_crop.png}
+  \caption{$\theta_x$: rotation about the symmetric axis (front view)}
+  \label{fig:runtime-tilt-x}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.38\linewidth}
+  \centering
+  \includegraphics[height=0.72\textheight,width=\linewidth,keepaspectratio]{fr3_theta_y_crop.png}
+  \caption{$\theta_y$: rotation about the gripping axis (side view)}
+  \label{fig:runtime-tilt-y}
+\end{subfigure}
+\caption[Runtime tilt convention]{Runtime tilt angles $\theta_x$
+(left) and $\theta_y$ (right), each shown as a rotation of the whole
+gripper body away from the world $z$ axis relative to Ground.
+\TODO{add explicit $x$/$y$/$z$ axis labels and the $\mathcal{F}$/$\mathcal{T}$
+frame origins to both panels to close out the full frame-triad request.}}
+\label{fig:runtime-tilt}
+\end{figure}
 
 For a $+2.5^{\circ}$ tilt about $x$ on the \texttt{finray\_26} variant
 ($z_{\text{TCP}} = 94.911$\,mm), the predicted flange offset is
@@ -248,38 +321,40 @@ from all aggregate analyses; the two most common triggers were:
         descent and mitigated through the trajectory-emission-floor
         modifications documented in Section~\ref{sec:tcp-calib}.
 \end{itemize}
-Both trigger classes leave the trial's \texttt{success} field as
+Both trigger classes left the trial's \texttt{success} field as
 \texttt{null} in the per-trial JSON; no-grasp trials, by contrast,
-carry \texttt{success = false} with a valid force record and are
+carried \texttt{success = false} with a valid force record and were
 retained for engagement-force analysis.
 
 \section{Trial Procedure}
 
-A single trial proceeds:
+A single trial proceeded as follows:
 \begin{enumerate}
-  \item Open gripper (Franka Hand or finray release width);
-  \item Bulk descent: smooth multi-waypoint trajectory from the lifted pose
-        down to a fine clearance ($+5$\,mm above surface), filtered to
-        exclude any upward leg (preventing direction reversals at zero-twist
-        interior waypoints);
-  \item Settle: 2\,s pause at the fine-clearance pose;
-  \item Final approach: cosine-S-curve descent from the fine clearance to
-        the press target $z_{\text{surf}} - d$, where $d$ is the trial press
-        depth;
-  \item Grasp: force-controlled close (Franka grasp action at 80\,N or
+  \item The gripper opened (Franka Hand or finray release width);
+  \item Bulk descent: a smooth multi-waypoint trajectory carried the
+        gripper from the lifted pose down to a fine clearance ($+5$\,mm
+        above surface), filtered to exclude any upward leg (preventing
+        direction reversals at zero-twist interior waypoints);
+  \item Settle: a 2\,s pause at the fine-clearance pose;
+  \item Final approach: a cosine-S-curve descent carried the gripper from
+        the fine clearance to the press target $z_{\text{surf}} - d$,
+        where $d$ is the trial press depth;
+  \item Grasp: a force-controlled close (Franka grasp action at 80\,N or
         20\,N nominal, with $\pm 100$\,mm $\epsilon$ to disable the
         position-acceptance check that would otherwise cause auto-release
         on a sub-spec final width);
-  \item Settle: 1\,s pause;
-  \item Stationary sample: 30 samples of $\mathbf{F}_{\text{ext}}$
+  \item Settle: a 1\,s pause;
+  \item Stationary sample: 30 samples of $\mathbf{F}_{\text{ext}}$ were
         captured over 1\,s during the \texttt{grasp\_stationary\_sample}
         stage;
-  \item Lift to $\sim +80$\,mm above surface for visual inspection;
-  \item Operator verdict prompt;
-  \item Open gripper and reset for next trial.
+  \item The gripper lifted to $\sim +80$\,mm above surface for visual
+        inspection;
+  \item The operator was prompted for a verdict;
+  \item The gripper opened and the rig was reset for the next trial.
 \end{enumerate}
 
 \section{Statistical Treatment}
+\label{sec:stats}
 
 For each (variant, depth, tilt) cell, the contact force is reported as
 \begin{equation}

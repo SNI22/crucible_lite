@@ -59,14 +59,79 @@ this lead. If the intended reference is unpublished/internal lab work,
 cite it accordingly (e.g.\ technical report or personal communication per
 McGill GPS guidelines) rather than as a peer-reviewed source.}
 
-None of the work above, however, addresses the specific question this
+\section{Strategies for Acquiring the First Grasp}
+\label{sec:first-grasp-strategies}
+
+Because a flat cloth on a surface presents no protruding feature for a
+conventional pinch grasp, the literature has developed two broad families
+of workarounds: manipulating the \emph{environment or cloth state} until a
+graspable feature exists, and replacing the \emph{end-effector} with a
+mechanism that does not require one.
+
+\subsection{Environment-Assisted and State-Changing Actions}
+
+The first family keeps a standard gripper and instead spends actions
+creating a graspable feature --- a fold, wrinkle, or free edge --- before
+the pick. Ramisa et al.~\cite{ramisa2012wrinkled} detect and rank
+\emph{wrinkles} in depth images of crumpled laundry, directing a standard
+gripper to the most graspable bump on the cloth rather than to a flat
+region. Qian et al.~\cite{qian2020clothregion} segment cloth \emph{edges
+and corners} (as distinct from wrinkles and folds) in depth images and
+couple the segmentation to a sliding grasp policy that approaches along
+the estimated grasp direction. At the dynamic extreme, Ha and
+Song's FlingBot~\cite{ha2021flingbot} shows that a high-velocity fling
+primitive can unfold a crumpled cloth in a few actions --- environment
+interaction used not to create a pinchable feature but to reset the cloth
+to a flatter, more predictable state. These strategies are effective, but
+each spends additional actions and sensing before the grasp itself, and
+their reliability degrades exactly in the flat-cloth-on-surface
+configuration this thesis targets, where there is no wrinkle to find and
+no free edge to slide against.
+
+\subsection{Specialised End-Effectors}
+
+The second family redesigns the gripper so that a protruding feature is
+unnecessary. Monkman's survey of grippers for fibrous
+materials~\cite{monkman1995fibrous} catalogues the classical industrial
+approaches --- intrusive (needle/pin) grippers that pierce the top ply,
+and adhesive/electrostatic surface grippers --- developed largely for
+garment manufacturing. Electroadhesion has since matured substantially;
+Guo et al.~\cite{guo2020electroadhesion} review its use across robotics
+and highlight its suitability for delicate, flexible materials at low
+energy cost. Non-contact airflow methods lift fabric without touching it
+at all: Ozcelik and Erzincanli's Bernoulli-principle
+end-effector~\cite{ozcelik2002noncontact} suspends a garment ply on a
+radial airflow film. More recently, variable-friction fingertips blur the
+line between gripper and manipulation policy: Jiang et
+al.~\cite{jiang2022variablefriction} switch fingertip surfaces between
+high- and low-friction states to slide, pinch, and unfold fabric in-hand.
+These end-effectors trade generality for capability: needles risk damaging
+fine textiles, electroadhesion and airflow devices require dedicated
+power/pneumatic infrastructure and are largely single-purpose, and all of
+them abandon the ubiquitous two-jaw form factor that general-purpose
+robot platforms (including the Franka Hand used here) provide.
+
+\subsection{The Gap: the Gripper as an Experimental Variable}
+
+Across both families, the gripper hardware is treated as \emph{fixed} and
+the innovation budget is spent on perception, policy, or a task-specific
+mechanism. Direct comparisons between compliant and rigid jaw-type
+grippers exist --- Li et al.~\cite{li2025scopingreview} systematically
+review soft--rigid hybrid grippers against industrial parallel-jaw
+grippers across payload, adaptability, and precision metrics --- but such
+comparisons are conducted on rigid or quasi-rigid workpieces, not on
+cloth, and report capability envelopes rather than parametric contact
+behaviour. None of the work above addresses the specific question this
 thesis investigates: almost all cloth-manipulation literature treats grasp
 \emph{success} as a binary outcome to be predicted or achieved, not as a
 function of a continuous physical parameter space (press depth, gripper
 tilt) whose boundary can be mapped and compared across gripper geometries.
 The benchmark in this thesis is deliberately narrower in manipulation scope
 than folding or dressing pipelines, but correspondingly more quantitative
-about the mechanics of the grasp itself.
+about the mechanics of the grasp itself: it keeps the two-jaw form factor
+fixed, varies only the finger design $(t, \alpha)$, and maps the resulting
+contact-force landscape under the positional and angular uncertainty
+$(d, \theta_x, \theta_y)$ that any deployed system must tolerate.
 
 \section{Compliant Gripper Designs}
 
