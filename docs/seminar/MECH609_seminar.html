@@ -177,11 +177,11 @@ table.simple td{padding:8px 18px 8px 0; border-bottom:1px solid var(--hair); fon
   <div class="slidehead"><h2>The Fin-Ray Finger</h2></div>
   <div class="cols c23">
     <div>
-      <ul style="font-size:24px; line-height:1.7">
-        <li>Fish-fin structure: flexible walls + internal ribs</li>
-        <li>Pressed → <b>bends toward the load</b>, wraps the contact</li>
-        <li>Fully <b>passive</b> — no motors, sensors, or control</li>
-        <li>3D-printed in flexible plastic (TPU)</li>
+      <ul style="font-size:23px; line-height:1.6">
+        <li>A compliant structure inspired by fish-fin anatomy: two flexible side walls connected by internal ribs.</li>
+        <li>When pressed, it <b>bends toward the load</b> and wraps the contact surface — the opposite of a stiff beam.</li>
+        <li>Entirely passive: no added motors, sensors, or control.</li>
+        <li>3D-printed in a flexible thermoplastic (TPU).</li>
       </ul>
     </div>
     <div class="figbox">
@@ -225,15 +225,13 @@ table.simple td{padding:8px 18px 8px 0; border-bottom:1px solid var(--hair); fon
 <!-- 6 · QUESTIONS -->
 <section class="slide">
   <div class="slidehead"><h2>Questions This Work Answers</h2></div>
-  <div class="cardgrid">
-    <div class="card"><div class="qnum">1</div>
-      <p style="font-size:23px; color:var(--ink)">Contact force vs. <b>press depth</b> — for each finger design?</p></div>
-    <div class="card"><div class="qnum">2</div>
-      <p style="font-size:23px; color:var(--ink)">How much <b>tilt</b> before the grasp fails?</p></div>
-    <div class="card"><div class="qnum">3</div>
-      <p style="font-size:23px; color:var(--ink)">Does tilt tolerance <b>depend on depth</b>?</p></div>
-    <div class="card"><div class="qnum">4</div>
-      <p style="font-size:23px; color:var(--ink)">Is tilting one way <b>different from the other</b>?</p></div>
+  <div class="cols top" style="grid-template-columns:1fr">
+    <ol style="font-size:25px; line-height:1.55; max-width:1020px; margin-top:10px">
+      <li style="margin-bottom:28px">How does the contact force vary with <b>press depth</b>, for each finger design?</li>
+      <li style="margin-bottom:28px">How much can the gripper be <b>tilted</b> before the grasp becomes unreliable?</li>
+      <li style="margin-bottom:28px">Does tilt tolerance <b>depend on the press depth</b>?</li>
+      <li>Is the response to tilt <b>symmetric</b> — is tilting one way the same as tilting the other?</li>
+    </ol>
   </div>
   <div class="foot"><span>Objectives</span><span class="pageno">6 / 16</span></div>
 </section>
@@ -307,10 +305,10 @@ table.simple td{padding:8px 18px 8px 0; border-bottom:1px solid var(--hair); fon
         <li>Every trial fully logged (poses, forces, verdict)</li>
         <li>Safety-aborted trials excluded from analysis</li>
       </ul>
-      <div class="acknote">
-        <b>Tools.</b> Franka FR3 arm · ROS 2 · Python · Bambu Lab X1C printer.
+      <p class="small" style="margin-top:auto; padding-top:16px">
+        Tools: Franka FR3 arm, ROS 2, Python, Bambu Lab X1C printer.
         Experiment design, calibration, data collection, and analysis by the author.
-      </div>
+      </p>
     </div>
   </div>
   <div class="foot"><span>Methodology</span><span class="pageno">9 / 16</span></div>
@@ -398,13 +396,12 @@ table.simple td{padding:8px 18px 8px 0; border-bottom:1px solid var(--hair); fon
 <!-- 14 · IMPLICATIONS -->
 <section class="slide">
   <div class="slidehead"><h2>What This Means in Practice</h2></div>
-  <div style="flex:1; display:flex; flex-direction:column; justify-content:center">
-    <div class="bigrow"><div class="bignum">10×</div>
-      <p>placement tolerance from <b>hardware alone</b> — before cameras or machine learning</p></div>
-    <div class="bigrow"><div class="bignum">but…</div>
-      <p>the benefit is conditional: the finger must press past a <b>threshold depth</b></p></div>
-    <div class="bigrow"><div class="bignum">2.4×</div>
-      <p>direction asymmetry remains at light contact — <b>delicate tasks must account for it</b></p></div>
+  <div class="cols top" style="grid-template-columns:1fr">
+    <ul style="font-size:24px; line-height:1.6; max-width:1040px; margin-top:10px">
+      <li style="margin-bottom:26px">A compliant finger provides a <b>tenfold gain in placement tolerance</b> from hardware alone, before any investment in cameras or learning.</li>
+      <li style="margin-bottom:26px">The benefit is conditional: the finger must be pressed <b>past a threshold depth</b>. Compliance does not remove sensitivity at light contact.</li>
+      <li>Systems operating near the contact boundary — delicate fabrics — must still account for the finger's <b>direction-dependent response</b>.</li>
+    </ul>
   </div>
   <div class="foot"><span>Discussion</span><span class="pageno">14 / 16</span></div>
 </section>
