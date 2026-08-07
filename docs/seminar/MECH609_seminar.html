@@ -210,10 +210,11 @@ table.simple td{padding:8px 18px 8px 0; border-bottom:1px solid var(--hair); fon
       <li style="margin-bottom:14px"><b>Non-contact airflow handling</b> — a Bernoulli-principle end-effector suspends a single garment ply on a radial air film, never touching it. <span class="small">Ozcelik and Erzincanli, Robotica 2002.</span></li>
       <li style="margin-bottom:14px"><b>Electroadhesion</b> — electrically switchable adhesion; effective on delicate, flexible materials at low energy cost. <span class="small">Guo, Leng, and Rossiter, IEEE T-RO 2020.</span></li>
       <li style="margin-bottom:14px"><b>Variable-friction fingertips</b> — surfaces that switch between high- and low-friction states to slide, pinch, and unfold fabric in-hand. <span class="small">Jiang et al., IEEE RA-L 2022.</span></li>
-      <li><b>Soft-vs-rigid gripper comparison</b> — a scoping review of 24 soft–rigid grippers against industrial parallel jaws; conducted on rigid workpieces, not cloth. <span class="small">Li et al., Advanced Intelligent Systems 2025.</span></li>
+      <li style="margin-bottom:14px"><b>Soft-vs-rigid gripper comparison</b> — a scoping review of 24 soft–rigid grippers against industrial parallel jaws; conducted on rigid workpieces, not cloth. <span class="small">Li et al., Advanced Intelligent Systems 2025.</span></li>
+      <li><b>Cloth end-effector benchmark</b> — commercial grippers, including fin-ray fingers on a Franka Hand, compared on task-level cloth benchmarks (edge drag, grasp resilience, encapsulation, folding). <span class="small">Clark et al., ICRA 2023.</span></li>
     </ul>
   </div>
-  <div class="finding"><b>Remaining gap:</b> capable but single-purpose hardware — and still no map of grasp quality versus placement error across finger designs.</div>
+  <div class="finding"><b>Remaining gap:</b> gripper comparisons on cloth are scored at the task level — still no map of grasp quality versus <b>placement error</b> (depth, tilt) across finger designs.</div>
   <div class="foot"><span>Literature Review</span><span class="pageno">6 / 19</span></div>
 </section>
 
@@ -251,7 +252,7 @@ table.simple td{padding:8px 18px 8px 0; border-bottom:1px solid var(--hair); fon
       <p style="font-weight:600; margin:12px 0 10px">What is missing</p>
       <ul style="font-size:19px">
         <li>Gripper treated as <b>fixed</b>; effort goes to cameras &amp; software</li>
-        <li>Soft-vs-rigid comparisons exist — but on rigid objects</li>
+        <li>Gripper comparisons: task-scored on cloth, or on rigid objects</li>
         <li>No map of grasp quality vs. <b>placement error</b> across finger designs</li>
       </ul>
     </div>

@@ -121,11 +121,31 @@ review soft--rigid hybrid grippers against industrial parallel-jaw
 grippers across payload, adaptability, and precision metrics --- but such
 comparisons are conducted on rigid or quasi-rigid workpieces, not on
 cloth, and report capability envelopes rather than parametric contact
-behaviour. None of the work above addresses the specific question this
-thesis investigates: almost all cloth-manipulation literature treats grasp
-\emph{success} as a binary outcome to be predicted or achieved, not as a
-function of a continuous physical parameter space (press depth, gripper
-tilt) whose boundary can be mapped and compared across gripper geometries.
+behaviour.
+
+The closest precedent to this thesis is the household-clothing benchmark
+of Clark et al.~\cite{clark2023household}, who evaluated several
+commercial end-effectors --- including Fin-Ray-style compliant fingers
+mounted on a Franka Emika Hand, alongside the standard Franka Hand,
+a Robotiq 2F-140, and the Openhand Model T42 --- on four cloth-specific
+benchmarks: edge-drag accuracy, edge-grasp resilience, crumpled-object
+encapsulation, and fold generation. Their results establish empirically
+that end-effector selection materially changes cloth-manipulation
+outcomes, and their inclusion of fin-ray fingers on the same robot
+platform used here makes the comparison direct. The evaluation, however,
+is scored at the \emph{task} level: each benchmark reports success or
+accuracy of a completed manoeuvre, with the approach pose fixed per task.
+What it does not measure is how the grasp itself degrades as the
+approach conditions vary --- the continuous dependence of contact force
+and grasp outcome on press depth and gripper tilt that any deployed
+system experiences as positioning error.
+
+None of the work above, therefore, addresses the specific question this
+thesis investigates: cloth-manipulation literature treats grasp
+\emph{success} as an outcome to be predicted or achieved at a fixed
+operating point, not as a function of a continuous physical parameter
+space (press depth, gripper tilt) whose boundary can be mapped and
+compared across gripper geometries.
 The benchmark in this thesis is deliberately narrower in manipulation scope
 than folding or dressing pipelines, but correspondingly more quantitative
 about the mechanics of the grasp itself: it keeps the two-jaw form factor
