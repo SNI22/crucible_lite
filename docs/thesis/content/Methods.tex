@@ -338,7 +338,8 @@ A single trial proceeded as follows:
   \item Settle: a 2\,s pause at the fine-clearance pose;
   \item Final approach: a cosine-S-curve descent carried the gripper from
         the fine clearance to the press target $z_{\text{surf}} - d$,
-        where $d$ is the trial press depth;
+        where $d$ is the trial press depth
+        (Figure~\ref{fig:press-deform});
   \item Grasp: a force-controlled close (Franka grasp action at 80\,N or
         20\,N nominal, with $\pm 100$\,mm $\epsilon$ to disable the
         position-acceptance check that would otherwise cause auto-release
@@ -352,6 +353,19 @@ A single trial proceeded as follows:
   \item The operator was prompted for a verdict;
   \item The gripper opened and the rig was reset for the next trial.
 \end{enumerate}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\linewidth]{fr3_press_deform.png}
+\caption[Finray engagement at press depth]{Physical effect of the press
+depth $d$ on a finray variant. At first contact ($d = 0$, left) the
+blades are straight and only the tips touch the surface; pressed to
+$d > 0$ (right), the compliant blades buckle outward and wrap the
+surface, increasing the contact area. This wrap-around engagement
+underlies the depth-gated tilt robustness discussed in
+Chapter~\ref{ch:discussion}.}
+\label{fig:press-deform}
+\end{figure}
 
 \section{Statistical Treatment}
 \label{sec:stats}

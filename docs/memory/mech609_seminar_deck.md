@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 923b8ca9-f1ab-4cb2-a5b8-034e144d327e
-  modified: 2026-08-06T05:13:19.105Z
+  modified: 2026-08-06T05:15:12.090Z
 ---
 
 MECH 609 Masters Seminar: **August 12, 2026, 16h30, ENGMD-267**. 15–17 min talk + 5 min Q&A, graded on presentation quality only (not research quality).
@@ -18,6 +18,6 @@ Deck lives at `docs/seminar/MECH609_seminar.html` (self-contained HTML, keyboard
 - LaTeX look: Latin Modern fonts embedded from `/usr/share/texmf/fonts/opentype/public/lm/` as data-URI @font-face; McGill Red #ED1B2F rules; formal academic register (user rejected a "designed" version as unprofessional)
 - Title slide: date only — NO time, NO room, NO email anywhere
 - ALL thanks/credits (ADL-ros2 controller, MACRObotics, supervisor) go ONLY on the final acknowledgements slide; slide-9 tools box stays neutral/factual
-- Low word density: fragments on slides, spoken sentences carry detail; sparse slides filled with card grids / big-numeral rows, not more text
+- Low word density but PLAIN formatting: concise full sentences in ordinary itemize/enumerate lists. User explicitly rejected card grids, giant red numerals, "10×/but…" big-number rows, and arrow fragments as "not professional at all" (slides 4/6/9/14 incident). Fill space with font size and line spacing only — never decorative layout devices
 - Structure per MECH 609 evaluation criteria: ~50% background / 40% results / 10% conclusions; general mech-eng audience (no unexplained acronyms); explicit tools acknowledgement is a graded item
 - MACRObotics logo on title + final slide is a RECREATION (URW Gothic Demi + drawn purple blobs) — swap for the official file when user provides it
