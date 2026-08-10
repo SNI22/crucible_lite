@@ -370,6 +370,30 @@ Chapter~\ref{ch:discussion}.}
 \section{Statistical Treatment}
 \label{sec:stats}
 
+\subsection{Calibrated Depth Reference}
+\label{sec:dcal}
+
+All aggregate analyses are reported on a \emph{calibrated} depth axis
+\begin{equation}
+  d_{\text{cal}} = d - d_{\text{first success}},
+  \label{eq:dcal}
+\end{equation}
+where $d_{\text{first success}}$ is, per variant and calibration epoch, the
+shallowest zero-tilt cell whose completed trials are all successful.
+Tilt-condition cells inherit $d_{\text{first success}}$ from their
+variant's zero-tilt sweep in the same calibration epoch. The reference is
+thus a directly measured physical event --- the onset of reliable
+grasping --- rather than the force-touch-off zero, which inherits
+cross-session bias drift and per-print geometry offsets
+(Section~\ref{sec:tcp-calib}). Aggregate statistics and figures use only
+$d_{\text{cal}} \in [0, 10]$\,mm; cells outside this window remain in the
+record but are excluded from aggregates. This convention was adopted as
+Bill~0007 of the project's governance record (enacted 2026-08-09), on the
+evidence that first-success alignment collapses the two prints of the
+18\,mm finger onto a common curve.
+
+\subsection{Per-Cell Statistics}
+
 For each (variant, depth, tilt) cell, the contact force is reported as
 \begin{equation}
   \bar{F}_z = \frac{1}{N}\sum_{i=1}^{N} F_z^{(i)}, \qquad

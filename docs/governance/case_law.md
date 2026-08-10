@@ -650,6 +650,31 @@ as a re-calibration trigger.
 
 ---
 
+## Case 4 — Bill 0007 enacted: calibrated depth reference (2026-08-09)
+
+**Matter:** Bill 0007 proposed replacing raw command depth with a calibrated
+depth d_cal = d_command − d_first_success (per variant, per calibration
+epoch; first zero-tilt all-success cell defines zero), and restricting all
+aggregate analyses to d_cal ∈ [0, 10] mm.
+
+**Disposition:** Enacted without hearing by the Justice (Shiyao Ni),
+2026-08-09. No opposing position was filed; the Bill's Article I grounding
+(reference to a measured physical event rather than a calibration construct)
+was accepted as presented.
+
+**Physical evidence relied on:** fr18 print-pair curve collapse under
+first-success alignment (+4.1 N mean, RMSE 5.0 N); finray_18_model2
+ground-truth shift (+0.393 mm) and F_ext bias sign flip (−1.2 → +4.3 N)
+across sessions with unchanged hardware.
+
+**Binding consequences:** All benchmark figures and statistics report
+d_cal on [0, 10] mm. Working ranges of finray variants are right-censored
+at the window end and reported as "≥ 10 mm". Deep-region cells
+(d_cal > 10 mm) remain in the record, excluded from aggregates, and require
+a new Bill to re-admit.
+
+---
+
 ## Frozen Precedents
 
 *(Populated by stage-compactor at each stage gate.)*

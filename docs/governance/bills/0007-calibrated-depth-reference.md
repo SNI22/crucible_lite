@@ -2,7 +2,7 @@
 Proposed by: Shiyao Ni (drafted by Claude session)
 Date drafted: 2026-08-09
 Change type: software (analysis pipeline — reference frame and analysis window)
-Status: PROPOSED — awaiting human enactment
+Status: ENACTED 2026-08-09 (human approval: Shiyao Ni, this session)
 
 ---
 
