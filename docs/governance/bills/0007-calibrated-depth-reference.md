@@ -81,3 +81,13 @@ calibration drift, which Article I exists to prevent.
 Requires human approval (Article II). On enactment: recompute all affected
 figures and statistics, update thesis Methods/Results and seminar deck, and
 record the enacted Bill in case_law.md.
+
+
+---
+
+**Revision R1 (2026-08-09, approved by Shiyao Ni in-session):**
+Item 2 is replaced: every trial series — each (variant, tilt condition)
+pair — is zeroed at its OWN first successful attempt, rather than
+inheriting the variant's zero-tilt reference. The analysis window
+[0, 10] mm applies from each series' own zero. Conditions with no
+successful attempt have no defined zero and are reported as such.
