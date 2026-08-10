@@ -91,3 +91,15 @@ pair — is zeroed at its OWN first successful attempt, rather than
 inheriting the variant's zero-tilt reference. The analysis window
 [0, 10] mm applies from each series' own zero. Conditions with no
 successful attempt have no defined zero and are reported as such.
+
+
+---
+
+**Revision R2 (2026-08-10, approved by Shiyao Ni in-session):**
+Cell success criterion relaxed from all-attempts-succeed to MAJORITY
+success: a cell counts as successful when at least 2/3 of its valid
+attempts (completed, non-relabelled) succeed. Applies uniformly to all
+variants and conditions — affects zero placement (first majority-success
+cell) and range membership. Motivated by the finray_26_5deg boundary
+cells (2/3 at raw −0.5) whose exclusion under the strict rule displaced
+series zeros mid-ramp.
