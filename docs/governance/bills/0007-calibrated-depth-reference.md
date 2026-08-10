@@ -103,3 +103,14 @@ variants and conditions — affects zero placement (first majority-success
 cell) and range membership. Motivated by the finray_26_5deg boundary
 cells (2/3 at raw −0.5) whose exclusion under the strict rule displaced
 series zeros mid-ramp.
+
+
+---
+
+**Revision R3 (2026-08-10, approved by Shiyao Ni in-session):**
+1. Analysis window widened from [0, 10] mm to [0, 12] mm. Every finray
+   series' record extends beyond calibrated 12 mm, so finray ranges censor
+   uniformly at the window end; rigid ranges are unaffected.
+2. Safety-abort cells count as range-closing boundary evidence (they
+   demonstrate an unusable depth) while remaining excluded from force
+   statistics and success-rate denominators, per the outcome taxonomy.
