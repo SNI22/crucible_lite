@@ -114,3 +114,9 @@ series zeros mid-ramp.
 2. Safety-abort cells count as range-closing boundary evidence (they
    demonstrate an unusable depth) while remaining excluded from force
    statistics and success-rate denominators, per the outcome taxonomy.
+
+**R3 note (2026-08-10):** for the parallel jaws, an abort boundary measured
+under y +2.5° closes the mirror condition y −2.5° at the same depth
+(empirical y± equivalence on rigid jaws, per the 2026-06-24 sign-flip
+finding), when the y −2.5° sweep itself ended without a closing cell.
+Ruled by Shiyao Ni: pj_TPU y −2.5° working range is 2.5 mm (closed).
