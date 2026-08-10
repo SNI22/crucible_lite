@@ -1,0 +1,23 @@
+{
+  "_bill": "0008 — canonical variant colors; do not change without a new Bill",
+  "variants": {
+    "parallel_jaw_stock": "#c44e52",
+    "parallel_jaw_TPU": "#dd8452",
+    "finray_18": "#55a868",
+    "finray_18_model2": "#4c72b0",
+    "finray_26": "#8172b3",
+    "finray_26_5deg": "#937860"
+  },
+  "markers": {
+    "failure_zero": {"color": "#8b0000", "marker": "x"},
+    "window_line": {"color": "0.4", "linestyle": "--"}
+  },
+  "tilt_conditions": {
+    "0deg":   {"alpha": 1.0,  "hatch": null},
+    "tx+2.5": {"alpha": 0.8,  "hatch": "//"},
+    "tx-2.5": {"alpha": 0.8,  "hatch": "\\\\"},
+    "ty+2.5": {"alpha": 0.55, "hatch": null},
+    "ty-2.5": {"alpha": 0.55, "hatch": ".."}
+  },
+  "assumed_by_symmetry": {"alpha": 0.3, "edge": "0.4", "linestyle": "--"}
+}
