@@ -135,3 +135,17 @@ abort-closure and all notes remain in force). Rationale: at 10 mm every
 finray series censors uniformly at the window end AND every variant's
 shape curve covers the full window without interpolation gaps; the 12 mm
 window left finray_26's shape coverage short at 10.5 mm.
+
+
+---
+
+**Revision R5 (2026-08-10, approved by Shiyao Ni in-session):**
+Every per-series force curve rendered over the analysis window must span
+the full [0, 10] mm range. When a series' last in-window cell falls short
+of 10 mm but a measured support cell exists beyond the window end, the
+curve's endpoint at exactly d_cal = 10 is obtained by linear interpolation
+between the last in-window cell and the first out-of-window support cell.
+Markers (and error bars) appear only at measured in-window cells; the
+interpolated endpoint is line-only. Series whose record genuinely ends
+inside the window (no support cell beyond the last measurement, e.g. the
+rigid parallel jaws) end where the data ends — no extrapolation.
