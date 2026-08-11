@@ -125,3 +125,13 @@ Ruled by Shiyao Ni: pj_TPU y −2.5° working range is 2.5 mm (closed).
 measurements (no "≥"): the jaws' steep force ramp toward the −60 N reflex
 bounds their usable depth physically, so open-endedness labels are not
 meaningful for them. Ruled by Shiyao Ni: pj_stock y −2.5° = 0.5 mm (closed).
+
+
+---
+
+**Revision R4 (2026-08-10, approved by Shiyao Ni in-session):**
+Analysis window returned to [0, 10] mm (reverting R3 item 1; R3 item 2
+abort-closure and all notes remain in force). Rationale: at 10 mm every
+finray series censors uniformly at the window end AND every variant's
+shape curve covers the full window without interpolation gaps; the 12 mm
+window left finray_26's shape coverage short at 10.5 mm.
