@@ -120,3 +120,8 @@ under y +2.5° closes the mirror condition y −2.5° at the same depth
 (empirical y± equivalence on rigid jaws, per the 2026-06-24 sign-flip
 finding), when the y −2.5° sweep itself ended without a closing cell.
 Ruled by Shiyao Ni: pj_TPU y −2.5° working range is 2.5 mm (closed).
+
+**R3 note 2 (2026-08-10):** rigid parallel-jaw spans are reported as closed
+measurements (no "≥"): the jaws' steep force ramp toward the −60 N reflex
+bounds their usable depth physically, so open-endedness labels are not
+meaningful for them. Ruled by Shiyao Ni: pj_stock y −2.5° = 0.5 mm (closed).
