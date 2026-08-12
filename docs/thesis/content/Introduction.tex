@@ -10,7 +10,11 @@ assistive robotics for elderly or disabled individuals, and the packaging
 of soft goods. Yet a striking fraction of published robot-manipulation
 demonstrations sidesteps the hardest step entirely: the object is handed
 to the robot's gripper by a human operator, and the demonstrated
-autonomy begins only after the grasp already exists. For cloth
+autonomy begins only after the grasp already
+exists.\footnote{A prominent recent example: a widely circulated
+January 2024 video of the Tesla Optimus humanoid folding a shirt was
+subsequently acknowledged by its poster to be teleoperated, with the
+shirt pre-staged in a fixed setup~\cite{musk2024optimus,novak2024magic}.} For cloth
 specifically, acquiring the first grasp---picking a thin, flat fabric
 directly off a surface---remains the bottleneck that limits how
 autonomous these systems can truly be. Cloth is uniquely difficult to
@@ -37,23 +41,31 @@ in real deployment: press depth and gripper tilt angle?
 \section{Research Question and Contributions}
 
 This thesis answers the following research questions through a controlled
-experimental benchmark on a Franka FR3 collaborative robot:
+experimental benchmark on a Franka FR3 collaborative robot --- a benchmark
+that treats the gripper itself as the experimental variable, holding the
+robot, control policy, cloth, and environment identical across all
+conditions:
 \begin{enumerate}
   \item How does stationary contact force vary with press depth for each of
-        five candidate gripper geometries?
-  \item For each geometry, what is the maximum tilt angle (about each
-        orthogonal axis) at which a reliable grasp is still produced?
-  \item Is the dependence of contact force on tilt itself depth-dependent?
-  \item Does the finray gripper exhibit a direction-dependent (handed)
-        response under tilt about its geometrically asymmetric axis?
+        six candidate gripper variants?
+  \item For each variant, how much can the gripper be tilted (about each
+        orthogonal axis) before the grasp becomes unreliable?
+  \item Is the dependence of grasp quality on tilt itself depth-dependent
+        --- and is the response direction-dependent (handed) about the
+        finray's geometrically asymmetric axis?
+  \item What is the compliant finger's mechanical response under
+        compression, and is that response shared across the fin-ray
+        design family?
 \end{enumerate}
 
 \noindent The contributions of this work are:
 \begin{itemize}
   \item A reproducible benchmark protocol for cloth-grasp force characterisation
         on a Franka FR3, with full source code published alongside this thesis.
-  \item A two-dimensional depth--tilt experimental matrix sampling five
-        commercially relevant gripper geometries.
+  \item A two-dimensional depth--tilt experimental matrix sampling six
+        gripper variants: two rigid parallel-jaw configurations and four
+        fin-ray prints spanning blade thickness, seat angle, and print
+        instance.
   \item Empirical evidence of a depth-dependent tilt robustness transition
         in finray grippers, with quantitative characterisation of the
         transition depth.

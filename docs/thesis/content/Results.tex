@@ -181,12 +181,15 @@ Variant & Boundary depth & No-grasp fraction \\
 \section{Working-Range and Failure Comparison}
 \label{sec:pj-vs-finray-results}
 
-The parallel-jaw variants exhibit successful-grasp windows of
-approximately $1$--$2$\,mm in commanded depth
-($+1.5$ to $+3.5$\,mm on \texttt{parallel\_jaw\_stock} at $0^{\circ}$;
-$+3.0$ to $+3.5$\,mm on \texttt{parallel\_jaw\_TPU}). The finray
-variants exhibit successful-grasp windows of $8$--$12$\,mm on all four
-variants ($+1$\,mm to $+14$\,mm and beyond).
+On the calibrated depth axis (Section~\ref{sec:dcal}), the parallel-jaw
+variants exhibit closed successful-grasp windows of $1.5$\,mm
+(\texttt{parallel\_jaw\_stock}) and $2.5$\,mm
+(\texttt{parallel\_jaw\_TPU}) at $0^{\circ}$, shrinking to
+$0.5$--$2.5$\,mm under tilt, with two stock-jaw tilt conditions
+producing no successful grasp at any depth. All four finray variants
+span the full $\geq 10$\,mm analysis window under every orientation
+tested; their ranges are right-censored at the window end, and the
+underlying record extends beyond it.
 
 The parallel jaws auto-fail on the Franka excess-force safety monitor
 at depths only $1$--$1.5$\,mm beyond their successful-grasp window; the

@@ -1,40 +1,88 @@
 \chapter{\rm\bfseries Conclusion and Future Work}
 \label{ch:conclusion}
 
-\section{Summary of Contributions}
+\section{Answers to the Research Questions}
 
-This thesis presented a controlled benchmark of five gripper variants on a
-single platform (Franka FR3), measuring stationary contact force as a
-function of press depth and tilt angle. The principal findings are:
+This thesis presented a controlled benchmark of six gripper variants on a
+single platform (Franka FR3), measuring stationary contact force and grasp
+outcome as a function of press depth and tilt angle over 845 analysed
+trials. Returning to the four research questions posed in
+Chapter~\ref{ch:introduction}:
+
 \begin{enumerate}
-  \item Rigid parallel-jaw grippers exhibit narrow ($\sim 1$--$2$\,mm)
-        working depth ranges with steep force-depth slopes ($-19$ to
-        $-26$\,N/mm).
-  \item Finray-effect grippers exhibit broad ($10$--$12$\,mm) working
-        ranges with a flat soft plateau ($-1.2$\,N/mm in the linear
-        regime).
-  \item Finray contact force is strongly tilt-sensitive at the no-contact
-        boundary ($53\%$ reduction at $5^{\circ}$ tilt for the boundary
-        depth of $-0.5$\,mm).
-  \item Finray contact force is tilt-insensitive in the soft plateau
-        ($\leq 1\%$ change at $5^{\circ}$ tilt for the safe depth of
-        $+10$\,mm).
-  \item Finray response is direction-dependent under tilt about the
-        asymmetric ($y$) axis at boundary depths ($2.4\times$ ratio
-        between $\pm 2.5^{\circ}$), but symmetric in the soft plateau.
+  \item \emph{How does contact force vary with press depth for each finger
+        design?} Every fin-ray variant follows a single shared
+        rise--peak--valley--recovery curve (pairwise NMSE below $1\%$
+        over the full 10\,mm calibrated window), whereas the rigid
+        parallel jaws ramp steeply toward the platform's excess-force
+        limit within roughly 2\,mm of first contact.
+  \item \emph{How much can the gripper be tilted before the grasp becomes
+        unreliable?} The fin-rays grasp reliably across every orientation
+        tested ($\pm 2.5^{\circ}$ about both axes, plus a $5^{\circ}$
+        seat mount) over the full $\geq 10$\,mm window; the rigid jaws
+        never exceed 2.5\,mm, and two stock-jaw tilt conditions produced
+        no successful grasp at any depth.
+  \item \emph{Does tilt tolerance depend on press depth?} Yes ---
+        robustness is depth-gated: near the contact boundary, tilt
+        strongly modulates both force and success (including a
+        $2.4\times$ direction-dependent asymmetry about the geometrically
+        asymmetric axis), whereas past the buckling threshold the mean
+        across-orientation force spread shrinks to $1.3$--$2.4$\,N.
+  \item \emph{What is the compliant finger's response under compression?}
+        Blade buckling: force peaks at buckling onset ($\approx 2$--$3$\,mm
+        past first successful grasp), dips as the blades buckle, then
+        recovers --- and the fin-ray geometry (blade thickness, seat
+        angle, print instance) sets the force \emph{scale} (30--51\,N
+        peaks) but not the curve \emph{shape}.
 \end{enumerate}
 
 The depth-dependent tilt robustness identified here had not been
-quantitatively characterised in prior literature, to the author's knowledge,
-and constitutes the principal empirical contribution.
+quantitatively characterised in prior literature, to the author's
+knowledge, and constitutes the principal empirical contribution.
+
+\section{Implications}
+
+The practical reading of these findings is that a finger swap alone ---
+with the robot, control policy, cloth, and environment held identical ---
+buys at least a $4\times$ wider press-depth tolerance than the best rigid
+configuration ($\geq 10$\,mm versus 2.5\,mm on the padded jaws, and
+$\geq 7\times$ versus the stock jaws), at roughly half the grip force.
+Under tilt the advantage widens further, to $20\times$ or more against the
+stock jaws' surviving conditions; all of these ratios are lower bounds,
+because the fin-ray ranges are right-censored at the analysis-window end.
+For the application domains that motivated this work --- laundry and
+textile handling, hospital bedding, assistive robotics, garment
+manufacturing, and soft-goods packaging --- this means the flat-cloth
+pick, the step that currently keeps such systems human-started, becomes
+accessible to a standard arm running an unchanged policy, before any
+investment in cameras, tactile sensing, or learned control. The
+accompanying design rule is equally simple: press the compliant finger
+past its buckling peak ($\approx 2$--$3$\,mm beyond first contact), and
+the grasp becomes robust to both depth and tilt placement error.
 
 \section{Future Work}
 
 \begin{description}
-  \item[Cross-variant tilt sweep.] The natural extension is to repeat
-        Chapter~\ref{ch:experiments} on the remaining four variants. The rigid
-        parallel-jaw case is of particular interest as a hypothesised
-        tilt-invariant baseline.
+  \item[Independent force-sensor cross-check.] All force measurements
+        derive from the arm's joint-torque-based external-wrench
+        estimate. Repeating a subset of the matrix with a dedicated
+        force/torque sensor at the wrist (or an instrumented surface)
+        would bound the estimator's pose-dependent bias directly.
+  \item[Task-level evaluation.] The descoped downstream tasks
+        (Chapter~\ref{ch:introduction}) --- folding from a corner grasp,
+        placing onto curved objects, dragging between positions ---
+        would test whether the contact-phase advantage measured here
+        translates into end-to-end task success, including under learned
+        policies.
+  \item[Task-level precision comparison.] Beyond success rates, a soft
+        versus rigid comparison of task-level \emph{precision} (placement
+        accuracy after fold or drop) would characterise the cost side of
+        compliance.
+  \item[Dynamic and high-rate behaviour.] All trials here are
+        quasi-static. The perturbation behaviour of compliant fingers
+        under fast actuation and high-frequency control --- where the
+        compliance that absorbs placement error may instead cause
+        oscillation or delayed settling --- is uncharacterised.
   \item[Tilt-sensitivity model.] An analytical model relating finger
         curvature, contact compliance, and tilt-induced contact-point
         migration would connect the present empirical findings to the
@@ -42,15 +90,13 @@ and constitutes the principal empirical contribution.
   \item[Multi-fabric study.] All trials used a single cloth specimen.
         Replicating the matrix on fabrics of varying thickness, weave,
         and surface treatment would establish the applicability range
-        of the depth-tilt-robustness curves identified here.
+        of the depth--tilt-robustness curves identified here.
   \item[Closed-loop control.] The boundary-depth regime, where finray
         directional asymmetry dominates, motivates a tilt-compensating
-        controller using inline force feedback. Implementing such a
-        controller and validating it against the open-loop boundary
-        baseline would be the natural follow-on for a system-design
-        thesis.
+        controller using inline force feedback, validated against the
+        open-loop boundary baseline.
   \item[Sim2real validation.] A simulation of the finray finger in a
         compliant-contact physics engine could be calibrated against the
-        empirical force-depth-tilt surface from this thesis, providing
+        empirical force--depth--tilt surface from this thesis, providing
         a digital twin for the gripper variants.
 \end{description}
