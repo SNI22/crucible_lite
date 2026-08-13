@@ -7,7 +7,7 @@ variants (\texttt{finray\_18}, \texttt{finray\_18\_model2},
 \texttt{parallel\_jaw\_stock}, \texttt{parallel\_jaw\_TPU}) organised
 around the primary measurement (contact force $F_z$) at swept command
 depths and $\pm 2.5^{\circ}$ tilts about the x and y axes. All values
-are $F_z$-bias-corrected using the per-session Franka $F_{\mathrm{ext}}$ zero-load
+were $F_z$-bias-corrected using the per-session Franka $F_{\mathrm{ext}}$ zero-load
 reading and pooled across trials with matching command depths and tilts
 unless otherwise noted. Interpretation is deferred to
 Chapter~\ref{ch:discussion}.
@@ -15,9 +15,9 @@ Chapter~\ref{ch:discussion}.
 \section{Canonical Force-Depth Curves at $0^{\circ}$}
 \label{sec:zero-tilt-results}
 
-Under zero tilt, all four finray variants exhibit a stereotyped
+Under zero tilt, all four finray variants exhibited a stereotyped
 \emph{bell-plus-valley} force-depth response with four regions:
-(i)~a boundary regime where contact force rises steeply with press depth,
+(i)~a boundary regime where contact force rose steeply with press depth,
 (ii)~a knee peak around $+1.5$ to $+3$\,mm past the detected surface,
 (iii)~a valley trough near $+6$ to $+8$\,mm, and (iv)~a recovery regime
 deeper than $+10$\,mm. Table~\ref{tab:zero-tilt-summary} summarises the
@@ -42,20 +42,20 @@ Variant & Knee peak $|F_z|$ & Peak depth & Valley $|F_z|$ & Valley depth \\
 \end{tabular}
 \end{table}
 
-The four features are within $\pm 1$\,mm of the same depth locations
-across all four variants. The absolute force magnitudes scale
+The four features lay within $\pm 1$\,mm of the same depth locations
+across all four variants. The absolute force magnitudes scaled
 approximately with the frontal contact area of the finger.
 
 \section{Bipolar Tilt Bias on the Finray Family}
 \label{sec:bipolar-bias-results}
 
-A $\pm 2.5^{\circ}$ tilt produces a signed bias
+A $\pm 2.5^{\circ}$ tilt produced a signed bias
 $b(d,a) = |F_z^{+2.5^{\circ}}(d,a)| - |F_z^{-2.5^{\circ}}(d,a)|$
-whose depth trajectory itself follows a bipolar shape: a strong signed
+whose depth trajectory itself followed a bipolar shape: a strong signed
 peak at boundary depths, a zero-crossing near the knee, a sign-reversed
 plateau through the valley, and depth-gated attenuation toward zero at
-deep press. The clearest example is the y-axis bias on
-\texttt{finray\_26\_5deg}, which has full coverage across 14 sign-flip
+deep press. The clearest example was the y-axis bias on
+\texttt{finray\_26\_5deg}, which had full coverage across 14 sign-flip
 pairs from $-2$ to $+16$\,mm:
 
 \begin{itemize}
@@ -68,21 +68,21 @@ pairs from $-2$ to $+16$\,mm:
         $d = +4$\,mm.
 \end{itemize}
 
-The x-axis bias on \texttt{finray\_26\_5deg} has a similar bipolar
+The x-axis bias on \texttt{finray\_26\_5deg} had a similar bipolar
 shape but with opposite sign at the boundary
 ($b_x = -4.17 \pm 0.32$\,N at $d = -1.5$\,mm).
 
 \section{Cross-Axis Sign Reversal at the Boundary}
 \label{sec:cross-axis-results}
 
-At boundary depths, the x-axis and y-axis biases have \emph{opposite
+At boundary depths, the x-axis and y-axis biases had \emph{opposite
 signs} on \texttt{finray\_26\_5deg} (Table~\ref{tab:cross-axis-sign}).
 
 \begin{table}[ht]
 \centering
 \caption[Cross-axis bias sign reversal at boundary]{Bias on
 \texttt{finray\_26\_5deg} at boundary depths. x-axis and y-axis biases
-have opposite signs. Values are
+had opposite signs. Values are
 $|F_z^{+2.5^{\circ}}|-|F_z^{-2.5^{\circ}}|$ in newtons.}
 \label{tab:cross-axis-sign}
 \begin{tabular}{lccc}
@@ -96,23 +96,23 @@ $-0.5$\,mm & $-3.51 \pm 0.39$ & $+2.00 \pm 0.24$ & $-$ \\
 \end{tabular}
 \end{table}
 
-The same sign-reversal pattern is present on \texttt{finray\_18} at
+The same sign-reversal pattern was present on \texttt{finray\_18} at
 $d = -1.0$\,mm ($x$-bias $= -2.44 \pm 0.17$\,N; $y$-bias
-$= +4.49 \pm 0.47$\,N), demonstrating that the effect is not specific to
+$= +4.49 \pm 0.47$\,N), demonstrating that the effect was not specific to
 the $5^{\circ}$ mount condition.
 
 \section{Mount-Tilt Alignment: $5^{\circ}$ Mount as a Depth Shift}
 \label{sec:mount-tilt-results}
 
 After a two-parameter best-fit alignment (single depth shift plus
-single force offset), the $5^{\circ}$-mounted variant collapses onto
+single force offset), the $5^{\circ}$-mounted variant collapsed onto
 the flat-mounted variant with residual RMSE below $2$\,N on both tilt
 axes independently (Table~\ref{tab:mount-tilt-alignment}).
 
 \begin{table}[ht]
 \centering
 \caption[Mount tilt equivalence]{Best-fit alignment of
-\texttt{finray\_26\_5deg} onto \texttt{finray\_26}. The two axes yield
+\texttt{finray\_26\_5deg} onto \texttt{finray\_26}. The two axes yielded
 independent estimates of the depth shift within $0.03$\,mm of each other.}
 \label{tab:mount-tilt-alignment}
 \begin{tabular}{lccc}
@@ -131,21 +131,22 @@ y     & $-1.12$\,mm & $+3.1$\,N & $1.58$\,N \\
 
 Two independent prints of the same \texttt{finray\_18} CAD geometry,
 each zeroed at its own first majority-success cell
-(Section~\ref{sec:dcal}), differ by a $+4.6$\,N mean force offset
+(Section~\ref{sec:dcal}), differed by a $+4.6$\,N mean force offset
 (second print stiffer) with RMSE $5.4$\,N over the 10\,mm window;
-removing the constant offset leaves a residual RMSE of $2.9$\,N. The
-$\approx 5$\,N offset is the canonical same-session print-to-print
-variability, approximately $15\%$ of the knee peak force.
+removing the constant offset left a residual RMSE of $2.9$\,N. This
+$\approx 5$\,N offset was adopted as the canonical same-session
+print-to-print variability, approximately $15\%$ of the knee peak
+force.
 
 Cross-session drift on the \emph{same} print, measured by comparing
 \texttt{finray\_18} data collected on separate days approximately three
-weeks apart, is approximately $7$--$10$\,N at knee and knee-adjacent
-depths. Cross-session drift on the same specimen is therefore larger
+weeks apart, was approximately $7$--$10$\,N at knee and knee-adjacent
+depths. Cross-session drift on the same specimen was therefore larger
 than same-session print-to-print variability.
 
-The two prints also differ qualitatively in x-axis bias sign:
-\texttt{finray\_18} exhibits a bipolar x-bias (negative at boundary,
-positive at knee), whereas \texttt{finray\_18\_model2} exhibits a
+The two prints also differed qualitatively in x-axis bias sign:
+\texttt{finray\_18} exhibited a bipolar x-bias (negative at boundary,
+positive at knee), whereas \texttt{finray\_18\_model2} exhibited a
 monotonically negative x-bias across the entire measured range.
 
 \section{Trial Outcome Distribution}
@@ -156,7 +157,7 @@ Trial outcomes were classified into three categories: \emph{success}
 $F_z$ measurement but cloth slipped at lift), and \emph{failed trial}
 (controller aborted or trial did not complete a stationary window).
 The failed-trial category was excluded from force-curve analyses;
-no-grasp trials contribute valid force measurements. No-grasp fractions
+no-grasp trials contributed valid force measurements. No-grasp fractions
 at each variant's boundary depth are reported in
 Table~\ref{tab:no-grasp-fraction}.
 
@@ -184,13 +185,13 @@ Variant & Boundary depth & No-grasp fraction \\
 \label{sec:pj-vs-finray-results}
 
 On the calibrated depth axis (Section~\ref{sec:dcal}), the parallel-jaw
-variants exhibit closed successful-grasp windows of $1.5$\,mm
+variants exhibited closed successful-grasp windows of $1.5$\,mm
 (\texttt{parallel\_jaw\_stock}) and $2.5$\,mm
 (\texttt{parallel\_jaw\_TPU}) at $0^{\circ}$, shrinking to
 $0.5$--$2.5$\,mm under tilt, with two stock-jaw tilt conditions
 producing no successful grasp at any depth. All four finray variants
-span the full $\geq 10$\,mm analysis window under every orientation
-tested; their ranges are right-censored at the window end, and the
+spanned the full $\geq 10$\,mm analysis window under every orientation
+tested; their ranges were right-censored at the window end, and the
 underlying record extends beyond it.
 
 The parallel jaws auto-failed on the Franka excess-force safety monitor
