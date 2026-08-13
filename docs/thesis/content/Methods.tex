@@ -74,14 +74,15 @@ the $\alpha$ and $t$ design-parameter convention.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.95\linewidth]{fr3_design_params.pdf}
-\caption[Finray design parameters $\alpha$ and $t$]{Isometric, front, and
-side orthographic views of a finray variant mounted on the Franka Hand.
-The front view (centre) annotates the baseline seat-mount tilt $\alpha$
-at each finger root; the side view (right) annotates the finger blade
-thickness $t$. \TODO{add explicit gripper-frame axis labels ($x$, $y$,
-$z$) to each view once the frame-triad figure is finalised, per
-supervisor request.}}
+\includegraphics[width=0.92\linewidth]{fr3_design_params_new.png}\\[6pt]
+\includegraphics[width=0.82\linewidth]{fr3_pj_design_new.png}
+\caption[Gripper drawings and design parameters $\alpha$ and $t$]{Both
+grippers in isometric, front, and side orthographic views, mounted on
+the Franka Hand. Top: a finray variant; the front view (centre)
+annotates the baseline seat-mount tilt $\alpha$ at each finger root, and
+the side view (right) annotates the finger blade thickness $t$. Bottom:
+the rigid parallel-jaw gripper with the optional TPU tip indicated.
+Scale bars in cm.}
 \label{fig:seat-mount-params}
 \end{figure}
 
@@ -262,9 +263,8 @@ reported independently throughout this thesis and are never summed.
 \end{subfigure}
 \caption[Runtime tilt convention]{Runtime tilt angles $\theta_x$
 (left) and $\theta_y$ (right), each shown as a rotation of the whole
-gripper body away from the world $z$ axis relative to Ground.
-\TODO{add explicit $x$/$y$/$z$ axis labels and the $\mathcal{F}$/$\mathcal{T}$
-frame origins to both panels to close out the full frame-triad request.}}
+gripper body away from the world $z$ axis (labelled) relative to the
+Ground line; $0^{\circ}$ is the arm perpendicular to the surface.}
 \label{fig:runtime-tilt}
 \end{figure}
 
