@@ -7,7 +7,7 @@ variants (\texttt{finray\_18}, \texttt{finray\_18\_model2},
 \texttt{parallel\_jaw\_stock}, \texttt{parallel\_jaw\_TPU}) organised
 around the primary measurement (contact force $F_z$) at swept command
 depths and $\pm 2.5^{\circ}$ tilts about the x and y axes. All values
-are $F_z$-bias-corrected using the per-session Franka $F_{ext}$ zero-load
+are $F_z$-bias-corrected using the per-session Franka $F_{\mathrm{ext}}$ zero-load
 reading and pooled across trials with matching command depths and tilts
 unless otherwise noted. Interpretation is deferred to
 Chapter~\ref{ch:discussion}.
@@ -18,7 +18,7 @@ Chapter~\ref{ch:discussion}.
 Under zero tilt, all four finray variants exhibit a stereotyped
 \emph{bell-plus-valley} force-depth response with four regions:
 (i)~a boundary regime where contact force rises steeply with press depth,
-(ii)~a knee peak around $+2$ to $+3$\,mm past the detected surface,
+(ii)~a knee peak around $+1.5$ to $+3$\,mm past the detected surface,
 (iii)~a valley trough near $+6$ to $+8$\,mm, and (iv)~a recovery regime
 deeper than $+10$\,mm. Table~\ref{tab:zero-tilt-summary} summarises the
 key features.
@@ -129,10 +129,12 @@ y     & $-1.12$\,mm & $+3.1$\,N & $1.58$\,N \\
 \section{Print-to-Print Manufacturing Variability}
 \label{sec:manufacturing-results}
 
-Two independent prints of the same \texttt{finray\_18} CAD geometry
-tested on the same day yield a two-parameter alignment of depth shift
-$+0.85$\,mm and force offset $-5.5$\,N with residual RMSE $1.82$\,N.
-The $5.5$\,N force offset is the canonical same-session print-to-print
+Two independent prints of the same \texttt{finray\_18} CAD geometry,
+each zeroed at its own first majority-success cell
+(Section~\ref{sec:dcal}), differ by a $+4.6$\,N mean force offset
+(second print stiffer) with RMSE $5.4$\,N over the 10\,mm window;
+removing the constant offset leaves a residual RMSE of $2.9$\,N. The
+$\approx 5$\,N offset is the canonical same-session print-to-print
 variability, approximately $15\%$ of the knee peak force.
 
 Cross-session drift on the \emph{same} print, measured by comparing
@@ -161,8 +163,8 @@ Table~\ref{tab:no-grasp-fraction}.
 \begin{table}[ht]
 \centering
 \caption[No-grasp fractions at boundary]{No-grasp fraction at each
-variant's boundary depth. Cells that produce cleanly measurable
-contact force but fail to hold the cloth on lift.}
+variant's boundary depth. A no-grasp trial yields a cleanly measurable
+contact force but fails to hold the cloth on lift.}
 \label{tab:no-grasp-fraction}
 \begin{tabular}{lcc}
 \toprule
@@ -191,7 +193,7 @@ span the full $\geq 10$\,mm analysis window under every orientation
 tested; their ranges are right-censored at the window end, and the
 underlying record extends beyond it.
 
-The parallel jaws auto-fail on the Franka excess-force safety monitor
+The parallel jaws auto-failed on the Franka excess-force safety monitor
 at depths only $1$--$1.5$\,mm beyond their successful-grasp window; the
 finrays never triggered the safety monitor within the tested $-2$ to
 $+16$\,mm range on any variant.

@@ -8,12 +8,13 @@ rigides \`a m\^achoires parall\`eles, qui offrent un contr\^ole de force
 pr\'ecis mais une tol\'erance op\'erationnelle \'etroite, et les doigts
 souples \`a effet finray, qui \'echangent la pr\'ecision de force contre
 une enveloppe op\'erationnelle plus large. Cette th\`ese pr\'esente un
-banc d'essai exp\'erimental de cinq variantes de pr\'ehenseur --- deux
+banc d'essai exp\'erimental de six variantes de pr\'ehenseur --- deux
 configurations \`a m\^achoires parall\`eles (rigide d'origine, et
 d'origine avec un coussinet en polyur\'ethane thermoplastique de duret\'e
-Shore 90A) et trois configurations finray (doigts de 18\,mm et de 26\,mm
-d'\'epaisseur, plus une fixation inclin\'ee \`a $5^{\circ}$) --- mont\'ees
-sur un manipulateur collaboratif Franka FR3. Chaque variante est
+Shore 90A) et quatre configurations finray (doigts de 18\,mm et de 26\,mm
+d'\'epaisseur, une fixation inclin\'ee \`a $5^{\circ}$, et une seconde
+impression du doigt de 18\,mm) --- mont\'ees
+sur un manipulateur collaboratif Franka FR3. Chaque variante a \'et\'e
 caract\'eris\'ee sur un espace d'entr\'ee bidimensionnel compos\'e de la
 profondeur d'appui (la distance \`a laquelle le bout du doigt est
 enfonc\'e sous la surface d\'etect\'ee du tissu) et de l'angle
@@ -23,21 +24,19 @@ contact stationnaire selon l'axe $z$ du pr\'ehenseur est \'echantillonn\'ee
 pendant chaque prise et sert de variable de r\'esultat principale, la
 r\'eussite binaire de la prise servant de r\'esultat secondaire.
 
-Le banc d'essai a produit 204 essais r\'epartis sur 75 s\'eances, donnant
-139 prises r\'eussies confirm\'ees. Le pr\'ehenseur rigide \`a m\^achoires
-parall\`eles pr\'esente une plage de profondeur utile \'etroite d'environ
-1\,mm, born\'ee sup\'erieurement par un r\'eflexe de s\'ecurit\'e \`a
+Le banc d'essai a produit 845 essais analys\'es sur les six variantes. Le pr\'ehenseur rigide \`a m\^achoires
+parall\`eles pr\'esente une plage de profondeur utile \'etroite de 1,5\,mm, born\'ee sup\'erieurement par un r\'eflexe de s\'ecurit\'e \`a
 $-60$\,N et inf\'erieurement par l'absence de contact~; la variante avec
-coussinet TPU \'elargit cette plage \`a environ 2\,mm. Les variantes
+coussinet TPU \'elargit cette plage \`a 2,5\,mm. Les variantes
 finray, en revanche, restent efficaces sur toute la fen\^etre d'analyse
 calibr\'ee de 10\,mm (plage utile de 10\,mm ou plus),
-avec un plateau souple pr\`es de $-37$\,N sur l'intervalle de profondeur
-de $+2$ \`a $+8$\,mm.
+avec un plateau de force souple au-del\`a du pic de flambement (forces
+maximales de 30 \`a 51\,N selon la variante).
 
 Au-del\`a de cet avantage attendu de la souplesse, deux effets
 d'inclinaison d\'ependants de la profondeur ont \'emerg\'e. Premi\`erement,
 la force de contact du finray est fortement sensible \`a l'inclinaison
-pr\`es de la limite de non-contact, mais insensible \`a l'inclinaison dans
+pr\`es de la limite de non-contact, mais robuste \`a l'inclinaison dans
 le plateau souple~: une inclinaison de $\pm 5^{\circ}$ produit une
 r\'eduction de 58\,\% de la force de contact \`a une profondeur de
 $-0{,}5$\,mm, mais de seulement 1\,\% \`a $+10$\,mm. Deuxi\`emement, le

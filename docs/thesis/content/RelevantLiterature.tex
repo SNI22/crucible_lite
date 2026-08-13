@@ -17,7 +17,7 @@ shape prior, rather than raw image features, is what makes cloth state
 estimation tractable. Maitin-Shepard et
 al.~\cite{maitinshepard2010clothgrasp} took a complementary, model-light
 approach: a multiple-view geometric-cue detector locates cloth corners
-directly from silhouettes robust to texture and colour variation, letting
+directly from silhouettes, in a manner robust to texture and colour variation, letting
 a general-purpose PR2 manipulator pick and fold towels of varying material
 and appearance without a specialised end-effector. Miller et
 al.~\cite{miller2012geometric} generalised this line of work with a
@@ -44,9 +44,8 @@ this thesis, Tirumala et al.~\cite{tirumala2022singulate} mounted a tactile
 sensor on a Franka gripper fingertip and trained a classifier on the
 resulting tactile signal to determine how many layers of cloth had been
 grasped, using that signal to re-grasp until exactly one or two layers were
-singulated from a stack --- direct evidence that fingertip force/tactile
-information, not vision alone, is necessary to resolve certain cloth-grasp
-ambiguities. For a comprehensive treatment of the field beyond these
+singulated from a stack. This is direct evidence that certain cloth-grasp ambiguities
+cannot be resolved by vision alone. For a comprehensive treatment of the field beyond these
 representative examples, Longhini et
 al.~\cite{longhini2025unfolding} provide a recent survey spanning
 perception, dynamics modelling, benchmarking, and control specifically for
@@ -72,14 +71,14 @@ mechanism that does not require one.
 
 The first family keeps a standard gripper and instead spends actions
 creating a graspable feature --- a fold, wrinkle, or free edge --- before
-the pick. Ramisa et al.~\cite{ramisa2012wrinkled} detect and rank
+the pick. Ramisa et al.~\cite{ramisa2012wrinkled} detected and ranked
 \emph{wrinkles} in depth images of crumpled laundry, directing a standard
 gripper to the most graspable bump on the cloth rather than to a flat
-region. Qian et al.~\cite{qian2020clothregion} segment cloth \emph{edges
+region. Qian et al.~\cite{qian2020clothregion} segmented cloth \emph{edges
 and corners} (as distinct from wrinkles and folds) in depth images and
-couple the segmentation to a sliding grasp policy that approaches along
+coupled the segmentation to a sliding grasp policy that approaches along
 the estimated grasp direction. At the dynamic extreme, Ha and
-Song's FlingBot~\cite{ha2021flingbot} shows that a high-velocity fling
+Song's FlingBot~\cite{ha2021flingbot} showed that a high-velocity fling
 primitive can unfold a crumpled cloth in a few actions --- environment
 interaction used not to create a pinchable feature but to reset the cloth
 to a flatter, more predictable state. These strategies are effective, but
@@ -125,13 +124,13 @@ behaviour.
 
 The closest precedent to this thesis is the household-clothing benchmark
 of Clark et al.~\cite{clark2023household}, who evaluated several
-commercial end-effectors --- including Fin-Ray-style compliant fingers
+commercial end-effectors --- including finray-style compliant fingers
 mounted on a Franka Emika Hand, alongside the standard Franka Hand,
-a Robotiq 2F-140, and the Openhand Model T42 --- on four cloth-specific
+a Robotiq 2F-140, and the OpenHand Model T42 --- on four cloth-specific
 benchmarks: edge-drag accuracy, edge-grasp resilience, crumpled-object
 encapsulation, and fold generation. Their results establish empirically
 that end-effector selection materially changes cloth-manipulation
-outcomes, and their inclusion of fin-ray fingers on the same robot
+outcomes, and their inclusion of finray fingers on the same robot
 platform used here makes the comparison direct. The evaluation, however,
 is scored at the \emph{task} level: each benchmark reports success or
 accuracy of a completed manoeuvre, with the approach pose fixed per task.
@@ -175,7 +174,11 @@ directions: analytic modelling and empirical/manufacturing studies. Shan
 and Birglen~\cite{shan2020modeling} developed an analytic mechanical model
 of finray fingers to predict grasp force and finger deformation from
 geometric parameters, addressing the absence of a convenient design tool
-for this class of compliant finger. On the empirical side, Crooks et
+for this class of compliant finger. Their model, like the empirical
+studies that follow it, addresses \emph{lateral} grasping contact; no
+published model, to the author's knowledge, predicts the axial
+tip-compression response --- the rise--peak--valley--recovery profile ---
+characterised empirically in this thesis. On the empirical side, Crooks et
 al.~\cite{crooks2016finray} modified the finray design by angling its
 internal crossbeams to introduce a directional bending bias, fabricated by
 multi-material 3D printing, and reported an approximately 40\% increase in
@@ -186,7 +189,7 @@ thermoplastic polyurethane (TPU) filament, varying crossbeam rib angle and
 spacing, and found that at large tip displacements the ribs contact one
 another (\emph{layer jamming}), substantially increasing force generation
 and producing a tunable-stiffness effect. Most directly relevant to this
-thesis's use of two TPU Shore-hardness variants, Lang et
+thesis's use of TPU-printed fingers, Lang et
 al.~\cite{lang2025softrobotics} 3D-printed finray fingers in both TPU 60A
 and TPU 95A and tensile-tested them: the softer 60A durometer gave the
 better force/compliance balance and left delicate fruit undamaged, while
@@ -266,10 +269,11 @@ stiffness, run at the robot's real-time servo rate; the tilt-aware pose
 targeting used in this thesis's trial procedure
 (Section~\ref{sec:tilt-pose}) builds directly on this controller.
 
-Contact force in this thesis is measured through two independent
-channels: the Franka FCI's own external-wrench estimate, and (per the
-project's toolchain configuration) an array of Tekscan FlexiForce
-resistive force sensors. FlexiForce is a thin-film piezoresistive sensor
+Contact force in this thesis is measured through the Franka FCI's own
+external-wrench estimate; a second, independent channel using an array
+of Tekscan FlexiForce resistive force sensors was provisioned, but a
+repeatable calibration could not be established in time and the
+cross-check is carried as future work (Chapter~\ref{ch:conclusion}). FlexiForce is a thin-film piezoresistive sensor
 marketed explicitly for grip-force measurement in robotic and surgical
 applications~\cite{tekscan_flexiforce_gripforce}, and has prior academic
 precedent for exactly this use: Sharan and
@@ -324,9 +328,10 @@ thesis's instrumentation choices. Most pertinently, Petrea et
 al.~\cite{petrea2021interaction} empirically evaluated the accuracy of the
 Panda's built-in filtered external-force estimate against ground-truth
 load-cell measurements during controlled contact --- the same FCI
-external-wrench signal this thesis uses as one of its two Contact Force
-channels, so their accuracy findings directly bound how much the FCI-based
-channel alone can be trusted without the FlexiForce cross-check.
+external-wrench signal this thesis uses as its Contact Force channel, so
+their accuracy findings directly bound how much that channel can be
+trusted, and motivate the independent force-sensor cross-check
+identified as future work.
 Gaz et al.~\cite{gaz2019dynamic} separately derived a full dynamic
 (inertial and friction) parameter model of the Panda's arm via
 penalty-based optimisation, a model since reused widely enough to be

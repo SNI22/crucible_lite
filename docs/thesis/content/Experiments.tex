@@ -1,10 +1,10 @@
 \chapter{\rm\bfseries Experimental Design and Procedure}
 \label{ch:experiments}
 
-The empirical campaign is organised into two sequential phases against a
-single experimental apparatus. Phase~1 establishes the contact-force
+The empirical campaign was organised into two sequential phases against a
+single experimental apparatus. Phase~1 established the contact-force
 versus press-depth relationship for each gripper variant at nominal
-zero-tilt orientation, and phase~2 perturbs the same measurement with
+zero-tilt orientation, and Phase~2 perturbed the same measurement with
 $\pm 2.5^{\circ}$ tilts about the two orthogonal Cartesian axes.
 Together the two phases define a three-dimensional
 (depth, tilt-axis, tilt-sign) cell grid whose per-cell measurements
@@ -13,7 +13,7 @@ constitute the data corpus reported in Chapter~\ref{ch:results}.
 \section{Study Design}
 \label{sec:study-design}
 
-The gripper roster comprises six variants organised into two families:
+The gripper roster comprised six variants organised into two families:
 \begin{itemize}
   \item \textbf{Finray family} (four variants):
     \texttt{finray\_18}, \texttt{finray\_18\_model2} (second print of
@@ -26,13 +26,14 @@ The gripper roster comprises six variants organised into two families:
     compliant pad).
 \end{itemize}
 
-The same fabric specimen (single-layer cotton) rests on the same
-acrylic table surface throughout the campaign. The Franka Emika Panda
-arm holds the gripper in a fixed base orientation $R_0 = R_x(180^{\circ})$
-for phase~1, and applies signed rotations
-$R_{\alpha,\beta} = R_x(180^{\circ}) R_x(\alpha) R_y(\beta)$
-for phase~2, with $(\alpha, \beta) \in
-\{(\pm 2.5^{\circ}, 0), (0, \pm 2.5^{\circ})\}$.
+The same fabric specimen (single-layer cotton) rested on the same
+acrylic table surface throughout the campaign. The Franka FR3
+arm held the gripper in a fixed base orientation $R_0 = R_x(180^{\circ})$
+for Phase~1, and applied signed rotations
+$R_{\theta} = R_x(180^{\circ})\, R_y(\theta_y)\, R_x(\theta_x)$
+for Phase~2, with $(\theta_x, \theta_y) \in
+\{(\pm 2.5^{\circ}, 0), (0, \pm 2.5^{\circ})\}$ (the runtime arm tilts
+of Chapter~\ref{ch:methods}, distinct from the seat angle $\alpha$).
 
 \section{Depth Grid}
 \label{sec:depth-grid}
@@ -42,10 +43,10 @@ surface via the \texttt{ground\_truth\_finder} touch-off procedure
 described in Chapter~\ref{ch:methods}. The depth grid was chosen
 adaptively per gripper family:
 \begin{itemize}
-  \item For the rigid parallel jaws, depths are spaced at $0.25$--$0.5$\,mm
+  \item For the rigid parallel jaws, depths were spaced at $0.25$--$0.5$\,mm
         intervals over $-1$ to $+4$\,mm, close to the narrow
         force-limited working range.
-  \item For the finrays, depths are spaced at $0.5$--$1.0$\,mm intervals
+  \item For the finrays, depths were spaced at $0.5$--$1.0$\,mm intervals
         over $-2$ to $+16$\,mm, covering the four regimes
         (boundary, knee, valley, recovery) identified in
         Chapter~\ref{ch:results}.
@@ -53,7 +54,7 @@ adaptively per gripper family:
 
 Per (variant, depth, tilt) cell, three trials were collected. Boundary
 depths were routinely retested when within-cell standard deviation
-exceeded $1$\,N, up to a maximum of two additional cells per
+exceeded $1$\,N, up to a maximum of two additional trials per
 (depth, tilt) combination.
 
 \section{Tilt-Aware Pose Geometry: Verification}
@@ -75,7 +76,7 @@ offset uses $z_{\text{TCP}} = 94.911$\,mm.}
 \begin{tabular}{lccccc}
 \toprule
 Cell & Tilt cmd & Predicted $\Delta \mathbf{p}_\mathcal{F}$ (mm) &
-       Measured $\Delta \mathbf{p}_\mathcal{F}$ (mm) & Residual & Mean $|\mathbf{F}|$ \\
+       Measured $\Delta \mathbf{p}_\mathcal{F}$ (mm) & Residual & Mean $F_z$ \\
 \midrule
 $-1.0$\,mm   & $+2.5^{\circ}$ y & $(+4.14, +0.00)$ & $(+4.35, -0.03)$ & $0.21$\,mm & $-8.00$\,N \\
 $-1.0$\,mm   & $-2.5^{\circ}$ y & $(-4.14, +0.00)$ & $(-4.02, -0.04)$ & $0.13$\,mm & $-3.39$\,N \\
@@ -125,15 +126,15 @@ be attributed to arm rotation error.
 \section{Trial Protocol and Outcome Classification}
 \label{sec:trial-protocol}
 
-Each trial follows a fixed six-stage sequence: (1)~set the commanded
-pose above the target, (2)~descend to the pre-contact height,
-(3)~contact and press to the target depth, (4)~grasp with the gripper's
-default close command, (5)~lift by a fixed clearance, (6)~operator
-confirms whether the cloth is held. A stationary-sample window of at
-least $2$\,seconds during the grasped-and-pressed stage provides the
-force measurement.
+Each trial followed the fixed stage sequence detailed in
+Section~\ref{sec:trial-procedure}: set the commanded pose above the
+target, descend to the pre-contact height, contact and press to the
+target depth, grasp with the gripper's default close command, lift by a
+fixed clearance, and record the operator's held/not-held verdict. A
+stationary-sample window of $1$\,s (30 samples) during the
+grasped-and-pressed stage provided the force measurement.
 
-Trial outcomes are classified into three categories:
+Trial outcomes were classified into three categories:
 \begin{description}
   \item[\textbf{Success}:] the trial executed to completion, contact
         force was sampled cleanly during the stationary window, and the

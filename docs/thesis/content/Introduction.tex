@@ -38,10 +38,10 @@ robustness?} Specifically, how does the finray's contact force respond to
 deviations in the two design degrees of freedom most likely to be uncontrolled
 in real deployment: press depth and gripper tilt angle?
 
-\section{Research Question and Contributions}
+\section{Research Questions and Contributions}
 
 This thesis answers the following research questions through a controlled
-experimental benchmark on a Franka FR3 collaborative robot --- a benchmark
+experimental benchmark on a Franka FR3 collaborative robot---a benchmark
 that treats the gripper itself as the experimental variable, holding the
 robot, control policy, cloth, and environment identical across all
 conditions:
@@ -50,11 +50,11 @@ conditions:
         six candidate gripper variants?
   \item For each variant, how much can the gripper be tilted (about each
         orthogonal axis) before the grasp becomes unreliable?
-  \item Is the dependence of grasp quality on tilt itself depth-dependent
-        --- and is the response direction-dependent (handed) about the
+  \item Is the dependence of grasp quality on tilt itself depth-dependent---and
+        is the response direction-dependent (handed) about the
         finray's geometrically asymmetric axis?
   \item What is the compliant finger's mechanical response under
-        compression, and is that response shared across the fin-ray
+        compression, and is that response shared across the finray
         design family?
 \end{enumerate}
 
@@ -64,7 +64,7 @@ conditions:
         on a Franka FR3, with full source code published alongside this thesis.
   \item A two-dimensional depth--tilt experimental matrix sampling six
         gripper variants: two rigid parallel-jaw configurations and four
-        fin-ray prints spanning blade thickness, seat angle, and print
+        finray prints spanning blade thickness, seat angle, and print
         instance.
   \item Empirical evidence of a depth-dependent tilt robustness transition
         in finray grippers, with quantitative characterisation of the
@@ -95,10 +95,12 @@ Chapter~\ref{ch:background} reviews the literature on cloth grasping,
 compliant grippers, and force-controlled approach strategies.
 Chapter~\ref{ch:methods} describes the experimental hardware, the kinematic
 calibration procedure, and the data-acquisition pipeline.
-Chapter~\ref{ch:experiments} presents the depth-sweep characterisation (Experiment~1)
-across all five gripper variants at zero tilt.
-Chapter~\ref{ch:experiments} presents the tilt-sweep characterisation (Experiment~2)
+Chapter~\ref{ch:experiments} presents the two experimental campaigns: the
+depth-sweep characterisation (Experiment~1) across all six gripper
+variants at zero tilt, and the tilt-sweep characterisation (Experiment~2)
 at boundary and safe depths.
+Chapter~\ref{ch:results} reports the resulting force--depth--tilt
+characterisation.
 Chapter~\ref{ch:discussion} synthesises the findings into a model of
 depth-dependent tilt robustness.
 Chapter~\ref{ch:conclusion} concludes and identifies directions for future work.

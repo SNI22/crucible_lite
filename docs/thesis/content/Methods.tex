@@ -59,15 +59,15 @@ finger. All finray variants were mounted on the Franka Hand via this
 inclined seat; the seat was present in \emph{every} finray variant
 tested in this thesis unless otherwise noted, and is the physical
 realisation of $\alpha$. Variants whose name contains \texttt{\_5deg}
-used a $\alpha = +5.0^{\circ}$ seat in place of the default
+used an $\alpha = +5.0^{\circ}$ seat in place of the default
 $\alpha = +2.5^{\circ}$ seat; all other finray variants
 (\texttt{finray\_18}, \texttt{finray\_18\_model2}, \texttt{finray\_26})
 used the $\alpha = +2.5^{\circ}$ baseline; the parallel-jaw variants have
 no seat and no defined $\alpha$. The $\alpha = +2.5^{\circ}$ baseline
 was chosen so that the two opposing finray fingers converge inward
-toward each other rather than splaying apart, closing the residual slit
-that would otherwise remain between the finger tips when the gripper is
-fully closed, ensuring firm contact between the fingers along their
+toward each other rather than splaying apart. This closes the residual
+slit that would otherwise remain between the finger tips when the
+gripper is fully closed, and ensures firm contact along the fingers'
 full length during a successful grasp. Figure~\ref{fig:seat-mount-params}
 shows the mounting stack (flange $\to$ seat $\to$ finger) and defines
 the $\alpha$ and $t$ design-parameter convention.
@@ -193,7 +193,11 @@ per-cell force standard deviation $\sigma_{F_z}$ of
 Section~\ref{sec:stats}). For \texttt{finray\_26\_5deg},
 $\sigma_{z,\text{tcp}} = 183$\,\textmu m owing to a wobble component
 introduced by the inclined seat; the other four variants had
-$\sigma_{z,\text{tcp}} \leq 102$\,\textmu m.
+$\sigma_{z,\text{tcp}} \leq 102$\,\textmu m. The second print
+(\texttt{finray\_18\_model2}) shares the finger geometry and seat of
+\texttt{finray\_18}; its surface reference and TCP offset were
+re-established by the same touch-off procedure when it was mounted,
+rather than reusing the first print's calibration.
 
 \section{Force Measurement}
 
@@ -202,7 +206,7 @@ Franka internal model from joint torques, available via the \texttt{libfranka}
 RobotState API at 1\,kHz and subsampled to 30\,Hz for session logging.
 A free-air bias capture was performed at the start of every session: the
 gripper was held at a known pose 30--80\,mm above the cloth surface and
-30 samples were averaged over 1 second to provide $F_z^{\text{bias}}$.
+30 samples were averaged over 1\,s to provide $F_z^{\text{bias}}$.
 This bias was recorded in each session JSON but \emph{not} subtracted from
 the raw force time series at acquisition time; downstream analyses subtract
 it where appropriate.
@@ -318,8 +322,8 @@ from all aggregate analyses; the two most common triggers were:
   \item the Franka safety reflex firing on acceleration discontinuity
         between two consecutive Cartesian trajectory segments, which
         was observed intermittently during the chunked touch-off
-        descent and mitigated through the trajectory-emission-floor
-        modifications documented in Section~\ref{sec:tcp-calib}.
+        descent and mitigated by raising the trajectory-emission floor of the
+        touch-off descent trajectories.
 \end{itemize}
 Both trigger classes left the trial's \texttt{success} field as
 \texttt{null} in the per-trial JSON; no-grasp trials, by contrast,
@@ -327,6 +331,7 @@ carried \texttt{success = false} with a valid force record and were
 retained for engagement-force analysis.
 
 \section{Trial Procedure}
+\label{sec:trial-procedure}
 
 A single trial proceeded as follows:
 \begin{enumerate}
@@ -378,10 +383,11 @@ All aggregate analyses are reported on a \emph{calibrated} depth axis
   d_{\text{cal}} = d - d_{\text{first success}},
   \label{eq:dcal}
 \end{equation}
-where $d_{\text{first success}}$ is, per variant and calibration epoch, the
-shallowest zero-tilt cell whose completed trials are all successful.
-Tilt-condition cells inherit $d_{\text{first success}}$ from their
-variant's zero-tilt sweep in the same calibration epoch. The reference is
+where $d_{\text{first success}}$ is, per trial series (each
+variant--tilt-condition pair, within a calibration epoch), the
+shallowest cell in which at least two-thirds of the valid completed
+trials succeed (the majority-success criterion); each series is zeroed
+at its own first majority-success cell. The reference is
 thus a directly measured physical event --- the onset of reliable
 grasping --- rather than the force-touch-off zero, which inherits
 cross-session bias drift and per-print geometry offsets

@@ -11,13 +11,13 @@ Chapter~\ref{ch:introduction}:
 
 \begin{enumerate}
   \item \emph{How does contact force vary with press depth for each finger
-        design?} Every fin-ray variant follows a single shared
+        design?} Every finray variant follows a single shared
         rise--peak--valley--recovery curve (pairwise NMSE below $1\%$
         over the full 10\,mm calibrated window), whereas the rigid
         parallel jaws ramp steeply toward the platform's excess-force
         limit within roughly 2\,mm of first contact.
   \item \emph{How much can the gripper be tilted before the grasp becomes
-        unreliable?} The fin-rays grasp reliably across every orientation
+        unreliable?} The finrays grasp reliably across every orientation
         tested ($\pm 2.5^{\circ}$ about both axes, plus a $5^{\circ}$
         seat mount) over the full $\geq 10$\,mm window; the rigid jaws
         never exceed 2.5\,mm, and two stock-jaw tilt conditions produced
@@ -31,7 +31,7 @@ Chapter~\ref{ch:introduction}:
   \item \emph{What is the compliant finger's response under compression?}
         Blade buckling: force peaks at buckling onset ($\approx 2$--$3$\,mm
         past first successful grasp), dips as the blades buckle, then
-        recovers --- and the fin-ray geometry (blade thickness, seat
+        recovers --- and the finray geometry (blade thickness, seat
         angle, print instance) sets the force \emph{scale} (30--51\,N
         peaks) but not the curve \emph{shape}.
 \end{enumerate}
@@ -42,17 +42,16 @@ knowledge, and constitutes the principal empirical contribution.
 
 \section{Implications}
 
-The practical reading of these findings is that a finger swap alone ---
-with the robot, control policy, cloth, and environment held identical ---
-buys at least a $4\times$ wider press-depth tolerance than the best rigid
+With the robot, control policy, cloth, and environment held identical,
+a finger swap alone buys at least a $4\times$ wider press-depth tolerance than the best rigid
 configuration ($\geq 10$\,mm versus 2.5\,mm on the padded jaws, and
-$\geq 7\times$ versus the stock jaws), at roughly half the grip force.
+roughly $7\times$ versus the stock jaws), at roughly half the grip force.
 Under tilt the advantage widens further, to $20\times$ or more against the
 stock jaws' surviving conditions; all of these ratios are lower bounds,
-because the fin-ray ranges are right-censored at the analysis-window end.
-For the application domains that motivated this work --- laundry and
+because the finray ranges are right-censored at the analysis-window end.
+For the application domains that motivated this work (laundry and
 textile handling, hospital bedding, assistive robotics, garment
-manufacturing, and soft-goods packaging --- this means the flat-cloth
+manufacturing, and soft-goods packaging), this means the flat-cloth
 pick, the step that currently keeps such systems human-started, becomes
 accessible to a standard arm running an unchanged policy, before any
 investment in cameras, tactile sensing, or learned control. The

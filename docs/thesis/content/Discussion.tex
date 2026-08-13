@@ -1,8 +1,8 @@
 \chapter{\rm\bfseries Discussion}
 \label{ch:discussion}
 
-The results reported in Chapter~\ref{ch:results} are interpreted in the
-same six thematic groups, with an emphasis on the physical mechanisms
+The results reported in Chapter~\ref{ch:results} are interpreted in
+thematic groups mirroring the results sections, with an emphasis on the physical mechanisms
 that produce the observed force behaviour and the implications for
 cloth-handling system design.
 
@@ -92,17 +92,16 @@ sensitivity, at the cost of the $\sim 3$\,N vertical force offset.
 \section{Manufacturing Variability vs Session Drift}
 \label{sec:manufacturing-mechanism}
 
-The finding that same-day print-to-print variability ($5.5$\,N) is
+The finding that same-day print-to-print variability ($\approx 4.6$\,N mean, RMSE $5.4$\,N) is
 \emph{smaller} than same-print cross-session drift ($7$--$10$\,N) has
 two consequences worth stating explicitly.
 
-First, from a design-decision perspective, print-to-print variability
-is well within the range where any bias claim below $2 \sigma \approx
-1$--$2$\,N is unlikely to reproduce across different physical instances
-of the same CAD. Any cross-variant force-magnitude claim in this
-thesis with an effect size below approximately $2$\,N should be
-regarded as tentative and requires cross-print replication before
-being carried into product decisions.
+First, from a design-decision perspective, any cross-variant
+force-magnitude claim with an effect size below the $\approx 5$\,N
+print-to-print offset is unlikely to reproduce across different
+physical instances of the same CAD, and should be regarded as tentative
+until replicated across prints before being carried into product
+decisions.
 
 Second, from an experimental-methodology perspective, session drift is
 the dominant noise source in cloth-grasping benchmarks of this kind.
@@ -140,7 +139,7 @@ essential for characterising the low end of the working range, so
 their exclusion would truncate the observed force-depth curves and
 mask the boundary-tilt biases that are one of the headline findings.
 
-Treating failed trials as no-grasps in the opposite direction would
+The opposite error, treating failed trials as no-grasps, would
 pollute the force averages with spurious near-zero readings from
 aborted controllers, inflating apparent variance and eroding the
 signal-to-noise of the bias estimates. The three-way taxonomy is the
@@ -161,9 +160,9 @@ strategy visible in the offline analysis.
 \label{sec:deployment-envelope}
 
 The parallel-jaw versus finray comparison
-(Section~\ref{sec:pj-vs-finray-results}) puts an approximately
-$8\times$ factor between the two classes in tolerance to depth command
-noise. This factor is large enough that any cloth-handling system
+(Section~\ref{sec:pj-vs-finray-results}) puts at least a $4\times$--$7\times$ factor between the two classes in
+tolerance to depth command noise --- a lower bound, the finray windows
+being right-censored at the analysis-window end. This factor is large enough that any cloth-handling system
 whose depth uncertainty exceeds $1$\,mm should default to a finray
 class gripper unless there is a specific force-precision requirement
 that the finray cannot meet.
@@ -173,15 +172,14 @@ the full $-2$ to $+16$\,mm range indicates that finray-based systems
 can be deployed open-loop with no depth clipping controller and no
 safety-limit tuning. Parallel-jaw systems require an active depth
 governor whose accuracy budget must be at least a factor of two
-tighter than the successful-grasp window, i.e. sub-half-millimeter
+tighter than the successful-grasp window, i.e. sub-half-millimetre
 command precision, to avoid frequent aborts.
 
-The three-position design envelope proposed in the earlier version of
-this discussion (safe-plateau finray, boundary finray with tilt
-control, and rigid jaw with compliant pad) survives the expanded
-dataset but with a refinement: the compliant-pad variant
+The expanded dataset supports a three-position design envelope ---
+safe-plateau finray, boundary finray with tilt control, and rigid jaw
+with compliant pad --- with one refinement: the compliant-pad variant
 (\texttt{parallel\_jaw\_TPU}) has narrower successful-grasp coverage
-than the discussion originally suggested, and its excess-force
+than its compliant facing might suggest, and its excess-force
 susceptibility is closer to \texttt{parallel\_jaw\_stock} than to
 finray. The compliant-pad design remains a useful hybrid but its
 robustness benefit is qualitative (better boundary behaviour) rather
