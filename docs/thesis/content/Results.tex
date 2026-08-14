@@ -37,7 +37,8 @@ than same-session print-to-print variability.
 \caption[Print-to-print force comparison]{Contact force versus
 calibrated depth for two independently printed copies of
 \texttt{finray\_18}, zero tilt, successful cells only. Error bars: one
-standard deviation across repeats.}
+standard deviation across repeats; where no bar is visible, the spread
+is smaller than the marker.}
 \label{fig:m1-vs-m2}
 \end{figure}
 
@@ -96,6 +97,7 @@ depth. Hatched bars are right-censored at the analysis-window end.}
 \end{figure}
 
 The parallel jaws auto-failed on the Franka excess-force safety monitor
+(triggered at $-60$\,N in $F_z$)
 at depths only $1$--$1.5$\,mm beyond their successful-grasp window; the
 finrays never triggered the safety monitor within the tested $-2$ to
 $+16$\,mm range on any variant.
@@ -210,8 +212,11 @@ in brackets).}
 \label{sec:bipolar-bias-results}
 
 A $\pm 2.5^{\circ}$ tilt produced a signed bias
-$b(d,a) = |F_z^{+2.5^{\circ}}(d,a)| - |F_z^{-2.5^{\circ}}(d,a)|$
-whose depth trajectory itself followed a bipolar shape: a strong signed
+$b(d,a) = |F_z^{+2.5^{\circ}}(d,a)| - |F_z^{-2.5^{\circ}}(d,a)|$.
+Depths in this section and the next are quoted on the raw command-depth
+axis $d$, the native axis of the per-cell bias record, rather than the
+calibrated axis $d_{\text{cal}}$ used elsewhere in this chapter. The
+bias's depth trajectory itself followed a bipolar shape: a strong signed
 peak at boundary depths, a zero-crossing near the knee, a sign-reversed
 plateau through the valley, and depth-gated attenuation toward zero at
 deep press. The clearest example was the y-axis bias on
