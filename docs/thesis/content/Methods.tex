@@ -29,16 +29,16 @@ $\alpha$ changes between the $+2.5^{\circ}$ baseline and the $+5.0^{\circ}$
 variant. The parallel-jaw variants do not use an inclined seat and have
 no defined $t$ or $\alpha$.}
 \label{tab:variants}
-\begin{tabular}{llll}
+\begin{tabular}{clllll}
 \toprule
-Variant & Type & $t$ & $\alpha$ \\
+\# & Variant & Type & Finger & $t$ & $\alpha$ \\
 \midrule
-\texttt{parallel\_jaw\_stock}    & Rigid two-finger (Franka Hand)      & --- & --- \\
-\texttt{parallel\_jaw\_TPU}      & Rigid two-finger + 2.0\,mm TPU 90A pad & --- & --- \\
-\texttt{finray\_18}              & Finray-effect 3D-printed            & 18\,mm & $+2.5^{\circ}$ \\
-\texttt{finray\_18\_model2}      & Second print of \texttt{finray\_18} & 18\,mm & $+2.5^{\circ}$ \\
-\texttt{finray\_26}              & Finray-effect 3D-printed            & 26\,mm & $+2.5^{\circ}$ \\
-\texttt{finray\_26\_5deg}        & Finray-26 on 5$^{\circ}$-seat mount & 26\,mm & $+5.0^{\circ}$ \\
+1 & \texttt{parallel\_jaw\_stock} & Rigid       & Metal jaws (Franka Hand)   & --- & --- \\
+2 & \texttt{parallel\_jaw\_TPU}   & Rigid + pad & 2.0\,mm TPU 90A pad facing & --- & --- \\
+3 & \texttt{finray\_18}           & Compliant   & TPU 90A print              & 18\,mm & $+2.5^{\circ}$ \\
+4 & \texttt{finray\_18\_model2}   & Compliant   & Second print of \#3        & 18\,mm & $+2.5^{\circ}$ \\
+5 & \texttt{finray\_26}           & Compliant   & TPU 90A print              & 26\,mm & $+2.5^{\circ}$ \\
+6 & \texttt{finray\_26\_5deg}     & Compliant   & TPU 90A print, $5.0^{\circ}$ seat & 26\,mm & $+5.0^{\circ}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
