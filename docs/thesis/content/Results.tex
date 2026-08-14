@@ -12,29 +12,6 @@ reading and pooled across trials with matching command depths and tilts
 unless otherwise noted. Interpretation is deferred to
 Chapter~\ref{ch:discussion}.
 
-Figure~\ref{fig:all-variants-raw} gives a first, uncalibrated view of
-the full dataset: stationary contact force for all six variants against
-the raw commanded press depth, at zero tilt. The two rigid variants rise
-steeply and reach the $-60$\,N safety reflex within $3$--$3.5$\,mm of
-first contact; all four finray variants rise more gradually and remain
-well clear of the reflex out to $14$--$22$\,mm. The remainder of this
-chapter reports statistics and figures on the \emph{calibrated} depth
-axis introduced in Section~\ref{sec:dcal}, which removes the raw-axis
-offsets visible here --- each variant's curve departs from zero at a
-different raw depth, an artefact of touch-off and print geometry rather
-than gripper behaviour --- and enables direct cross-variant comparison.
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.95\linewidth]{all_variants_Fz_vs_depth_0deg.png}
-\caption[All variants, raw depth, zero tilt]{Stationary $F_z$ versus raw
-commanded press depth for all six variants at $0^{\circ}$ tilt (shaded
-band: $\pm 1\sigma$ across repeats). Rigid variants (circle, square)
-saturate the $-60$\,N safety reflex within a few millimetres; finray
-variants (triangle, diamond) rise more gradually and extend far beyond.}
-\label{fig:all-variants-raw}
-\end{figure}
-
 \section{Print-to-Print Manufacturing Variability}
 \label{sec:manufacturing-results}
 
@@ -341,18 +318,3 @@ Variant & Boundary depth & No-grasp fraction \\
 \bottomrule
 \end{tabular}
 \end{table}
-
-Figure~\ref{fig:success-rate} shows the same information as a continuous
-function of calibrated depth at zero tilt: grasp success rate climbs
-from $0\%$ at the no-contact boundary to $100\%$ by the first
-majority-success cell and holds at $100\%$ for every finray variant
-across the remainder of the $[0,10]$\,mm window.
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.9\linewidth]{success_rate_hist.png}
-\caption[Grasp success rate versus calibrated depth]{Grasp success rate
-versus calibrated depth, zero tilt, binned in $0.5$\,mm increments below
-$3$\,mm and pooled above. \textcolor{red}{$\times$}: $0\%$ success.}
-\label{fig:success-rate}
-\end{figure}
