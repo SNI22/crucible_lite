@@ -42,18 +42,23 @@ standard deviation across repeats.}
 \end{figure}
 
 The two prints' primary force-depth response is otherwise nearly
-identical (pairwise shape NMSE $0.41\%$, Table~\ref{tab:shape-nmse}):
-the one measurable qualitative difference is in the secondary x-axis
-bias, where \texttt{finray\_18} exhibited a bipolar bias (negative at
-boundary, positive at knee) while \texttt{finray\_18\_model2} exhibited
-a monotonically negative bias across the entire measured range
-(Section~\ref{sec:bipolar-bias-results}). Because this difference
-appears only on the smaller, off-axis force component and not on the
-dominant $F_z$ response the two prints otherwise share, it is better
-read as a bound on secondary-axis error --- attributable to some
-combination of print-instance manufacturing variation and
-force-estimator bias (Section~\ref{sec:manufacturing-mechanism}) ---
-than as evidence that the two prints behave differently.
+identical (pairwise shape NMSE $0.41\%$, Table~\ref{tab:shape-nmse}),
+and even their secondary x-axis bias shares the same depth-gated
+envelope as the rest of this thesis's bias measurements
+(Section~\ref{sec:bipolar-bias-results}): largest near the boundary and
+relaxing toward zero at depth. The two prints differ only in where that
+shared envelope sits relative to zero. \texttt{finray\_18}'s bias
+crosses zero (negative at the boundary, briefly positive through the
+knee, negative again at depth), while \texttt{finray\_18\_model2}'s
+stays negative throughout the full measured range; the gap between the
+two ($2$--$3.5$\,N near the boundary, shrinking to $<1$\,N by
+$d=+10$\,mm) is itself depth-gated, consistent with a shared underlying
+shape offset by a shrinking, print-dependent bias rather than two
+qualitatively different behaviours. This offset is a bound on
+secondary-axis error --- attributable to some combination of
+print-instance manufacturing variation and force-estimator bias
+(Section~\ref{sec:manufacturing-mechanism}) --- not evidence that the
+two prints respond differently to tilt.
 
 \section{Working Range at Zero Tilt}
 \label{sec:working-range-zero}
