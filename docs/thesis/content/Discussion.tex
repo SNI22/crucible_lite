@@ -114,15 +114,29 @@ observations, not for headline effect sizes.
 
 The qualitative x-axis bias sign flip between \texttt{finray\_18} and
 \texttt{finray\_18\_model2} (bipolar vs monotonically negative) is a
-puzzle that this thesis cannot resolve with the current data. Two
-prints from the same slicer, same infill, same material, and same
-printer produced measurably different tilt-response behaviours on the
-x-axis but similar behaviour on the y-axis. The most likely mechanism
-is small differences in rib-wall thickness or infill density that
-manifest as asymmetric buckling behaviour under x-axis load, but
-verifying this requires post-hoc CT-scanning or a controlled study
-with more prints. The finding is noted here as an interesting boundary
-condition on manufacturing-invariance claims for compliant grippers.
+puzzle that this thesis cannot fully resolve with the current data, but
+its scale is informative: the effect lives entirely on the secondary
+(off-axis) force component, is smaller than the print-to-print noise
+floor established above, and leaves the dominant $F_z$ response of the
+two prints essentially unchanged (shape NMSE $0.41\%$,
+Section~\ref{sec:manufacturing-results}). Two candidate mechanisms are
+consistent with the data. First, two prints from the same slicer,
+infill, material, and printer could still carry small differences in
+rib-wall thickness or infill density that manifest as asymmetric
+buckling behaviour under x-axis load. Second, the $F_z$-dominant
+external-wrench estimate this thesis relies on
+(Section~\ref{sec:frames}) has documented pose-dependent bias on other
+Franka platforms~\cite{petrea2021interaction}; a small, direction-dependent
+estimator bias on the weaker x-axis component would be consistent with
+a print-to-print difference that vanishes on the dominant axis.
+Distinguishing manufacturing variation from estimator bias requires
+either post-hoc CT-scanning of the two prints or the independent
+force-sensor cross-check identified as future work
+(Chapter~\ref{ch:conclusion}); until then, the finding is noted as an
+interesting boundary condition on manufacturing-invariance claims for
+compliant grippers, and as a caution that secondary-axis force
+components in this dataset carry more uncertainty than the primary
+$F_z$ channel.
 
 \section{Failure-Mode Taxonomy: Why the Distinction Matters}
 \label{sec:failure-mode-discussion}

@@ -41,11 +41,19 @@ standard deviation across repeats.}
 \label{fig:m1-vs-m2}
 \end{figure}
 
-The two prints also differed qualitatively in x-axis bias sign:
-\texttt{finray\_18} exhibited a bipolar x-bias (negative at boundary,
-positive at knee), whereas \texttt{finray\_18\_model2} exhibited a
-monotonically negative x-bias across the entire measured range
-(Section~\ref{sec:bipolar-bias-results}).
+The two prints' primary force-depth response is otherwise nearly
+identical (pairwise shape NMSE $0.41\%$, Table~\ref{tab:shape-nmse}):
+the one measurable qualitative difference is in the secondary x-axis
+bias, where \texttt{finray\_18} exhibited a bipolar bias (negative at
+boundary, positive at knee) while \texttt{finray\_18\_model2} exhibited
+a monotonically negative bias across the entire measured range
+(Section~\ref{sec:bipolar-bias-results}). Because this difference
+appears only on the smaller, off-axis force component and not on the
+dominant $F_z$ response the two prints otherwise share, it is better
+read as a bound on secondary-axis error --- attributable to some
+combination of print-instance manufacturing variation and
+force-estimator bias (Section~\ref{sec:manufacturing-mechanism}) ---
+than as evidence that the two prints behave differently.
 
 \section{Working Range at Zero Tilt}
 \label{sec:working-range-zero}
