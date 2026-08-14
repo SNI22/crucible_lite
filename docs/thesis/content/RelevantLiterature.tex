@@ -26,7 +26,7 @@ through an entire folding sequence, allowing one parameterised folding
 strategy to transfer across previously unseen towels, pants, and shirts.
 Li et al.~\cite{li2015regrasping} pushed the physical modelling further
 still, using a predictive thin-shell simulation fit to RGB-D observations
-to plan \emph{regrasp} actions that unfold and flatten a crumpled garment
+to plan regrasp actions that unfold and flatten a crumpled garment
 by selecting the grasp points expected to maximise resulting flatness.
 
 More recent work has moved from hand-designed geometric priors toward
@@ -65,10 +65,10 @@ mechanism that does not require one.
 The first family keeps a standard gripper and instead spends actions
 creating a graspable feature --- a fold, wrinkle, or free edge --- before
 the pick. Ramisa et al.~\cite{ramisa2012wrinkled} detected and ranked
-\emph{wrinkles} in depth images of crumpled laundry, directing a standard
+wrinkles in depth images of crumpled laundry, directing a standard
 gripper to the most graspable bump on the cloth rather than to a flat
-region. Qian et al.~\cite{qian2020clothregion} segmented cloth \emph{edges
-and corners} (as distinct from wrinkles and folds) in depth images and
+region. Qian et al.~\cite{qian2020clothregion} segmented cloth edges
+and corners (as distinct from wrinkles and folds) in depth images and
 coupled the segmentation to a sliding grasp policy that approaches along
 the estimated grasp direction. At the dynamic extreme, Ha and
 Song's FlingBot~\cite{ha2021flingbot} showed that a high-velocity fling
