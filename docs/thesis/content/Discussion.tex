@@ -31,6 +31,31 @@ finger thickness ($18$ vs $26$\,mm) or to a $5^{\circ}$ mount tilt.
 Force magnitudes scale with contact area, as expected, but the depth
 locations of the transitions do not.
 
+\section{Depth-Gated Tilt Bias: Mechanism}
+\label{sec:depth-gating-mechanism}
+
+The bipolar bias trajectory of Section~\ref{sec:bipolar-bias-results}
+--- a strong signed asymmetry at boundary depths that attenuates to
+under $0.9$\,N beyond $d = +4$\,mm --- is consistent with the
+contact-geometry transition documented in
+Figure~\ref{fig:press-deform}. At boundary depths only the blade tips
+touch the surface: the contact patch is small, and a $2.5^{\circ}$
+orientation change redistributes which tip carries the load, so the
+asymmetric ridge profile of the finger dominates the force response.
+Past the buckling knee ($d_{\text{cal}} \approx 2$--$3$\,mm), the
+blades wrap the surface and the contact becomes an extended line along
+each blade; the same orientation change then only slightly
+re-distributes load along an already-engaged contact, and the force
+response becomes insensitive to tilt sign. The depth at which the bias
+attenuates ($+4$\,mm) sits just past the knee-peak region
+($+1.5$ to $+3$\,mm, Section~\ref{sec:shape-results}), consistent with
+wrap-around engagement, rather than press depth per se, being the
+quantity that confers tilt robustness. This is the mechanism behind the
+depth-gated tilt robustness identified in
+Chapter~\ref{ch:conclusion} as the principal empirical contribution:
+compliance does not remove tilt sensitivity, it relocates it to the
+contact-boundary regime that a sufficiently deep press avoids.
+
 \section{Cross-Axis Sign Reversal: Mechanism}
 \label{sec:cross-axis-mechanism}
 
@@ -66,25 +91,30 @@ contribution.
 \section{Mount-Tilt Equivalence: Geometric Interpretation}
 \label{sec:mount-tilt-mechanism}
 
-The observation that a $5^{\circ}$ pre-tilt of the finray mount is
+The observation that raising the seat angle from the
+$\alpha = +2.5^{\circ}$ baseline to $\alpha = +5.0^{\circ}$ is
 equivalent to a $-1.13$\,mm depth shift, with axis-independent shift
-within $0.03$\,mm on the two axes (Table~\ref{tab:mount-tilt-alignment}),
-admits a simple geometric interpretation. A $5^{\circ}$ tilt of a rigid
-finger of length $L$ produces a projected vertical offset at the
-contact tip of $L\sin(5^{\circ}) = 0.087 L$. Setting this equal to the
-observed $1.13$\,mm shift gives $L_{\mathrm{eff}} \approx 13$\,mm.
-Because the finray finger is physically $\sim 50$\,mm long, this
-$L_{\mathrm{eff}}$ corresponds to a contact-engagement point roughly
-$25\%$ up the length of the finger from its distal tip, consistent with
-the load being concentrated on the proximal portion of the finray's
-curved contact surface rather than at the tip.
+within $0.02$\,mm on the two axes (Table~\ref{tab:mount-tilt-alignment}),
+admits a simple geometric interpretation. Because the comparison
+variant (\texttt{finray\_26}) already sits on the $+2.5^{\circ}$
+baseline seat (Section~\ref{sec:variants}), the differential tilt
+between the two mounts is $2.5^{\circ}$, not $5^{\circ}$. A
+differential tilt of a rigid finger of length $L$ produces a projected
+vertical offset at the contact of
+$L\left[\sin(5^{\circ}) - \sin(2.5^{\circ})\right] = 0.0436 L$.
+Setting this equal to the observed $1.13$\,mm shift gives
+$L_{\mathrm{eff}} \approx 26$\,mm. Because the finray finger is
+physically $\sim 50$\,mm long, this $L_{\mathrm{eff}}$ corresponds to a
+contact-engagement point near the mid-length of the finger, consistent
+with the load being distributed along the finray's curved contact
+surface rather than concentrated at the distal tip.
 
 The axis-independence of the shift (0.02\,mm apart on the two axes) is
 a strong constraint: it rules out any mechanism in which the pre-tilt
 produces a different effective load-bearing length on the two axes.
-The $5^{\circ}$ mount therefore acts as a strictly rigid translation
-of the operating point in the depth dimension, independent of the tilt
-axis applied at runtime. This makes the $5^{\circ}$ mount a useful
+The seat-angle increment therefore acts as a strictly rigid
+translation of the operating point in the depth dimension, independent
+of the tilt axis applied at runtime. This makes the seat angle a useful
 design lever: the finray's operating envelope can be shifted a chosen
 $1.13$\,mm in depth without altering the underlying force-depth
 sensitivity, at the cost of the $\sim 3$\,N vertical force offset.
