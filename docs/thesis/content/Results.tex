@@ -286,35 +286,3 @@ y     & $-1.12$\,mm & $+3.1$\,N & $1.58$\,N \\
 \bottomrule
 \end{tabular}
 \end{table}
-
-\section{Trial Outcome Distribution}
-\label{sec:trial-outcomes}
-
-Trial outcomes were classified into three categories: \emph{success}
-(cloth held after lift), \emph{no-grasp} (trial completed with valid
-$F_z$ measurement but cloth slipped at lift), and \emph{failed trial}
-(controller aborted or trial did not complete a stationary window).
-The failed-trial category was excluded from force-curve analyses;
-no-grasp trials contributed valid force measurements. No-grasp fractions
-at each variant's boundary depth are reported in
-Table~\ref{tab:no-grasp-fraction}.
-
-\begin{table}[ht]
-\centering
-\caption[No-grasp fractions at boundary]{No-grasp fraction at each
-variant's boundary depth. A no-grasp trial yields a cleanly measurable
-contact force but fails to hold the cloth on lift.}
-\label{tab:no-grasp-fraction}
-\begin{tabular}{lcc}
-\toprule
-Variant & Boundary depth & No-grasp fraction \\
-\midrule
-\texttt{finray\_18}        & $-2.0$\,mm & $3/3$ \\
-\texttt{finray\_18\_model2} & $-1.0$\,mm & $3/3$ \\
-\texttt{finray\_26}        & $-0.5$\,mm & $\sim 40\%$ \\
-\texttt{finray\_26\_5deg}  & $-2.0$\,mm & $6/6$ \\
-\texttt{parallel\_jaw\_stock} & $+1.0$\,mm & $4/6$ \\
-\texttt{parallel\_jaw\_TPU}   & $+0.5$\,mm & varies with tilt \\
-\bottomrule
-\end{tabular}
-\end{table}
