@@ -5,11 +5,14 @@
 
 \subsection{Robot Manipulator}
 
-A Franka Emika FR3 7-DOF cobot served as the manipulator throughout this work.
-The arm was operated through the Franka Control Interface (FCI) using
-\texttt{libfranka 0.18.1} and the ROS\,2 Humble control stack. Cartesian
-pose tracking was performed by a custom \texttt{fr3\_pose\_controller}
-developed and maintained by the McGill Applied Dynamics Lab. The
+A Franka Research 3 (FR3) 7-DOF cobot served as the manipulator throughout
+this work. The arm was operated through the Franka Control Interface (FCI)
+using \texttt{libfranka 0.18.1} and the ROS\,2 Humble control stack.
+Cartesian pose targets were streamed through libfranka's motion-generator
+interface by a custom \texttt{fr3\_pose\_controller} developed and
+maintained by the McGill Applied Dynamics Lab, with tracking delegated to
+the arm's internal impedance controller
+(Section~\ref{sec:franka-platform-lit}). The
 controller accepts a sequence of (pose, twist) waypoints with associated
 time stamps and interpolates between them using a quintic polynomial;
 for the in-place re-orientation and the final precision descent phases,
@@ -34,7 +37,7 @@ no defined $t$ or $\alpha$.}
 \# & Variant & Type & Finger & $t$ & $\alpha$ \\
 \midrule
 1 & \texttt{parallel\_jaw\_stock} & Rigid       & Metal jaws (Franka Hand)   & --- & --- \\
-2 & \texttt{parallel\_jaw\_TPU}   & Rigid + pad & 2.0\,mm TPU 90A pad facing & --- & --- \\
+2 & \texttt{parallel\_jaw\_TPU}   & Rigid + pad & 2.0\,mm TPU 90A pads & --- & --- \\
 3 & \texttt{finray\_18}           & Compliant   & TPU 90A print              & 18\,mm & $+2.5^{\circ}$ \\
 4 & \texttt{finray\_18\_model2}   & Compliant   & Second print of \#3        & 18\,mm & $+2.5^{\circ}$ \\
 5 & \texttt{finray\_26}           & Compliant   & TPU 90A print              & 26\,mm & $+2.5^{\circ}$ \\
@@ -84,7 +87,7 @@ Scale bars in cm.}
 \end{figure}
 
 \paragraph{Consequence for reported ``$0^{\circ}$'' cells.}
-Cells reported in Chapter~\ref{ch:results} as $0^{\circ}$ tilt mean the
+Cells reported in Chapter~\ref{ch:results} as $0^{\circ}$ tilt denote that the
 robot arm is perpendicular to the surface ($\theta_x = \theta_y = 0$;
 the runtime tilt angles are illustrated in Figure~\ref{fig:runtime-tilt}).
 Runtime tilt values ($\pm 2.5^{\circ}$ about $x$ or $y$) tilt the arm
@@ -162,7 +165,7 @@ The $z_{\text{TCP}}$ value differs by variant because different fingers
 attach to the same flange. To calibrate, each variant was driven to a
 common probe position $(x_0, y_0)$ on a known rigid table and a force-feedback
 touch-off was performed: the gripper descended slowly in $z$ until the
-external force in $z$ exceeded a $-3$\,N threshold (debounced for three
+external $z$ force exceeded $3$\,N in magnitude (debounced for three
 consecutive 50\,Hz samples). The flange $z$ at the latch moment was
 recorded as $z_{\text{TCP}}^{\text{measured}}$.
 
@@ -180,7 +183,10 @@ this work.
 \begin{table}[ht]
 \centering
 \caption[Calibrated TCP offsets]{Calibrated per-variant TCP offsets from
-differential touch-off against the stock parallel jaw.}
+differential touch-off against the stock parallel jaw. Offsets are
+computed from the unrounded calibration records; displayed values are
+rounded independently. \texttt{finray\_18\_model2} is absent because it
+was re-calibrated on mounting (see text).}
 \label{tab:tcp-calib}
 \begin{tabular}{lrr}
 \toprule
@@ -232,7 +238,7 @@ position is
   \label{eq:flange-target-tilted}
 \end{equation}
 
-This relation is implemented in the trial controller \path{run_trial.py}:
+This relation is implemented in the trial-control software:
 the target orientation $R = R_{\text{tilt}} \circ R_0$ is constructed at
 session start by composing the requested tilt rotation
 $R_{\text{tilt}} = R_y(\theta_y) R_x(\theta_x)$ (extrinsic, world frame)
@@ -419,9 +425,9 @@ parallel-jaw variants' working ranges are unaffected by the window
 choice, as both lie entirely inside $[0,10]$\,mm and their ranges are
 therefore reported as closed measurements, not censored. This convention
 was adopted as Bill~0007 of the project's governance record (enacted
-2026-08-09; revised to per-series zeroing and a majority-success cell
-criterion on 2026-08-10, and to the final $10$\,mm window on
-2026-08-10), on the evidence that first-success alignment collapses the
+2026-08-09; revised through 2026-08-10 to per-series zeroing, a
+majority-success cell criterion, and the final $10$\,mm window), on the
+evidence that first-success alignment collapses the
 two prints of the 18\,mm finger onto a common curve.
 
 \subsection{Per-Cell Statistics}

@@ -300,6 +300,7 @@ uses the controller's own external-wrench estimate rather than an external
 load cell.
 
 \section{The Franka FR3 Platform}
+\label{sec:franka-platform-lit}
 
 The Franka Research 3 (FR3) is a 7-degree-of-freedom, torque-controlled
 collaborative arm with seven integrated joint torque sensors, a 3\,kg
@@ -308,7 +309,7 @@ thesis through the Franka Control Interface
 (FCI)~\cite{franka2026fr3spec,frankarobotics2026fcidocs}, a real-time
 control layer providing torque, position, and velocity access in both
 joint and Cartesian space at up to 1\,kHz. This thesis controls the arm
-through franka\_ros2~\cite{frankarobotics2026franka_ros2}, the official
+through \texttt{franka\_ros2}~\cite{frankarobotics2026franka_ros2}, the official
 ROS\,2 integration built on \texttt{libfranka} and \texttt{ros2\_control}.
 
 The FR3's predecessor, the Franka Emika Panda, is documented by its

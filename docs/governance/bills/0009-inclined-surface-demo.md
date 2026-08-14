@@ -125,6 +125,6 @@ demonstrated only by inference from flat-surface data.
 Requires human approval (Article II) before any hardware session.
 On enactment: build/measure the wedge, scaffold
 `experiments/cloth_grasp/experiment3/`, derive the E3 trial script from
-the fixed E1 scripts, run the 6-trial pilot, and record the outcome
+the fixed E1 scripts, run the 18-trial pilot, and record the outcome
 grid. Thesis integration (pilot section + demo figure) and any deck
 material follow as separate steps under the Standing Orders.

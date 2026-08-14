@@ -41,24 +41,19 @@ standard deviation across repeats.}
 \label{fig:m1-vs-m2}
 \end{figure}
 
-The two prints' primary force-depth response is otherwise nearly
+The two prints' primary force-depth response was otherwise nearly
 identical (pairwise shape NMSE $0.41\%$, Table~\ref{tab:shape-nmse}),
-and even their secondary x-axis bias shares the same depth-gated
+and even their secondary x-axis bias shared the same depth-gated
 envelope as the rest of this thesis's bias measurements
 (Section~\ref{sec:bipolar-bias-results}): largest near the boundary and
-relaxing toward zero at depth. The two prints differ only in where that
-shared envelope sits relative to zero. \texttt{finray\_18}'s bias
-crosses zero (negative at the boundary, briefly positive through the
+relaxing toward zero at depth. The two prints differed only in where
+that shared envelope sat relative to zero. \texttt{finray\_18}'s bias
+crossed zero (negative at the boundary, briefly positive through the
 knee, negative again at depth), while \texttt{finray\_18\_model2}'s
-stays negative throughout the full measured range; the gap between the
+stayed negative throughout the full measured range; the gap between the
 two ($2$--$3.5$\,N near the boundary, shrinking to $<1$\,N by
-$d=+10$\,mm) is itself depth-gated, consistent with a shared underlying
-shape offset by a shrinking, print-dependent bias rather than two
-qualitatively different behaviours. This offset is a bound on
-secondary-axis error --- attributable to some combination of
-print-instance manufacturing variation and force-estimator bias
-(Section~\ref{sec:manufacturing-mechanism}) --- not evidence that the
-two prints respond differently to tilt.
+$d=+10$\,mm) was itself depth-gated. The attribution of this offset is
+deferred to Section~\ref{sec:manufacturing-mechanism}.
 
 \section{Working Range at Zero Tilt}
 \label{sec:working-range-zero}
@@ -112,10 +107,10 @@ the calibrated depth axis (Figure~\ref{fig:tilt-similarity}) shows how
 tightly the orientations track one another within a variant. The mean
 spread across the five orientations, averaged over the calibrated
 window, was $1.3$--$2.4$\,N depending on variant --- small relative to
-the $30$--$51$\,N knee peaks reported in
+the $31$--$50$\,N knee peaks reported in
 Table~\ref{tab:zero-tilt-summary}, and consistent with the depth-gated
 tilt robustness reported in Section~\ref{sec:bipolar-bias-results}: the
-curves separate near the boundary and converge in the plateau.
+curves separated near the boundary and converged in the plateau.
 
 \begin{figure}[ht]
 \centering
@@ -168,7 +163,7 @@ collapse onto a single rise--peak--valley--recovery curve over the full
 $[0,10]$\,mm calibrated window. Table~\ref{tab:shape-nmse} quantifies
 the pairwise agreement between variants as a normalised mean-squared
 error (NMSE) and, in decibels, $10\log_{10}(\text{NMSE})$; the mean
-pairwise NMSE is $0.58\%$ ($\approx -22$\,dB), with the largest
+pairwise NMSE was $0.58\%$ ($\approx -22$\,dB), with the largest
 disagreement between any two variants at $0.80\%$ ($-21.0$\,dB).
 
 \begin{figure}[ht]
