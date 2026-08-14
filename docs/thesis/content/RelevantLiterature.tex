@@ -334,7 +334,17 @@ sensing specifically, the Franka Panda/FR3's broad adoption as a
 manipulation-research testbed is illustrated by work such as Chi et
 al.'s~\cite{chi2023diffusion} diffusion-policy visuomotor control
 framework, evaluated on contact-rich real-world manipulation tasks using a
-Franka Panda as one of its physical platforms.
+Franka Panda as one of its physical platforms. This adoption is directly
+relevant to the control mode chosen here: learned visuomotor policies of
+this kind emit streams of end-effector pose targets --- the same command
+interface through which this thesis's trial procedure drives the arm
+(Section~\ref{sec:tilt-pose}). The benchmark is therefore conducted
+through the interface a learned or simulation-trained policy would use in
+deployment, with sim-to-real transfer as the motivating trajectory: a
+compliant finger that tolerates centimetre-scale press-depth error and
+degree-scale tilt error widens the placement-error budget available to a
+policy trained in simulation, and the depth--tilt maps produced in this
+thesis quantify that budget as a function of gripper design.
 
 \section{Position and Summary}
 
