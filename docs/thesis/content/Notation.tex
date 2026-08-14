@@ -23,15 +23,16 @@ $x_0, y_0$ & Fixed probe/target position in the world $xy$ plane (mm) \\ [1ex]
 \noindent
 \begin{tabular}{l l}
 \multicolumn{2}{l}{\textit{Design parameters (fixed per variant)}} \\ [0.5ex]
-$t$ & Finray finger blade thickness (mm) \\ [1ex]
+$t$ & Finray finger blade thickness (mm) (Fig.~\ref{fig:seat-mount-params}) \\ [1ex]
 $\alpha$ & Baseline seat-mount tilt angle, about the gripper's local $y$ \\
-         & axis, introduced by the 3D-printed inclined seat ($^{\circ}$) \\ [1ex]
+         & axis, introduced by the 3D-printed inclined seat ($^{\circ}$) \\
+         & (Fig.~\ref{fig:seat-mount-params}) \\ [1ex]
 \multicolumn{2}{l}{\textit{Runtime and trial variables}} \\ [0.5ex]
 $\theta_x$, $\theta_y$ & Commanded robot-arm tilt angles about the world $x$ / $y$ axes \\
                         & (which coincide with the gripper's local $x$ / $y$ axis lines \\
                         & at $R_0$), applied as $R_{\text{tilt}} = R_y(\theta_y)\,R_x(\theta_x)$ \\
                         & (extrinsic) ($^{\circ}$); distinct from, and never summed \\
-                        & with, the seat angle $\alpha$ \\ [1ex]
+                        & with, the seat angle $\alpha$ (Fig.~\ref{fig:runtime-tilt}) \\ [1ex]
 $d$ & Press depth: distance the gripper fingertip is driven below the \\
     & detected cloth/table surface (mm) \\ [1ex]
 $d_{\text{cal}}$ & Calibrated press depth: $d - d_{\text{first success}}$, zeroed at each \\
