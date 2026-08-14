@@ -9,15 +9,12 @@ A Franka Emika FR3 7-DOF cobot served as the manipulator throughout this work.
 The arm was operated through the Franka Control Interface (FCI) using
 \texttt{libfranka 0.18.1} and the ROS\,2 Humble control stack. Cartesian
 pose tracking was performed by a custom \texttt{fr3\_pose\_controller}
-maintained by the McGill Applied Dynamics Lab at
-\url{https://github.com/McGill-Applied-Dynamics-Lab/adl-ros2},
-parameterised in \path{config/controllers/fr3_pose/default.yaml}. The controller accepts a
-sequence of (pose, twist) waypoints with associated time stamps and
-interpolates between them using a quintic polynomial; for the in-place
-re-orientation and the final precision descent phases, a cosine half-cycle
-S-curve interpolator (the so-called ``sine descent'' implemented in
-\path{run_trial.py::_safe_traj}) is used to ensure zero start- and end-state
-velocities.
+developed and maintained by the McGill Applied Dynamics Lab. The
+controller accepts a sequence of (pose, twist) waypoints with associated
+time stamps and interpolates between them using a quintic polynomial;
+for the in-place re-orientation and the final precision descent phases,
+a cosine half-cycle S-curve interpolator (the ``sine descent'') is used
+to ensure zero start- and end-state velocities.
 
 \subsection{Gripper Variants Tested}
 \label{sec:variants}
