@@ -208,18 +208,21 @@ and the outcome is recorded as a binary grasp verdict under the outcome
 taxonomy of Section~\ref{sec:trial-protocol}. Contact force is logged
 but is not a reported metric for this experiment.
 
-The pilot covers two variants, \texttt{finray\_26} and
-\texttt{parallel\_jaw\_stock}, at three attempts each. From the
-flat-surface working ranges of Chapter~\ref{ch:results}, the registered
-prediction is that the finray variant grasps successfully at all three
-attempts, while the rigid jaw fails or is marginal: a $4.15^{\circ}$
-surface-relative misalignment exceeds the largest runtime tilt at which
-the rigid jaws retained a usable window ($2.5^{\circ}$), and that window
-had already narrowed to between $0.5$ and $2.5$\,mm under that tilt.
+The pilot covers all six gripper variants of
+Table~\ref{tab:variants}, at three attempts each ($18$ trials total).
+From the flat-surface working ranges of Chapter~\ref{ch:results}, the
+registered prediction is that all four finray variants grasp
+successfully at every attempt, while both rigid variants fail or are
+marginal: a $4.15^{\circ}$ surface-relative misalignment exceeds the
+largest runtime tilt at which the rigid jaws retained a usable window
+($2.5^{\circ}$), and that window had already narrowed to between $0.5$
+and $2.5$\,mm under that tilt, with two \texttt{parallel\_jaw\_stock}
+tilt conditions producing no success at all
+(Section~\ref{sec:pj-vs-finray-results}).
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.7\linewidth]{exp3_wedge.jpg}
+\includegraphics[width=0.95\linewidth]{exp3_wedge.jpg}
 \caption[Experiment 3 wedge fixture]{The \texttt{SURFACE\_RISER} wedge
 (3D-printed, white) mounted under the acrylic test surface, on the
 optical breadboard used for Experiments 1 and 2. The arrow marks the

@@ -43,20 +43,23 @@ minimal-press grasp attempt — no depth or position sweep.
    reported (force stays logged for the record only).
 4. **Outcome metric.** Binary per the Amendment 1 outcome taxonomy:
    success / no-grasp; safety aborts recorded as aborts.
-5. **Pilot scope (this Bill).** Two variants — `finray_26` and
-   `parallel_jaw_stock` — at 3 attempts each (6 trials). Extension to
-   `parallel_jaw_TPU`, other finrays, other incline angles, or larger n
-   requires a revision of this Bill after the pilot is reviewed.
+5. **Pilot scope (this Bill).** All six variants — `finray_18`,
+   `finray_18_model2`, `finray_26`, `finray_26_5deg`,
+   `parallel_jaw_stock`, `parallel_jaw_TPU` — at 3 attempts each
+   (18 trials). Extension to other incline angles or larger n requires
+   a revision of this Bill after the pilot is reviewed.
 6. **Registered prediction (falsifiable).** The incline presents each
    gripper with a 4.15° surface-relative tilt it was not calibrated for.
-   From the flat-surface record: the finray succeeds (its window held at
-   every tested orientation, including the 5° seat evidence, which
-   brackets this incline); the rigid jaw fails or is marginal (at only
-   ±2.5° its window shrank to 0.5–2.5 mm with two no-success conditions;
-   4.15° exceeds the largest tested rigid tilt while the +0.5 mm press
-   sits at the very bottom edge of its flat-surface window).
+   From the flat-surface record: all four finray variants succeed (their
+   windows held at every tested orientation, including the 5° seat
+   evidence on `finray_26_5deg`, which brackets this incline); both rigid
+   variants fail or are marginal (at only ±2.5° their windows shrank to
+   0.5–2.5 mm, with two `parallel_jaw_stock` tilt conditions producing no
+   success at all; 4.15° exceeds the largest tested rigid tilt while the
+   +0.5 mm press sits at the very bottom edge of the flat-surface
+   window).
 7. **Data layout.** New tree
-   `experiments/cloth_grasp/experiment3/<variant>/incl+04.15deg_<YYYYMMDD_HHMMSS>/`
+   `experiments/cloth_grasp/experiment3/<variant>/incl+4.15deg_<YYYYMMDD_HHMMSS>/`
    with the standard depth_summary.json + session_log npz per cell;
    incline angle and slope orientation in cell metadata.
 
@@ -97,9 +100,10 @@ demonstrated only by inference from flat-surface data.
 ---
 
 **Consequences and known costs:**
-- Pilot data only: 3 attempts per variant supports a demonstration
-  figure and a short thesis section explicitly marked as pilot, not a
-  statistical claim. Full-matrix statistics require a Bill revision.
+- Pilot data only: 3 attempts per variant (18 trials across all six
+  variants) supports a demonstration figure/table and a short thesis
+  section explicitly marked as pilot, not a statistical claim.
+  Full-matrix statistics require a Bill revision.
 - New fixture: a wedge (BOM addition) whose angle must be measured and
   recorded (level / print-angle verification) — the incline is a
   controlled input even though calibration is blind to it.
@@ -108,7 +112,8 @@ demonstrated only by inference from flat-surface data.
 - Cloth placement on an incline may shift between trials; the flatten
   step must be repeated per attempt and slippage noted.
 - Scripts: E3 needs a minimal variant of run_trial.py (fixed +0.5 mm
-  press, no sweep); it must inherit the 2026-08-11 per-leg descent fix.
+  press, no sweep) for each of the six variants; all six must inherit
+  the 2026-08-11 per-leg descent fix.
 - Interpretive limit: a single press depth cannot separate depth-error
   from tilt-error contributions to a rigid-jaw failure; the demo shows
   THAT the naive policy fails on rigid jaws, not which error component
