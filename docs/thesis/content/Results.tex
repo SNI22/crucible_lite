@@ -46,6 +46,52 @@ The four features lay within $\pm 1$\,mm of the same depth locations
 across all four variants. The absolute force magnitudes scaled
 approximately with the frontal contact area of the finger.
 
+Normalising each variant's curve by its own peak force and averaging
+over its five tested orientations makes this shared shape directly
+visible (Figure~\ref{fig:shape-normalized}): all four finray variants
+collapse onto a single rise--peak--valley--recovery curve over the full
+$[0,10]$\,mm calibrated window. Table~\ref{tab:shape-nmse} quantifies
+the pairwise agreement between variants as a normalised mean-squared
+error (NMSE) and, in decibels, $10\log_{10}(\text{NMSE})$; the mean
+pairwise NMSE is $0.58\%$ ($\approx -22$\,dB), with the largest
+disagreement between any two variants at $0.80\%$ ($-21.0$\,dB).
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\linewidth]{finray_shape_normalized.png}
+\caption[Shared force-depth shape across the finray family]{Peak-normalised
+$|F_z|$ versus calibrated depth $d_{\text{cal}}$, averaged over all five
+tested orientations per variant (shaded band: across-orientation spread).
+All four finray variants collapse onto one shared response shape.}
+\label{fig:shape-normalized}
+\end{figure}
+
+\begin{table}[ht]
+\centering
+\caption[Pairwise shape agreement]{Pairwise shape agreement between
+finray variants over the full $[0,10]$\,mm calibrated window: NMSE (top),
+NMSE in decibels (middle), and RMSE as a percentage of peak (bottom,
+in brackets).}
+\label{tab:shape-nmse}
+\small
+\begin{tabular}{lcccc}
+\toprule
+ & \texttt{finray\_18} & \texttt{finray\_18\_model2} & \texttt{finray\_26} & \texttt{finray\_26\_5deg} \\
+\midrule
+\texttt{finray\_18} & --- &
+  \begin{tabular}{c}$0.41\%$\\($-23.9$\,dB)\\{}[$5.5\%$]\end{tabular} &
+  \begin{tabular}{c}$0.69\%$\\($-21.6$\,dB)\\{}[$7.2\%$]\end{tabular} &
+  \begin{tabular}{c}$0.80\%$\\($-21.0$\,dB)\\{}[$7.8\%$]\end{tabular} \\[2ex]
+\texttt{finray\_18\_model2} & & --- &
+  \begin{tabular}{c}$0.13\%$\\($-28.8$\,dB)\\{}[$3.1\%$]\end{tabular} &
+  \begin{tabular}{c}$0.70\%$\\($-21.6$\,dB)\\{}[$7.1\%$]\end{tabular} \\[2ex]
+\texttt{finray\_26} & & & --- &
+  \begin{tabular}{c}$0.76\%$\\($-21.2$\,dB)\\{}[$7.4\%$]\end{tabular} \\[2ex]
+\texttt{finray\_26\_5deg} & & & & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \section{Bipolar Tilt Bias on the Finray Family}
 \label{sec:bipolar-bias-results}
 
@@ -126,10 +172,35 @@ y     & $-1.12$\,mm & $+3.1$\,N & $1.58$\,N \\
 \end{tabular}
 \end{table}
 
+\section{Tilt-Aligned Response Comparison}
+\label{sec:tilt-similarity-results}
+
+Plotting each finray variant's five tilt-condition curves together on
+the calibrated depth axis (Figure~\ref{fig:tilt-similarity}) shows how
+tightly the orientations track one another within a variant. The mean
+spread across the five orientations, averaged over the calibrated
+window, was $1.3$--$2.4$\,N depending on variant --- small relative to
+the $30$--$51$\,N knee peaks reported in
+Table~\ref{tab:zero-tilt-summary}, and consistent with the depth-gated
+tilt robustness reported in Section~\ref{sec:bipolar-bias-results}: the
+curves separate near the boundary and converge in the plateau.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.95\linewidth]{finray_tilt_similarity.png}
+\caption[Tilt-aligned response per finray variant]{Contact force versus
+calibrated depth for each finray variant, all five tested orientations
+overlaid (0\textdegree, $x\pm2.5^{\circ}$, $y\pm2.5^{\circ}$). Within
+each panel the five curves nearly coincide.}
+\label{fig:tilt-similarity}
+\end{figure}
+
 \section{Print-to-Print Manufacturing Variability}
 \label{sec:manufacturing-results}
 
-Two independent prints of the same \texttt{finray\_18} CAD geometry,
+Figure~\ref{fig:m1-vs-m2} compares the two prints directly on the
+calibrated depth axis. Two independent prints of the same
+\texttt{finray\_18} CAD geometry,
 each zeroed at its own first majority-success cell
 (Section~\ref{sec:dcal}), differed by a $+4.6$\,N mean force offset
 (second print stiffer) with RMSE $5.4$\,N over the 10\,mm window;
@@ -143,6 +214,16 @@ Cross-session drift on the \emph{same} print, measured by comparing
 weeks apart, was approximately $7$--$10$\,N at knee and knee-adjacent
 depths. Cross-session drift on the same specimen was therefore larger
 than same-session print-to-print variability.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\linewidth]{fr18_m1_vs_m2_aligned0.png}
+\caption[Print-to-print force comparison]{Contact force versus
+calibrated depth for two independently printed copies of
+\texttt{finray\_18}, zero tilt, successful cells only. Error bars: one
+standard deviation across repeats.}
+\label{fig:m1-vs-m2}
+\end{figure}
 
 The two prints also differed qualitatively in x-axis bias sign:
 \texttt{finray\_18} exhibited a bipolar x-bias (negative at boundary,
@@ -181,10 +262,28 @@ Variant & Boundary depth & No-grasp fraction \\
 \end{tabular}
 \end{table}
 
+Figure~\ref{fig:success-rate} shows the same information as a continuous
+function of calibrated depth at zero tilt: grasp success rate climbs
+from $0\%$ at the no-contact boundary to $100\%$ by the first
+majority-success cell and holds at $100\%$ for every finray variant
+across the remainder of the $[0,10]$\,mm window.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\linewidth]{success_rate_hist.png}
+\caption[Grasp success rate versus calibrated depth]{Grasp success rate
+versus calibrated depth, zero tilt, binned in $0.5$\,mm increments below
+$3$\,mm and pooled above. \textcolor{red}{$\times$}: $0\%$ success.}
+\label{fig:success-rate}
+\end{figure}
+
 \section{Working-Range and Failure Comparison}
 \label{sec:pj-vs-finray-results}
 
-On the calibrated depth axis (Section~\ref{sec:dcal}), the parallel-jaw
+Figure~\ref{fig:working-range-hist} summarises the zero-tilt working
+range of every variant, and Figure~\ref{fig:working-range-tilt} extends
+the comparison to all five tested orientations. On the calibrated depth
+axis (Section~\ref{sec:dcal}), the parallel-jaw
 variants exhibited closed successful-grasp windows of $1.5$\,mm
 (\texttt{parallel\_jaw\_stock}) and $2.5$\,mm
 (\texttt{parallel\_jaw\_TPU}) at $0^{\circ}$, shrinking to
@@ -193,6 +292,25 @@ producing no successful grasp at any depth. All four finray variants
 spanned the full $\geq 10$\,mm analysis window under every orientation
 tested; their ranges were right-censored at the window end, and the
 underlying record extends beyond it.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\linewidth]{working_range_hist.png}
+\caption[Zero-tilt working range per variant]{Successful-grasp working
+range on the calibrated depth axis, zero tilt. Hatched bars are
+right-censored at the $10$\,mm analysis-window end (Section~\ref{sec:dcal}).}
+\label{fig:working-range-hist}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{working_range_tilt.png}
+\caption[Working range under tilt, all variants]{Successful-grasp
+working range on the calibrated depth axis, all five tested orientations
+per variant. \textcolor{red}{$\times$}: no successful attempt at any
+depth. Hatched bars are right-censored at the analysis-window end.}
+\label{fig:working-range-tilt}
+\end{figure}
 
 The parallel jaws auto-failed on the Franka excess-force safety monitor
 at depths only $1$--$1.5$\,mm beyond their successful-grasp window; the

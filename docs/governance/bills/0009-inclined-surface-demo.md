@@ -27,7 +27,7 @@ surface, calibrated blind as if the surface were flat, with a single
 minimal-press grasp attempt — no depth or position sweep.
 
 1. **Fixture.** The acrylic test surface is mounted on a wedge at incline
-   angle β = 5.0° (grounding below). Same cloth specimen, same robot,
+   angle β = 4.15° per the SURFACE_RISER CAD model (grounding below); the as-built fixture is verified against this nominal before the session. Same cloth specimen, same robot,
    same controller and trial policy as E1/E2. The slope direction is
    aligned with the gripping direction (gripper local y), the axis with
    the strongest measured rigid-jaw tilt degradation; the orientation is
@@ -48,15 +48,15 @@ minimal-press grasp attempt — no depth or position sweep.
    `parallel_jaw_TPU`, other finrays, other incline angles, or larger n
    requires a revision of this Bill after the pilot is reviewed.
 6. **Registered prediction (falsifiable).** The incline presents each
-   gripper with a 5° surface-relative tilt it was not calibrated for.
+   gripper with a 4.15° surface-relative tilt it was not calibrated for.
    From the flat-surface record: the finray succeeds (its window held at
-   every tested orientation, including the 5° seat evidence); the rigid
-   jaw fails or is marginal (at only ±2.5° its window shrank to
-   0.5–2.5 mm with two no-success conditions; 5° doubles the untested
-   misalignment while the +0.5 mm press sits at the very bottom edge of
-   its flat-surface window).
+   every tested orientation, including the 5° seat evidence, which
+   brackets this incline); the rigid jaw fails or is marginal (at only
+   ±2.5° its window shrank to 0.5–2.5 mm with two no-success conditions;
+   4.15° exceeds the largest tested rigid tilt while the +0.5 mm press
+   sits at the very bottom edge of its flat-surface window).
 7. **Data layout.** New tree
-   `experiments/cloth_grasp/experiment3/<variant>/incl+05.0deg_<YYYYMMDD_HHMMSS>/`
+   `experiments/cloth_grasp/experiment3/<variant>/incl+04.15deg_<YYYYMMDD_HHMMSS>/`
    with the standard depth_summary.json + session_log npz per cell;
    incline angle and slope orientation in cell metadata.
 
@@ -64,11 +64,13 @@ minimal-press grasp attempt — no depth or position sweep.
 
 **Article / Amendment grounding:**
 Every parameter traces to a measured primitive:
-- β = 5.0°: the largest surface-relative tilt for which compliant-grasp
-  evidence already exists (the finray_26_5deg seat, Experiments 1–2),
-  and 2× the largest runtime tilt tested on the rigid jaws — a
-  deployment-realistic misalignment, not an extrapolated extreme for the
-  compliant finger.
+- β = 4.15°: read directly from the SURFACE_RISER STEP model (top-face
+  normal 4.1467° from vertical, cross-checked via the independent
+  ref_axis direction to machine precision). This is below the largest
+  surface-relative tilt with existing compliant-grasp evidence (the
+  finray_26_5deg seat, Experiments 1–2) and still exceeds the largest
+  runtime tilt tested on the rigid jaws (2.5°) — a deployment-realistic
+  misalignment, not an extrapolated extreme for the compliant finger.
 - +0.5 mm press: the shallowest calibrated depth at which every variant
   recorded successful flat-surface grasps (the pj_stock y −2.5° window
   is exactly 0.5 mm, Bill 0007 record) — i.e., the most conservative

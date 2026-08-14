@@ -194,8 +194,11 @@ to calibration, policy, or sensing?
 
 The planned protocol mirrors Experiments 1 and 2 in every respect except
 the surface and the outcome metric. The acrylic test surface is mounted
-on a wedge inclined at $\beta = 5.0^{\circ}$, with the slope aligned
-with the gripping direction. Each variant is then calibrated \emph{blind}
+on a wedge (\texttt{SURFACE\_RISER}) whose CAD model specifies a top-surface
+incline of $\beta = 4.15^{\circ}$ (measured from the model geometry: the
+top face normal is $4.1467^{\circ}$ from vertical), with the slope aligned
+with the gripping direction; the as-built fixture will be verified against
+this nominal value before the session. Each variant is then calibrated \emph{blind}
 by the standard force touch-off of Section~\ref{sec:tcp-calib}, exactly
 as if the surface were flat and level: no tilt compensation is applied
 and the incline is treated as unknown to the calibration. Each trial
@@ -209,10 +212,10 @@ The pilot covers two variants, \texttt{finray\_26} and
 \texttt{parallel\_jaw\_stock}, at three attempts each. From the
 flat-surface working ranges of Chapter~\ref{ch:results}, the registered
 prediction is that the finray variant grasps successfully at all three
-attempts, while the rigid jaw fails or is marginal: a $5^{\circ}$
-surface-relative misalignment is twice the largest runtime tilt at which
-the rigid jaws retained a usable window, and that window had already
-narrowed to between $0.5$ and $2.5$\,mm under $\pm 2.5^{\circ}$ tilt.
+attempts, while the rigid jaw fails or is marginal: a $4.15^{\circ}$
+surface-relative misalignment exceeds the largest runtime tilt at which
+the rigid jaws retained a usable window ($2.5^{\circ}$), and that window
+had already narrowed to between $0.5$ and $2.5$\,mm under that tilt.
 
 \TODO{Experiment 3 is a placeholder: the protocol above is enacted but
 the pilot has not yet been run. Insert the outcome grid (variant $\times$
