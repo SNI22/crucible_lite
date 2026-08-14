@@ -9,7 +9,7 @@ A Franka Research 3 (FR3) 7-DOF cobot served as the manipulator throughout
 this work. The arm was operated through the Franka Control Interface (FCI)
 using \texttt{libfranka 0.18.1} and the ROS\,2 Humble control stack.
 Cartesian pose targets were streamed through libfranka's motion-generator
-interface by a custom \texttt{fr3\_pose\_controller} developed and
+interface by a custom \path{fr3_pose_controller} developed and
 maintained by the McGill Applied Dynamics Lab, with tracking delegated to
 the arm's internal impedance controller
 (Section~\ref{sec:franka-platform-lit}). The
@@ -32,6 +32,7 @@ $\alpha$ changes between the $+2.5^{\circ}$ baseline and the $+5.0^{\circ}$
 variant. The parallel-jaw variants do not use an inclined seat and have
 no defined $t$ or $\alpha$.}
 \label{tab:variants}
+\small
 \begin{tabular}{clllll}
 \toprule
 \# & Variant & Type & Finger & $t$ & $\alpha$ \\
@@ -96,6 +97,13 @@ away from this perpendicular pose.
 \subsection{Cloth Specimen}
 \label{sec:cloth}
 
+All trials used a single cloth specimen: a $30 \times 22.5$\,cm piece of
+single-layer plain-woven cotton (Figure~\ref{fig:cloth-specimen}). The
+same physical specimen was reused for the entire campaign and reset to a
+flat, wrinkle-free configuration before every trial
+(Section~\ref{sec:trial-procedure}, step~0), so that each trial began
+from the flat-on-surface configuration this thesis targets.
+
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.9\linewidth]{cloth_shape.jpg}
@@ -109,6 +117,14 @@ trials, reset to a flat, wrinkle-free configuration before each trial
 
 \subsection{Test Surface}
 \label{sec:test-surface}
+
+The cloth rested on a rigid, flat acrylic plate that served as the test
+surface for the entire campaign, fixed to the workbench so that its
+position and orientation were common to all variants and sessions. The
+surface height entering every trial was not assumed but measured: the
+force touch-off of Section~\ref{sec:tcp-calib} re-detected the surface
+at each calibration, making the plate's absolute height a per-session
+measured quantity rather than a fixed constant.
 
 \TODO{insert photograph of the test bench in situ and short caption
 describing the table material, flatness, and cloth-edge orientation
@@ -329,7 +345,7 @@ motion mid-trial were recorded as \emph{failed trials} and excluded
 from all aggregate analyses; the two most common triggers were:
 \begin{itemize}
   \item the Franka safety reflex firing on excessive predicted joint
-        force (\texttt{auto\_failed\_excess\_force}), which typically
+        force (\path{auto_failed_excess_force}), which typically
         occurred when the parallel-jaw variants were commanded to
         depths beyond their narrow force-limited working range;
   \item the Franka safety reflex firing on acceleration discontinuity
@@ -368,7 +384,7 @@ A single trial proceeded as follows:
         on a sub-spec final width);
   \item Settle: a 1\,s pause;
   \item Stationary sample: 30 samples of $\mathbf{F}_{\text{ext}}$ were
-        captured over 1\,s during the \texttt{grasp\_stationary\_sample}
+        captured over 1\,s during the \path{grasp_stationary_sample}
         stage;
   \item The gripper lifted to $\sim +80$\,mm above surface for visual
         inspection;

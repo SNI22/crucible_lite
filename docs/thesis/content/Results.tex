@@ -2,11 +2,11 @@
 \label{ch:results}
 
 This chapter reports the empirical findings across all six gripper
-variants (\texttt{finray\_18}, \texttt{finray\_18\_model2},
-\texttt{finray\_26}, \texttt{finray\_26\_5deg},
-\texttt{parallel\_jaw\_stock}, \texttt{parallel\_jaw\_TPU}) organised
+variants (\path{finray_18}, \path{finray_18_model2},
+\path{finray_26}, \path{finray_26_5deg},
+\path{parallel_jaw_stock}, \path{parallel_jaw_TPU}) organised
 around the primary measurement (contact force $F_z$) at swept command
-depths and $\pm 2.5^{\circ}$ tilts about the x and y axes. All values
+depths and $\pm 2.5^{\circ}$ tilts about the $x$ and $y$ axes. All values
 were $F_z$-bias-corrected using the per-session Franka $F_{\mathrm{ext}}$ zero-load
 reading and pooled across trials with matching command depths and tilts
 unless otherwise noted. Interpretation is deferred to
@@ -80,8 +80,9 @@ right-censored at the $10$\,mm analysis-window end (Section~\ref{sec:dcal}).}
 
 Extending the comparison to all five tested orientations
 (Figure~\ref{fig:working-range-tilt}) narrowed the parallel-jaw windows
-further, to $0.5$--$2.5$\,mm, with two stock-jaw tilt conditions
-producing no successful grasp at any depth. Every finray variant
+further, to $0.5$--$2.5$\,mm, with one stock-jaw tilt condition reduced
+to a single successful depth ($0$\,mm span) and two others producing no
+successful grasp at any depth. Every finray variant
 retained its full $\geq 10$\,mm window under every orientation tested.
 
 \begin{figure}[ht]
@@ -107,7 +108,7 @@ the calibrated depth axis (Figure~\ref{fig:tilt-similarity}) shows how
 tightly the orientations track one another within a variant. The mean
 spread across the five orientations, averaged over the calibrated
 window, was $1.3$--$2.4$\,N depending on variant --- small relative to
-the $31$--$50$\,N knee peaks reported in
+the $31$--$53$\,N knee peaks reported in
 Table~\ref{tab:zero-tilt-summary}, and consistent with the depth-gated
 tilt robustness reported in Section~\ref{sec:bipolar-bias-results}: the
 curves separated near the boundary and converged in the plateau.
@@ -129,10 +130,10 @@ each panel the five curves nearly coincide.}
 Under zero tilt, all four finray variants exhibited a stereotyped
 \emph{bell-plus-valley} force-depth response with four regions:
 (i)~a boundary regime where contact force rose steeply with press depth,
-(ii)~a knee peak around $+1.5$ to $+3$\,mm past the detected surface,
-(iii)~a valley trough near $+6$ to $+8$\,mm, and (iv)~a recovery regime
-deeper than $+10$\,mm. Table~\ref{tab:zero-tilt-summary} summarises the
-key features; the four features lay within $\pm 1$\,mm of the same
+(ii)~a knee peak at calibrated depths of $+2.5$ to $+4.5$\,mm,
+(iii)~a valley trough near $+6$ to $+8.5$\,mm, and (iv)~a recovery regime
+toward the window end. Table~\ref{tab:zero-tilt-summary} summarises the
+key features; the four features lay within $\approx \pm 1.5$\,mm of the same
 depth locations across all four variants, and the absolute force
 magnitudes scaled approximately with the frontal contact area of the
 finger.
@@ -140,18 +141,21 @@ finger.
 \begin{table}[ht]
 \centering
 \caption[Zero-tilt curve summary]{Key features of the $0^{\circ}$
-force-depth curve for each finray variant. Peak $|F_z|$ is the maximum
+force-depth curve for each finray variant, on the calibrated depth axis
+(Section~\ref{sec:dcal}). Peak $|F_z|$ is the maximum
 observed contact force in the knee region; valley $|F_z|$ is the local
-minimum between the knee peak and the deep-regime recovery.}
+minimum between the knee peak and the deep-regime recovery. The
+\texttt{finray\_26} knee is a flat plateau spanning $+2.5$ to
+$+4.5$\,mm; its listed peak depth is the maximum-force cell.}
 \label{tab:zero-tilt-summary}
 \begin{tabular}{lcccc}
 \toprule
 Variant & Knee peak $|F_z|$ & Peak depth & Valley $|F_z|$ & Valley depth \\
 \midrule
-\texttt{finray\_18}        & $35.4$\,N & $+1.5$\,mm & $31.9$\,N & $+6$\,mm \\
-\texttt{finray\_18\_model2} & $31.2$\,N & $+3.0$\,mm & $25.2$\,N & $+8$\,mm \\
-\texttt{finray\_26}        & $\sim 45$\,N & $+2.0$\,mm & $\sim 41$\,N & $+6$\,mm \\
-\texttt{finray\_26\_5deg}  & $\sim 50$\,N & $+2.5$\,mm & $\sim 43$\,N & $+6$\,mm \\
+\texttt{finray\_18}        & $30.6$\,N & $+3.0$\,mm & $27.1$\,N & $+7.5$\,mm \\
+\texttt{finray\_18\_model2} & $36.8$\,N & $+2.5$\,mm & $29.5$\,N & $+6.0$\,mm \\
+\texttt{finray\_26}        & $44.3$\,N & $+4.5$\,mm & $35.5$\,N & $+8.5$\,mm \\
+\texttt{finray\_26\_5deg}  & $53.1$\,N & $+2.5$\,mm & $39.1$\,N & $+6.5$\,mm \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -238,16 +242,16 @@ signs} on \texttt{finray\_26\_5deg} (Table~\ref{tab:cross-axis-sign}).
 \centering
 \caption[Cross-axis bias sign reversal at boundary]{Bias on
 \texttt{finray\_26\_5deg} at boundary depths. x-axis and y-axis biases
-had opposite signs. Values are
+had opposite signs (sign product $-1$). Values are
 $|F_z^{+2.5^{\circ}}|-|F_z^{-2.5^{\circ}}|$ in newtons.}
 \label{tab:cross-axis-sign}
 \begin{tabular}{lccc}
 \toprule
 Depth & x-bias & y-bias & Sign product \\
 \midrule
-$-1.5$\,mm & $-4.17 \pm 0.32$ & $+5.40 \pm 0.12$ & $-$ \\
-$-1.0$\,mm & $-3.94 \pm 0.18$ & $+4.27 \pm 0.07$ & $-$ \\
-$-0.5$\,mm & $-3.51 \pm 0.39$ & $+2.00 \pm 0.24$ & $-$ \\
+$-1.5$\,mm & $-4.17 \pm 0.32$ & $+5.40 \pm 0.12$ & $-1$ \\
+$-1.0$\,mm & $-3.94 \pm 0.18$ & $+4.27 \pm 0.07$ & $-1$ \\
+$-0.5$\,mm & $-3.51 \pm 0.39$ & $+2.00 \pm 0.24$ & $-1$ \\
 \bottomrule
 \end{tabular}
 \end{table}

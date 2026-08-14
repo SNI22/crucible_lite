@@ -48,7 +48,7 @@ illustrated in Figure~\ref{fig:runtime-tilt}.}
 \small
 \begin{tabular}{lll}
 \toprule
-Variable & Definition & Values tested \\
+Variable & Definition & Values / precision \\
 \midrule
 Press depth $d$ & Fingertip driven below the & rigid: $-1$ to $+4$\,mm at \\
                 & detected surface           & \quad $0.25$--$0.5$\,mm steps \\
@@ -99,7 +99,7 @@ the stationary grasp sample versus the geometric prediction for
 offset during the stationary grasp sample at four cells. Predicted
 offset uses $z_{\text{TCP}} = 94.911$\,mm.}
 \label{tab:tilt-geometry}
-\small
+\footnotesize
 \begin{tabular}{lccccc}
 \toprule
 Cell & Tilt cmd & Predicted $\Delta \mathbf{p}_\mathcal{F}$ (mm) &
@@ -143,7 +143,7 @@ orientation tracking error
 Across five representative sessions, the mean steady-state $\delta$
 was $0.05^{\circ}$ with a worst-case $0.13^{\circ}$. Transient
 excursions up to $\sim 5^{\circ}$ occur exclusively within the
-\texttt{orientation\_lock} stage at session start, before any descent
+\path{orientation_lock} stage at session start, before any descent
 or grasp, and are filtered out of trial-level analyses.
 
 A $2.5^{\circ}$ commanded tilt is therefore $50\times$ the noise floor
@@ -216,9 +216,9 @@ successfully at every attempt, while both rigid variants fail or are
 marginal: a $4.15^{\circ}$ surface-relative misalignment exceeds the
 largest runtime tilt at which the rigid jaws retained a usable window
 ($2.5^{\circ}$), and that window had already narrowed to between $0.5$
-and $2.5$\,mm under that tilt, with two \texttt{parallel\_jaw\_stock}
-tilt conditions producing no success at all
-(Section~\ref{sec:pj-vs-finray-results}).
+and $2.5$\,mm under that tilt, with one \texttt{parallel\_jaw\_stock}
+tilt condition reduced to a single successful depth and two producing
+no success at all (Section~\ref{sec:pj-vs-finray-results}).
 
 \begin{figure}[ht]
 \centering
