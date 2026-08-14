@@ -252,15 +252,18 @@ between them (Chapter~\ref{ch:results}) is exactly the impedance curve
 Hogan's framework predicts should characterise contact with an unknown
 environment (here, the cloth-covered rigid table).
 
-On the Franka FR3 platform specifically, this impedance relationship is
-realised through the Franka Control Interface's real-time Cartesian and
-joint impedance controllers, documented and distributed as reference
-implementations in libfranka~\cite{frankarobotics_libfranka}. The
-Cartesian impedance controller applies a spring-damper law referenced to
-a commanded pose with independently tunable translational and rotational
-stiffness, run at the robot's real-time servo rate; the tilt-aware pose
+On the Franka FR3 platform specifically, libfranka exposes two
+real-time command modes: external torque-level control (including a
+Cartesian impedance controller distributed as a reference
+implementation) and Cartesian pose motion generation, in which the
+client streams pose targets at the 1\,kHz servo rate and tracking is
+delegated to the arm's internal impedance
+controller~\cite{frankarobotics_libfranka}. The tilt-aware pose
 targeting used in this thesis's trial procedure
-(Section~\ref{sec:tilt-pose}) builds directly on this controller.
+(Section~\ref{sec:tilt-pose}) uses the latter mode: the in-house
+\texttt{fr3\_pose\_controller} commands Cartesian poses through
+libfranka's pose interface, so the contact interaction is mediated by
+the robot's internal impedance law rather than a user-tuned stiffness.
 
 Contact force in this thesis is measured through the Franka FCI's own
 external-wrench estimate; a second, independent channel using an array
