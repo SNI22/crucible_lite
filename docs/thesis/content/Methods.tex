@@ -49,10 +49,12 @@ using the vendor-default TPU 90A profile in Bambu Studio (0.4\,mm nozzle,
 default layer height, default infill, PEI-textured build plate).
 
 \paragraph{Baseline inclined-seat mount.}
-We define $\alpha$ as the baseline seat-mount tilt angle: the fixed
+We define $\alpha$ as the baseline seat-mount tilt angle, annotated in
+the front view of Figure~\ref{fig:seat-mount-params}: the fixed
 rotation about the gripper's local $y$ axis (the gripping direction)
 introduced by the 3D-printed seat adapter that carries every finray
-finger. All finray variants were mounted on the Franka Hand via this
+finger. The figure shows the mounting stack (flange $\to$ seat $\to$
+finger) and the $\alpha$ and $t$ design-parameter convention. All finray variants were mounted on the Franka Hand via this
 inclined seat; the seat was present in \emph{every} finray variant
 tested in this thesis unless otherwise noted, and is the physical
 realisation of $\alpha$. Variants whose name contains \texttt{\_5deg}
@@ -65,9 +67,7 @@ was chosen so that the two opposing finray fingers converge inward
 toward each other rather than splaying apart. This closes the residual
 slit that would otherwise remain between the finger tips when the
 gripper is fully closed, and ensures firm contact along the fingers'
-full length during a successful grasp. Figure~\ref{fig:seat-mount-params}
-shows the mounting stack (flange $\to$ seat $\to$ finger) and defines
-the $\alpha$ and $t$ design-parameter convention.
+full length during a successful grasp.
 
 \begin{figure}[ht]
 \centering
