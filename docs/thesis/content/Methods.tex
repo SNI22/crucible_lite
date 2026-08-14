@@ -95,7 +95,7 @@ away from this perpendicular pose.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.45\linewidth]{cloth_shape.jpg}
+\includegraphics[width=0.9\linewidth]{cloth_shape.jpg}
 \caption[Cloth specimen]{The single-layer plain-woven cotton specimen
 used throughout this thesis, $30 \times 22.5$\,cm, shown against a
 ruler for scale. The same physical specimen was reused across all
@@ -404,11 +404,25 @@ grasping --- rather than the force-touch-off zero, which inherits
 cross-session bias drift and per-print geometry offsets
 (Section~\ref{sec:tcp-calib}). Aggregate statistics and figures use only
 $d_{\text{cal}} \in [0, 10]$\,mm; cells outside this window remain in the
-record but are excluded from aggregates. This convention was adopted as Bill~0007 of the project's governance
-record (enacted 2026-08-09; revised to per-series zeroing and a
-majority-success cell criterion on 2026-08-10),
-on the evidence that first-success alignment collapses the two prints of
-the 18\,mm finger onto a common curve.
+record but are excluded from aggregates. The $10$\,mm bound was chosen
+because, at that width, every finray series' record extends at least to
+the window end --- so every finray range in Chapter~\ref{ch:results} is
+\emph{right-censored} uniformly: the true working range is known only to
+be at least $10$\,mm, since the underlying record continues beyond the
+window but is excluded from the aggregate by convention, not because the
+gripper stopped working there --- and every finray's peak--valley shape
+(Section~\ref{sec:zero-tilt-results}) is fully contained within it. A
+wider window (e.g.\ $12$\,mm) was evaluated and rejected: one finray
+variant's shape curve extended only to $10.5$\,mm of usable support at
+that width, breaking the uniform-censoring property. The rigid
+parallel-jaw variants' working ranges are unaffected by the window
+choice, as both lie entirely inside $[0,10]$\,mm and their ranges are
+therefore reported as closed measurements, not censored. This convention
+was adopted as Bill~0007 of the project's governance record (enacted
+2026-08-09; revised to per-series zeroing and a majority-success cell
+criterion on 2026-08-10, and to the final $10$\,mm window on
+2026-08-10), on the evidence that first-success alignment collapses the
+two prints of the 18\,mm finger onto a common curve.
 
 \subsection{Per-Cell Statistics}
 
