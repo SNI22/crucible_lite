@@ -181,3 +181,43 @@ Trial outcomes were classified into three categories:
 The rationale for this three-way taxonomy---rather than a binary
 success/failure classification---is discussed in
 Section~\ref{sec:failure-mode-discussion}.
+
+\section{Experiment 3: Inclined-Surface Demonstration (Pilot)}
+\label{sec:experiment3}
+
+Experiments 1 and 2 characterise the contact phase on a flat, levelled
+surface, with each variant calibrated against that surface. Experiment 3
+tests the deployment consequence those measurements predict: when the
+surface geometry departs from what the calibration assumed, does the
+compliant finger keep grasping where the rigid jaw fails, with no change
+to calibration, policy, or sensing?
+
+The planned protocol mirrors Experiments 1 and 2 in every respect except
+the surface and the outcome metric. The acrylic test surface is mounted
+on a wedge inclined at $\beta = 5.0^{\circ}$, with the slope aligned
+with the gripping direction. Each variant is then calibrated \emph{blind}
+by the standard force touch-off of Section~\ref{sec:tcp-calib}, exactly
+as if the surface were flat and level: no tilt compensation is applied
+and the incline is treated as unknown to the calibration. Each trial
+presses to the calibrated touch-off depth plus $0.5$\,mm, the shallowest
+depth at which every variant grasped successfully on the flat surface,
+and the outcome is recorded as a binary grasp verdict under the outcome
+taxonomy of Section~\ref{sec:trial-protocol}. Contact force is logged
+but is not a reported metric for this experiment.
+
+The pilot covers two variants, \texttt{finray\_26} and
+\texttt{parallel\_jaw\_stock}, at three attempts each. From the
+flat-surface working ranges of Chapter~\ref{ch:results}, the registered
+prediction is that the finray variant grasps successfully at all three
+attempts, while the rigid jaw fails or is marginal: a $5^{\circ}$
+surface-relative misalignment is twice the largest runtime tilt at which
+the rigid jaws retained a usable window, and that window had already
+narrowed to between $0.5$ and $2.5$\,mm under $\pm 2.5^{\circ}$ tilt.
+
+\TODO{Experiment 3 is a placeholder: the protocol above is enacted but
+the pilot has not yet been run. Insert the outcome grid (variant $\times$
+attempt, success/no-grasp/abort), a photograph of the wedge fixture with
+its measured incline angle, and a short results paragraph once the
+session is complete. If the pilot is not run before submission, delete
+this section and retain the inclined-surface demonstration as future work
+in Chapter~\ref{ch:conclusion}.}
