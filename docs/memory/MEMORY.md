@@ -23,3 +23,5 @@
 - [MECH609 seminar deck](mech609_seminar_deck.md) — Aug 12 seminar; deck at docs/seminar/, style rules (LaTeX look, no emails, thanks on last page only), artifact URL
 - [Thesis state 2026-08-06](thesis_state_2026_08_06.md) — 63pp clean build; what's done vs user-only TODOs; never invent citations
 - [Variant color bill](variant_color_bill.md) — Bill 0008: fixed hex per variant for all figures; docs/variant_palette.json
+- [Descent reflex fix 2026-08-11](descent_reflex_fix_2026_08_11.md) — E1 scripts lacked E2's per-leg descent fix; reflex crash root-caused and ported to all six variants
+- [E3 inclined demo 2026-08-12](e3_inclined_demo_2026_08_12.md) — Bill 0009 DRAFT; experiment3/ scripts scaffolded (+0.5mm blind-calib demo); enact before hardware

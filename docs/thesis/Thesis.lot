@@ -1,17 +1,18 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {3.1}{\ignorespaces Gripper variants}}{14}{table.caption.14}%
-\contentsline {table}{\numberline {3.2}{\ignorespaces Calibrated TCP offsets}}{17}{table.caption.18}%
+\contentsline {table}{\numberline {3.1}{\ignorespaces Gripper variants}}{15}{table.caption.15}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces Calibrated TCP offsets}}{20}{table.caption.20}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {4.1}{\ignorespaces Tilt geometry verification}}{27}{table.caption.21}%
+\contentsline {table}{\numberline {4.1}{\ignorespaces Test conditions}}{29}{table.caption.23}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Tilt geometry verification}}{30}{table.caption.24}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {5.1}{\ignorespaces Zero-tilt curve summary}}{30}{table.caption.22}%
-\contentsline {table}{\numberline {5.2}{\ignorespaces Cross-axis bias sign reversal at boundary}}{31}{table.caption.23}%
-\contentsline {table}{\numberline {5.3}{\ignorespaces Mount tilt equivalence}}{31}{table.caption.24}%
-\contentsline {table}{\numberline {5.4}{\ignorespaces No-grasp fractions at boundary}}{32}{table.caption.25}%
+\contentsline {table}{\numberline {5.1}{\ignorespaces Zero-tilt curve summary}}{39}{table.caption.30}%
+\contentsline {table}{\numberline {5.2}{\ignorespaces Pairwise shape agreement}}{39}{table.caption.32}%
+\contentsline {table}{\numberline {5.3}{\ignorespaces Cross-axis bias sign reversal at boundary}}{41}{table.caption.33}%
+\contentsline {table}{\numberline {5.4}{\ignorespaces Mount tilt equivalence}}{42}{table.caption.34}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {A.1}{\ignorespaces Experiment 1 coverage}}{42}{table.caption.26}%
-\contentsline {table}{\numberline {A.2}{\ignorespaces Experiment 2 coverage}}{43}{table.caption.27}%
+\contentsline {table}{\numberline {A.1}{\ignorespaces Experiment 1 coverage}}{56}{table.caption.35}%
+\contentsline {table}{\numberline {A.2}{\ignorespaces Experiment 2 coverage}}{56}{table.caption.36}%
