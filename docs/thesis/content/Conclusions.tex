@@ -22,8 +22,8 @@ Chapter~\ref{ch:introduction}:
         seat mount) over the full $\geq 10$\,mm window; the rigid jaws
         never exceed 2.5\,mm, and two stock-jaw tilt conditions produced
         no successful grasp at any depth.
-  \item \emph{Does tilt tolerance depend on press depth?} Yes ---
-        robustness is depth-gated: near the contact boundary, tilt
+  \item \emph{Does tilt tolerance depend on press depth?} Yes:
+        robustness is depth-gated; near the contact boundary, tilt
         strongly modulates both force and success (including a
         $2.4\times$ direction-dependent asymmetry about the geometrically
         asymmetric axis), whereas past the buckling threshold the mean
@@ -31,7 +31,7 @@ Chapter~\ref{ch:introduction}:
   \item \emph{What is the compliant finger's response under compression?}
         Blade buckling: force peaks at buckling onset ($\approx 2$--$3$\,mm
         past first successful grasp), dips as the blades buckle, then
-        recovers --- and the finray geometry (blade thickness, seat
+        recovers. The finray geometry (blade thickness, seat
         angle, print instance) sets the force \emph{scale} (31--53\,N
         knee peaks) but not the curve \emph{shape}.
 \end{enumerate}
@@ -67,10 +67,10 @@ the grasp becomes robust to both depth and tilt placement error.
         estimate. Repeating a subset of the matrix with a dedicated
         force/torque sensor at the wrist (or an instrumented surface)
         would bound the estimator's pose-dependent bias directly.
-  \item[Task-level evaluation.] Downstream task-level evaluation ---
-        folding a cloth diagonally from a corner grasp, dropping a
+  \item[Task-level evaluation.] Downstream task-level evaluation
+        (folding a cloth diagonally from a corner grasp, dropping a
         centre-grasped cloth onto a curved object, dragging between
-        positions under the same policy ---
+        positions under the same policy)
         would test whether the contact-phase advantage measured here
         translates into end-to-end task success, including under learned
         policies.
@@ -80,9 +80,9 @@ the grasp becomes robust to both depth and tilt placement error.
         compliance.
   \item[Dynamic and high-rate behaviour.] All trials here are
         quasi-static. The perturbation behaviour of compliant fingers
-        under fast actuation and high-frequency control --- where the
+        under fast actuation and high-frequency control, where the
         compliance that absorbs placement error may instead cause
-        oscillation or delayed settling --- is uncharacterised.
+        oscillation or delayed settling, is uncharacterised.
   \item[Tilt-sensitivity model.] An analytical model relating finger
         curvature, contact compliance, and tilt-induced contact-point
         migration would connect the present empirical findings to the

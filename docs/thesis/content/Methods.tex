@@ -311,10 +311,10 @@ finger compliance under press.
 
 Each trial directory \path{trial_NNN/} contains:
 \begin{itemize}
-  \item \path{config.yaml} --- snapshot of the variant config at trial time;
-  \item \path{run_config.json} --- depth, tilt, ground-truth source,
+  \item \path{config.yaml}: snapshot of the variant config at trial time;
+  \item \path{run_config.json}: depth, tilt, ground-truth source,
         speeds, gripper mode;
-  \item \path{pose_wrench.csv} --- high-rate (30\,Hz) actual + commanded
+  \item \path{pose_wrench.csv}: high-rate (30\,Hz) actual + commanded
         pose, RPY, wrench, gripper width per row, tagged with the current
         trial stage.
 \end{itemize}
@@ -323,10 +323,10 @@ Each trial directory \path{trial_NNN/} contains:
 
 Each session directory \path{depth_*/} contains in addition:
 \begin{itemize}
-  \item \path{depth_summary.json} --- header metadata + array of per-trial
+  \item \path{depth_summary.json}: header metadata + array of per-trial
         verdicts (\texttt{success}, \texttt{fail\_reason}); operator notes;
-  \item \path{ground_truth_used.json} --- snapshot of the GT JSON loaded;
-  \item \path{session_log_*.npz} --- numpy archive of the 30\,Hz background
+  \item \path{ground_truth_used.json}: snapshot of the GT JSON loaded;
+  \item \path{session_log_*.npz}: numpy archive of the 30\,Hz background
         sample stream, with stage labels and tap indices.
 \end{itemize}
 
@@ -419,19 +419,20 @@ variant--tilt-condition pair, within a calibration epoch), the
 shallowest cell in which at least two-thirds of the valid completed
 trials succeed (the majority-success criterion); each series is zeroed
 at its own first majority-success cell. The reference is
-thus a directly measured physical event --- the onset of reliable
-grasping --- rather than the force-touch-off zero, which inherits
+thus a directly measured physical event, the onset of reliable
+grasping, rather than the force-touch-off zero, which inherits
 cross-session bias drift and per-print geometry offsets
 (Section~\ref{sec:tcp-calib}). Aggregate statistics and figures use only
 $d_{\text{cal}} \in [0, 10]$\,mm; cells outside this window remain in the
 record but are excluded from aggregates. The $10$\,mm bound was chosen
 because, at that width, every finray series' record extends at least to
-the window end --- so every finray range in Chapter~\ref{ch:results} is
+the window end, so every finray range in Chapter~\ref{ch:results} is
 \emph{right-censored} uniformly: the true working range is known only to
 be at least $10$\,mm, since the underlying record continues beyond the
 window but is excluded from the aggregate by convention, not because the
-gripper stopped working there --- and every finray's peak--valley shape
-(Section~\ref{sec:zero-tilt-results}) is fully contained within it. A
+gripper stopped working there. The bound also keeps every finray's
+peak--valley shape (Section~\ref{sec:zero-tilt-results}) fully
+contained within the window. A
 wider window (e.g.\ $12$\,mm) was evaluated and rejected: one finray
 variant's shape curve extended only to $10.5$\,mm of usable support at
 that width, breaking the uniform-censoring property. The rigid

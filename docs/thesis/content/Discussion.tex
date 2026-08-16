@@ -2,8 +2,8 @@
 \label{ch:discussion}
 
 The results of Chapter~\ref{ch:results} admit a compact reading. A
-single mechanical picture --- the progressive engagement of a compliant
-blade with the surface --- accounts for the shared force-depth curve,
+single mechanical picture, the progressive engagement of a compliant
+blade with the surface, accounts for the shared force-depth curve,
 for the depth-gating of tilt robustness, and for the seat-mount
 equivalence (Section~\ref{sec:bell-plus-valley}). The various
 \emph{asymmetries} in the record, far from being noise, act as
@@ -47,8 +47,8 @@ boundary rise is elastic pre-buckling loading of the straight blades;
 the knee peak is the limit point at which the blades reach their
 tip-load (buckling) limit; the valley is the post-buckling softening
 branch, in which the buckled blades carry less force even as
-displacement continues --- the load drop characteristic of an elastic
-structure past a limit point; and the recovery is post-buckling
+displacement continues (the load drop characteristic of an elastic
+structure past a limit point); and the recovery is post-buckling
 re-stiffening, as the inward-buckled blades come into extended contact
 with the surface (Figure~\ref{fig:press-deform}) and further load
 transfers into structural compression through the finger base. This
@@ -56,7 +56,7 @@ reading also explains why the transition depths are geometry-set while
 the forces are not: a buckling limit is a property of the blade's shape
 and material, so geometrically similar blades place the peak and valley
 at the same depths while the critical load itself scales with blade
-section --- exactly the scale-not-shape separation of
+section. This is exactly the scale-not-shape separation of
 Section~\ref{sec:shape-results}. No published finray model covers this
 axial post-buckling regime (Chapter~\ref{ch:background}); the
 analytical model identified in future work
@@ -65,9 +65,9 @@ continuum-mechanics literature on post-buckling contact.
 
 The same engagement story explains why tilt robustness is depth-gated.
 The bipolar bias trajectory of Section~\ref{sec:bipolar-bias-results}
---- a strong signed asymmetry at boundary depths that attenuates to
-under $0.9$\,N beyond $d = +4$\,mm (raw command depth, the native axis
-of the per-cell bias record) --- tracks the contact-geometry
+(a strong signed asymmetry at boundary depths that attenuates to
+under $0.9$\,N beyond $d = +4$\,mm, raw command depth being the native
+axis of the per-cell bias record) tracks the contact-geometry
 transition documented in Figure~\ref{fig:press-deform}. At boundary
 depths only the blade tips touch the surface: the contact patch is
 small, and a $2.5^{\circ}$ orientation change redistributes which tip
@@ -98,7 +98,7 @@ mounts is $2.5^{\circ}$; a differential tilt of a rigid finger of
 length $L$ produces a projected vertical offset at the contact of
 $L\left[\sin(5^{\circ}) - \sin(2.5^{\circ})\right] = 0.0436 L$, and
 setting this equal to the observed shift gives
-$L_{\mathrm{eff}} \approx 26$\,mm --- near the mid-length of the
+$L_{\mathrm{eff}} \approx 26$\,mm, near the mid-length of the
 $\sim 50$\,mm finger, consistent with load distributed along the
 finray's curved contact surface rather than concentrated at the distal
 tip. The axis-independence is itself a strong constraint: it rules out
@@ -126,9 +126,9 @@ not circular: the per-series zero is defined by grasp success, not by
 any feature of the force curve, so the collapse of the calibrated
 curves is evidence that the success onset and the force-curve position
 shift together under tilt. The reading is also quantitatively
-self-consistent --- dividing the $+5.40$\,N boundary bias by the
+self-consistent: dividing the $+5.40$\,N boundary bias by the
 boundary-region slope ($\approx 5$--$10$\,N/mm) implies an onset shift
-of $0.5$--$1$\,mm, at or below the $0.5$\,mm cell spacing --- and it
+of $0.5$--$1$\,mm, at or below the $0.5$\,mm cell spacing. It also
 organises the bipolar bias trajectory: the bias is large where the
 curve is steep (the boundary) and reverses sign as the curve tops out
 approaching the knee, the measured crossing (between $d = -0.5$ and
@@ -153,7 +153,7 @@ structure points at three different origins. The y-axis bias is
 intrinsic to the finger: the gripper is mirror-symmetric about the
 $xz$ plane (Section~\ref{sec:frames}), so rotation about $x$, the
 symmetric axis, is sign-equivalent by construction, while rotation
-about $y$, the gripping direction, is not --- a $+2.5^{\circ}$ rotation
+about $y$, the gripping direction, is not: a $+2.5^{\circ}$ rotation
 about the gripping axis loads the two fingers differently and produces
 a signed force difference. The x-axis bias, by contrast, should vanish by
 symmetry if the finger and cloth were both symmetric about the mirror
@@ -228,13 +228,13 @@ taxonomy of success, no-grasp, and failed trial
 the categories map to physically distinct regimes with distinct control
 implications. Treating no-grasp trials as failed trials would
 systematically delete data from the boundary regime, where cloth
-engagement is intermittent but force measurement is clean ---
+engagement is intermittent but force measurement is clean,
 truncating the observed force-depth curves and masking the
 boundary-tilt biases that are one of the headline findings. The
 opposite error, treating failed trials as no-grasps, would pollute the
-force averages with readings from incomplete stationary windows ---
-near-zero from interrupted trials, saturated from safety-reflex aborts
---- inflating apparent variance. The three-way taxonomy is the
+force averages with readings from incomplete stationary windows
+(near-zero from interrupted trials, saturated from safety-reflex
+aborts), inflating apparent variance. The three-way taxonomy is the
 minimum classification that separates ``the trial produced valid
 measurement'' from ``the grasp was successful'' from ``the trial was
 invalid.'' It also has a deployment payoff. The no-grasp regime is precisely
@@ -252,7 +252,7 @@ offline analysis.
 The parallel-jaw versus finray comparison
 (Section~\ref{sec:pj-vs-finray-results}) puts at least a
 $4\times$--$7\times$ factor between the two classes in tolerance to
-depth command noise --- a lower bound, the finray windows being
+depth command noise, a lower bound given that the finray windows are
 right-censored at the analysis-window end. This factor is large enough
 that any cloth-handling system whose depth uncertainty exceeds roughly
 half the $1.5$--$2.5$\,mm rigid-jaw window should default to a
