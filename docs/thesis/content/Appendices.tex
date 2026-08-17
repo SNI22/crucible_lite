@@ -22,14 +22,14 @@ variant.}
 \toprule
 Variant & Cells & Depth range (mm) & Trials \\
 \midrule
-\texttt{finray\_18}          & 17 & $[-2, +14]$ & 51 \\
+\texttt{finray\_18}          & 21 & $[-2, +14]$ & 56 \\
 \texttt{finray\_18\_model2}  & 28 & $[-1, +14]$ & 86 \\
-\texttt{finray\_26}          & 18 & $[-1, +22]$ & 50 \\
-\texttt{finray\_26\_5deg}    & 10 & $[-1, +20]$ & 30 \\
+\texttt{finray\_26}          & 18 & $[-1, +22]$ & 52 \\
+\texttt{finray\_26\_5deg}    & 11 & $[-1, +20]$ & 31 \\
 \texttt{parallel\_jaw\_TPU}  &  9 & $[-1, +4]$  & 26 \\
 \texttt{parallel\_jaw\_stock}& 12 & $[-1, +4]$  & 29 \\
 \midrule
-Total                        & 94 &             & 272 \\
+Total                        & 99 &             & 280 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -49,14 +49,14 @@ jaw about the $xz$ plane rather than by separate cells.}
 Variant & $\theta_x{=}{+}2.5^{\circ}$ & $\theta_x{=}{-}2.5^{\circ}$
         & $\theta_y{=}{+}2.5^{\circ}$ & $\theta_y{=}{-}2.5^{\circ}$ & Trials \\
 \midrule
-\texttt{finray\_18}          & 12 $[-1,+12]$ & 13 $[-2,+12]$ & 11 $[-2,+12]$ & 10 $[-2,+12]$ & 134 \\
-\texttt{finray\_18\_model2}  & 12 $[-2,+12]$ & 12 $[-2,+12]$ & 12 $[-2,+12]$ & 11 $[-2,+12]$ & 140 \\
-\texttt{finray\_26}          & 14 $[0,+16]$ & 14 $[0,+16]$ & 11 $[-2,+16]$ & 10 $[-2,+16]$ & 163 \\
-\texttt{finray\_26\_5deg}    & 15 $[-2,+16]$ & 17 $[-2,+16]$ & 14 $[-2,+16]$ & 14 $[-2,+16]$ & 170 \\
+\texttt{finray\_18}          & 12 $[-1,+12]$ & 13 $[-2,+12]$ & 11 $[-2,+12]$ & 10 $[-2,+12]$ & 137 \\
+\texttt{finray\_18\_model2}  & 12 $[-2,+12]$ & 12 $[-2,+12]$ & 12 $[-2,+12]$ & 11 $[-2,+12]$ & 141 \\
+\texttt{finray\_26}          & 14 $[0,+16]$ & 14 $[0,+16]$ & 11 $[-2,+16]$ & 10 $[-2,+16]$ & 145 \\
+\texttt{finray\_26\_5deg}    & 14 $[-2,+16]$ & 16 $[-2,+16]$ & 14 $[-2,+16]$ & 14 $[-2,+16]$ & 168 \\
 \texttt{parallel\_jaw\_TPU}  &  6 $[0,+4]$  & ---           &  5 $[0,+4]$  &  3 $[0,+3]$  & 40 \\
 \texttt{parallel\_jaw\_stock}&  4 $[+1,+2]$  & ---           &  3 $[+1,+2]$  &  3 $[+1,+2]$  & 26 \\
 \midrule
-Total                        &               &               &               &               & 673 \\
+Total                        &               &               &               &               & 657 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -68,9 +68,18 @@ recorded within the Experiment~2 campaign; these were pilot probes of the
 larger-tilt regime and are not part of the primary $\pm 2.5^{\circ}$
 analysis.
 
-Across both experiments the active record comprises 945 trials. This
-figure counts every trial directory on disk, including no-grasp outcomes,
-retained as valid data per the outcome taxonomy of
-Section~\ref{sec:verdict-recording}, and failed trials, which are
-excluded from aggregate analyses; the trial counts quoted in Chapter~\ref{ch:results}
-are the subset surviving the per-analysis exclusion rules stated there.
+Across both experiments the active record comprises 955 trials. Not all
+of these enter the analyses, and the reconciliation is as follows. Fifteen
+trials belong to the exploratory cells beyond $\pm 2.5^{\circ}$ described
+above, and are excluded because they fall outside the tilt range of the
+primary study. A further 100 trials belong to cells that were later
+repeated at the same variant, depth, and tilt, usually after a
+recalibration or an interrupted session, and only the most recent valid
+cell of each configuration is used. The remaining 840 trials constitute
+the analysed record quoted in the Abstract and in
+Chapter~\ref{ch:conclusion}. Of these, 837 completed the full trial
+sequence, and 10 of the completed trials were relabelled during curation
+as documented in Section~\ref{sec:verdict-recording}, which leaves 827
+trials contributing to the force statistics. No-grasp outcomes are
+retained as valid data per the outcome taxonomy, while failed trials are
+excluded from aggregate force analyses.
