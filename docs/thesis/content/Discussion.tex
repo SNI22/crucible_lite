@@ -31,6 +31,46 @@ must either report cross-day drift as a separate variance component or
 restrict its headline claims to same-session pairs; in this thesis,
 all bias values are same-session unless labelled otherwise, and
 cross-day comparisons are used only for shape consistency.
+Table~\ref{tab:error-budget} collects the error terms on a common
+scale.
+
+\begin{table}[ht]
+\centering
+\caption[Error budget]{Error and variability terms of the campaign,
+ordered by magnitude. Percentages are relative to a nominal
+$30$\,N knee peak. The shape terms are computed on peak-normalised
+curves and so are insensitive to the force offsets above them.}
+\label{tab:error-budget}
+\small
+\begin{tabular}{llll}
+\toprule
+Term & Magnitude & Relative & Source \\
+\midrule
+Cross-session drift, same print & $7$--$10$\,N & $23$--$33\%$ & Section~\ref{sec:manufacturing-results} \\
+Print-to-print offset, same session & $4.6$\,N & $15\%$ & Section~\ref{sec:manufacturing-results} \\
+\quad residual after offset removal & $2.9$\,N & $10\%$ & Section~\ref{sec:manufacturing-results} \\
+Boundary tilt bias, peak & $5.4$\,N & $18\%$ & Section~\ref{sec:bipolar-bias-results} \\
+Plateau tilt bias & $<0.9$\,N & $<3\%$ & Section~\ref{sec:bipolar-bias-results} \\
+Across-orientation spread, calibrated & $1.3$--$2.4$\,N & $4$--$8\%$ & Section~\ref{sec:tilt-similarity-results} \\
+Within-cell retest trigger & $1$\,N & $3\%$ & Section~\ref{sec:depth-grid} \\
+Within-trial sample noise & $\sim 0.1$\,N & $<1\%$ & Section~\ref{sec:stats} \\
+\midrule
+Print-to-print shape (NMSE) & $0.41\%$ & $-23.9$\,dB & Table~\ref{tab:shape-nmse} \\
+Cross-variant shape (NMSE, mean) & $0.58\%$ & $-22.4$\,dB & Table~\ref{tab:shape-nmse} \\
+Cross-variant shape (NMSE, worst) & $0.79\%$ & $-21.0$\,dB & Table~\ref{tab:shape-nmse} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The table makes the central asymmetry of the dataset visible at a
+glance. Every force-magnitude term sits between $1$ and $10$\,N, one
+to two orders of magnitude above the shape terms, which are below
+$1\%$ normalised error. Absolute forces in this campaign are therefore
+uncertain at the several-newton level, while the \emph{shape} of the
+force-depth response is reproducible to a fraction of a percent. This
+is why the thesis leans on shape agreement and depth locations for its
+headline claims and treats absolute force comparisons as
+session-bounded.
 
 The x-axis bias sign difference between the two prints, deferred here
 from Section~\ref{sec:manufacturing-results}, fits inside this error
