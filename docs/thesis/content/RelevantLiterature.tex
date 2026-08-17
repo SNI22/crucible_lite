@@ -4,7 +4,7 @@
 \section{Cloth Grasping in Robotics}
 
 Robotic manipulation of cloth and other deformable fabric is difficult
-precisely because the object being manipulated lacks a fixed geometry:
+because the object being manipulated lacks a fixed geometry:
 unlike a rigid part, a cloth's shape is itself part of the manipulation
 state, and it must typically be inferred from vision rather than assumed
 from a physical model. Early work in this space focused on perceiving that
@@ -12,9 +12,9 @@ shape well enough to act on it. Kita et al.~\cite{kita2004deformablemodel}
 fit a deformable mass-spring model of a held garment to stereo-camera
 silhouette observations, using the best-matching simulated deformation to
 estimate the position of an unheld part of the garment for a second
-manipulator to grasp. This was an early demonstration that a
-physics-informed shape prior, rather than raw image features, is what
-makes cloth state estimation tractable. Maitin-Shepard et
+manipulator to grasp. This early result showed that a physics-informed
+shape prior, rather than raw image features, makes cloth state
+estimation tractable. Maitin-Shepard et
 al.~\cite{maitinshepard2010clothgrasp} took a complementary, model-light
 approach: a multiple-view geometric-cue detector locates cloth corners
 directly from silhouettes, in a manner robust to texture and colour variation, letting
@@ -39,8 +39,9 @@ reinforcement-learning policy for cloth and rope manipulation can be
 learned an order of magnitude faster than a jointly-learned pick-and-place
 policy by conditioning only on the \emph{placing} action and selecting
 picks that maximise the value of the resulting placement, entirely without
-human demonstrations. Closest in spirit to the force-sensing emphasis of
-this thesis, Tirumala et al.~\cite{tirumala2022singulate} mounted a tactile
+human demonstrations. Of these, the work of Tirumala et
+al.~\cite{tirumala2022singulate} is nearest in spirit to the
+force-sensing emphasis of this thesis: they mounted a tactile
 sensor on a Franka gripper fingertip and trained a classifier on the
 resulting tactile signal to determine how many layers of cloth had been
 grasped, using that signal to re-grasp until exactly one or two layers were
@@ -63,20 +64,20 @@ mechanism that does not require one.
 \subsection{Environment-Assisted and State-Changing Actions}
 
 The first family keeps a standard gripper and instead spends actions
-creating a graspable feature (a fold, wrinkle, or free edge) before
-the pick. Ramisa et al.~\cite{ramisa2012wrinkled} detected and ranked
+creating a graspable feature before the pick: a fold, a wrinkle, or a
+free edge. Ramisa et al.~\cite{ramisa2012wrinkled} detected and ranked
 wrinkles in depth images of crumpled laundry, directing a standard
 gripper to the most graspable bump on the cloth rather than to a flat
 region. Qian et al.~\cite{qian2020clothregion} segmented cloth edges
-and corners (as distinct from wrinkles and folds) in depth images and
+and corners, as distinct from wrinkles and folds, in depth images and
 coupled the segmentation to a sliding grasp policy that approaches along
 the estimated grasp direction. At the dynamic extreme, Ha and
 Song's FlingBot~\cite{ha2021flingbot} showed that a high-velocity fling
-primitive can unfold a crumpled cloth in a few actions: environment
-interaction used not to create a pinchable feature but to reset the cloth
-to a flatter, more predictable state. These strategies are effective, but
-each spends additional actions and sensing before the grasp itself, and
-their reliability degrades exactly in the flat-cloth-on-surface
+primitive can unfold a crumpled cloth in a few actions; here the
+environment interaction resets the cloth to a flatter, more predictable
+state rather than creating a pinchable feature. These strategies are
+effective, but each spends additional actions and sensing before the
+grasp itself, and their reliability degrades in the flat-cloth-on-surface
 configuration this thesis targets, where there is no wrinkle to find and
 no free edge to slide against.
 
@@ -89,19 +90,19 @@ approaches, developed largely for garment manufacturing: intrusive
 (needle/pin) grippers that pierce the top ply, and adhesive or
 electrostatic surface grippers. Electroadhesion has since matured substantially;
 Guo et al.~\cite{guo2020electroadhesion} review its use across robotics
-and highlight its suitability for delicate, flexible materials at low
+and note its suitability for delicate, flexible materials at low
 energy cost. Non-contact airflow methods lift fabric without touching it
-at all: Ozcelik and Erzincanli's Bernoulli-principle
+at all; Ozcelik and Erzincanli's Bernoulli-principle
 end-effector~\cite{ozcelik2002noncontact} suspends a garment ply on a
-radial airflow film. More recently, variable-friction fingertips blur the
-line between gripper and manipulation policy: Jiang et
+radial airflow film. More recently, variable-friction fingertips have
+blurred the line between gripper and manipulation policy. Jiang et
 al.~\cite{jiang2022variablefriction} switch fingertip surfaces between
 high- and low-friction states to slide, pinch, and unfold fabric in-hand.
 These end-effectors trade generality for capability: needles risk damaging
 fine textiles, electroadhesion and airflow devices require dedicated
 power/pneumatic infrastructure and are largely single-purpose, and all of
 them abandon the ubiquitous two-jaw form factor that general-purpose
-robot platforms (including the Franka Hand used here) provide.
+robot platforms, the Franka Hand used here among them, provide.
 
 \subsection{The Gap: the Gripper as an Experimental Variable}
 
@@ -117,27 +118,27 @@ behaviour.
 
 The closest precedent to this thesis is the household-clothing benchmark
 of Clark et al.~\cite{clark2023household}, who evaluated several
-commercial end-effectors (including finray-style compliant fingers
-mounted on a Franka Emika Hand, alongside the standard Franka Hand,
-a Robotiq 2F-140, and the OpenHand Model T42) on four cloth-specific
-benchmarks: edge-drag accuracy, edge-grasp resilience, crumpled-object
-encapsulation, and fold generation. Their results establish empirically
+commercial end-effectors on four cloth-specific benchmarks: edge-drag
+accuracy, edge-grasp resilience, crumpled-object encapsulation, and fold
+generation. The end-effectors included finray-style compliant fingers
+mounted on a Franka Emika Hand, the standard Franka Hand, a Robotiq
+2F-140, and the OpenHand Model T42. Their results establish empirically
 that end-effector selection materially changes cloth-manipulation
 outcomes, and their inclusion of finray fingers on the same robot
 platform used here makes the comparison direct. The evaluation, however,
-is scored at the \emph{task} level: each benchmark reports success or
+is scored at the \emph{task} level; each benchmark reports success or
 accuracy of a completed manoeuvre, with the approach pose fixed per task.
 What it does not measure is how the grasp itself degrades as the
-approach conditions vary: the continuous dependence of contact force
+approach conditions vary, the continuous dependence of contact force
 and grasp outcome on press depth and gripper tilt that any deployed
 system experiences as positioning error.
 
 None of the work above, therefore, addresses the specific question this
-thesis investigates: cloth-manipulation literature treats grasp
+thesis investigates. The cloth-manipulation literature treats grasp
 \emph{success} as an outcome to be predicted or achieved at a fixed
-operating point, not as a function of a continuous physical parameter
-space (press depth, gripper tilt) whose boundary can be mapped and
-compared across gripper geometries.
+operating point; it does not treat success as a function of a continuous
+physical parameter space of press depth and gripper tilt whose boundary
+can be mapped and compared across gripper geometries.
 The evaluation in this thesis is deliberately narrower in manipulation scope
 than folding or dressing pipelines, but correspondingly more quantitative
 about the mechanics of the grasp itself: it keeps the two-jaw form factor
@@ -158,8 +159,8 @@ DHAS gripper-finger product line~\cite{festo2018dhas} describes this
 structure explicitly as two flexible bands joined by cross-ribs at flex
 hinges, and reports measured retention-force, lateral-force, and
 indentation-depth curves as functions of gripping force and workpiece
-diameter. These are the same three quantities (force, indentation depth,
-contact geometry) that this thesis's depth-sweep experiments characterise directly
+diameter. The depth-sweep experiments of this thesis characterise the same three
+quantities, force, indentation depth, and contact geometry, directly
 on 3D-printed finray fingers rather than the commercial product.
 
 Academic characterisation of the finray design has followed two
@@ -170,7 +171,7 @@ geometric parameters, addressing the absence of a convenient design tool
 for this class of compliant finger. Their model, like the empirical
 studies that follow it, addresses \emph{lateral} grasping contact; no
 published model, to the author's knowledge, predicts the axial
-tip-compression response (the rise--peak--valley--recovery profile)
+tip-compression response, the rise--peak--valley--recovery profile
 characterised empirically in this thesis. On the empirical side, Crooks et
 al.~\cite{crooks2016finray} modified the finray design by angling its
 internal crossbeams to introduce a directional bending bias, fabricated by
@@ -181,19 +182,18 @@ characterised fully 3D-printed finray fingers made from flexible
 thermoplastic polyurethane (TPU) filament, varying crossbeam rib angle and
 spacing, and found that at large tip displacements the ribs contact one
 another (\emph{layer jamming}), substantially increasing force generation
-and producing a tunable-stiffness effect. Most directly relevant to this
-thesis's use of TPU-printed fingers, Lang et
+and producing a tunable-stiffness effect. Lang et
 al.~\cite{lang2025softrobotics} 3D-printed finray fingers in both TPU 60A
 and TPU 95A and tensile-tested them: the softer 60A durometer gave the
 better force/compliance balance and left delicate fruit undamaged, while
 95A reached substantially higher forces but visibly bruised the fruit.
-That result is direct prior evidence that finger material hardness, independent of
-finger geometry, is a first-order design lever for a compliant gripper, a
-finding consistent with this thesis's own manufacturing-variability
-results (Section~\ref{sec:manufacturing-results}).
+That result is prior evidence that finger material hardness, independent
+of finger geometry, is a first-order design lever for a compliant
+gripper; the manufacturing-variability results of
+Section~\ref{sec:manufacturing-results} are consistent with it.
 
-The operational-envelope argument for compliant hands (that
-compliance buys tolerance to positioning error) was established
+The operational-envelope argument for compliant hands, that
+compliance buys tolerance to positioning error, was established
 quantitatively by Dollar and Howe's SDM Hand~\cite{dollar2010sdm}: an
 underactuated hand with compliant polymer fingers that grasped a 48\,mm
 cylinder at positions offset by more than 100\% of the object size in
@@ -202,7 +202,7 @@ rigid gripper would require millimetre-level placement. Their
 successful-grasp-range maps over an $xy$ offset grid are the direct
 methodological ancestor of the depth--tilt working-window maps produced
 in this thesis, transposed from rigid household objects to cloth and
-from lateral offset to press depth and tilt. Closest of all in spirit,
+from lateral offset to press depth and tilt.
 Teeple et al.~\cite{teeple2022multidimensional} decomposed the benefit of
 a pneumatic soft gripper's compliance into per-axis contributions when
 handling thin, flexible materials: vertical compliance was shown to buy
@@ -230,9 +230,9 @@ commercial mGrip product line~\cite{softroboticsinc_mgrip} demonstrates
 that compliant gripping has moved beyond academic prototypes into
 food-handling industrial deployment. This thesis's finray variants and
 rigid parallel-jaw comparator sit within this broader design space as one
-specific, geometrically simple point in it, chosen because (unlike jamming
-or pneumatic actuation) a finray finger requires no additional actuation
-hardware beyond the gripper's own jaw motion.
+specific, geometrically simple point in it, chosen because a finray
+finger, unlike a jamming or pneumatic design, requires no additional
+actuation hardware beyond the gripper's own jaw motion.
 
 \section{Force-Controlled Grasping}
 
@@ -242,25 +242,25 @@ control framework~\cite{hogan1985impedancePartI,hogan1985impedancePartII,hogan19
 neither pure position control nor pure force control is adequate for a
 task involving contact with an environment of unknown or varying
 mechanical properties, so the manipulator should instead regulate the
-dynamic relationship --- the impedance --- between its motion and the
-interaction force at its end-point. This thesis's trial procedure, which
+dynamic relationship between its motion and the interaction force at
+its end-point, the impedance. This thesis's trial procedure, which
 presses the gripper to a commanded depth and then reports the resulting
 \emph{stationary} contact force $F_z$ rather than commanding force
 directly, is an impedance-control-style measurement: depth is the
 commanded quantity, force is the observed response, and the relationship
-between them (Chapter~\ref{ch:results}) is exactly the impedance curve
+between them (Chapter~\ref{ch:results}) is the impedance curve
 Hogan's framework predicts should characterise contact with an unknown
-environment (here, the cloth-covered rigid table).
+environment, here the cloth-covered rigid table.
 
 On the Franka FR3 platform specifically, libfranka exposes two
-real-time command modes: external torque-level control (including a
-Cartesian impedance controller distributed as a reference
-implementation) and Cartesian pose motion generation, in which the
+real-time command modes: external torque-level control, for which a
+Cartesian impedance controller is distributed as a reference
+implementation, and Cartesian pose motion generation, in which the
 client streams pose targets at the 1\,kHz servo rate and tracking is
 delegated to the arm's internal impedance
 controller~\cite{frankarobotics_libfranka}. The tilt-aware pose
 targeting used in this thesis's trial procedure
-(Section~\ref{sec:tilt-pose}) uses the latter mode: the in-house
+(Section~\ref{sec:tilt-pose}) uses the latter mode. The in-house
 \texttt{fr3\_pose\_controller} commands Cartesian poses through
 libfranka's pose interface, so the contact interaction is mediated by
 the robot's internal impedance law rather than a user-tuned stiffness.
@@ -272,7 +272,7 @@ repeatable calibration could not be established in time and the
 cross-check is carried as future work (Chapter~\ref{ch:conclusion}). FlexiForce is a thin-film piezoresistive sensor
 marketed explicitly for grip-force measurement in robotic and surgical
 applications~\cite{tekscan_flexiforce_gripforce}, and has prior academic
-precedent for exactly this use: Sharan and
+precedent for this use: Sharan and
 Onwubolu~\cite{sharan2015flexiforce} instrumented a two-finger
 pick-and-place gripper with a FlexiForce sensor to measure grip force
 directly against known payload weight. An alternative tactile-sensing
@@ -281,11 +281,11 @@ vision-based tactile sensing: Yuan et al.'s
 GelSight~\cite{yuan2017gelsight} sensor measures the deformation of a soft
 elastomer contact surface via an internal camera, recovering high-resolution
 contact geometry from which force and slip can be inferred, in contrast to
-FlexiForce's direct (but lower-resolution) force read-out.
+the direct but lower-resolution force read-out of FlexiForce.
 
-Finally, the trial procedure's touch-off step (descending the gripper
-under position control until a chosen contact criterion is met, before
-switching to the pressed-depth grasp) follows a long lineage of
+Finally, the trial procedure's touch-off step, in which the gripper
+descends under position control until a chosen contact criterion is met
+before switching to the pressed-depth grasp, follows a long lineage of
 contact-detection strategies in manipulation. Whitney's classical analysis
 of quasi-static assembly~\cite{whitney1982quasistatic} derives the
 geometric and force-equilibrium conditions under which measured contact
@@ -319,18 +319,18 @@ same author quantifies its continued adoption as a de facto standard
 platform across manipulation, control, and human-robot-interaction
 research~\cite{haddadin2024standard}. That widespread adoption has
 produced independent characterisation studies directly relevant to this
-thesis's instrumentation choices. Most pertinently, Petrea et
+thesis's instrumentation choices. Petrea et
 al.~\cite{petrea2021interaction} empirically evaluated the accuracy of the
 Panda's built-in filtered external-force estimate against ground-truth
-load-cell measurements during controlled contact. This is the same FCI
-external-wrench signal this thesis uses as its Contact Force channel, so
-their accuracy findings directly bound how much that channel can be
-trusted, and motivate the independent force-sensor cross-check
-identified as future work.
+load-cell measurements during controlled contact. The signal they
+evaluated is the same FCI external-wrench estimate used in this thesis
+as the Contact Force channel; their accuracy findings therefore bound
+how much that channel can be trusted, and motivate the independent
+force-sensor cross-check identified as future work.
 Gaz et al.~\cite{gaz2019dynamic} separately derived a full dynamic
 (inertial and friction) parameter model of the Panda's arm via
-penalty-based optimisation, a model since reused widely enough to be
-treated as a de facto standard dynamic model of the platform. Beyond force
+penalty-based optimisation, a model since reused widely enough to have
+become a standard dynamic model of the platform. Beyond force
 sensing specifically, the Franka Panda/FR3's broad adoption as a
 manipulation-research testbed is illustrated by work such as Chi et
 al.'s~\cite{chi2023diffusion} diffusion-policy visuomotor control
@@ -341,7 +341,7 @@ this kind emit streams of end-effector pose targets, the same command
 interface through which this thesis's trial procedure drives the arm
 (Section~\ref{sec:tilt-pose}). The evaluation is therefore conducted
 through the interface a learned or simulation-trained policy would use in
-deployment, with sim-to-real transfer as the motivating trajectory: a
+deployment, with sim-to-real transfer as the motivating trajectory. A
 compliant finger that tolerates centimetre-scale press-depth error and
 degree-scale tilt error widens the placement-error budget available to a
 policy trained in simulation, and the depth--tilt maps produced in this
@@ -352,9 +352,9 @@ thesis quantify that budget as a function of gripper design.
 This thesis sits at the intersection of three threads: cloth-handling
 system design, finray-effect gripper characterisation, and
 force-controlled manipulation on collaborative robots. Prior work has
-independently established each thread: cloth manipulation research has
-largely optimised for task-level success (folding, singulating, dressing)
-under vision-driven or learned control; compliant-gripper research has
+established each thread independently. Cloth manipulation research has
+largely optimised for task-level success in folding, singulating, and
+dressing under vision-driven or learned control; compliant-gripper research has
 characterised finray and jamming designs primarily through force/holding-capacity
 metrics on rigid or quasi-rigid test objects; and impedance-control theory
 and its Franka FCI implementation provide the tools to regulate and

@@ -11,14 +11,14 @@ of soft goods. Yet a striking fraction of published robot-manipulation
 demonstrations sidesteps the hardest step entirely: the object is handed
 to the robot's gripper by a human operator, and the demonstrated
 autonomy begins only after the grasp already
-exists.\footnote{A prominent recent example: a widely circulated
+exists.\footnote{One prominent recent example is a widely circulated
 January 2024 video of the Tesla Optimus humanoid folding a shirt was
 subsequently acknowledged by its poster to be teleoperated, with the
 shirt pre-staged in a fixed setup~\cite{musk2024optimus,novak2024magic}.} For cloth
-specifically, acquiring the first grasp (picking a thin, flat fabric
-directly off a surface) remains the bottleneck that limits how
+specifically, acquiring the first grasp, picking a thin, flat fabric
+directly off a surface, remains the bottleneck that limits how
 autonomous these systems can truly be. Cloth is uniquely difficult to
-grasp robustly: it deforms continuously under contact, exhibits no fixed
+grasp robustly. It deforms continuously under contact, exhibits no fixed
 graspable feature, and has a near-zero bending stiffness that allows it to slip
 out of a poorly placed gripper. Conventional rigid-jaw grippers, designed for
 sturdy objects with well-defined geometry, perform poorly on cloth without
@@ -35,8 +35,8 @@ asymmetries arise that have no analogue in the rigid-jaw case.
 The central question of this thesis is: \emph{to what extent does the finray's
 compliance trade single-axis force precision for multi-axis operational
 robustness?} Specifically, how does the finray's contact force respond to
-deviations in the two design degrees of freedom most likely to be uncontrolled
-in real deployment: press depth and gripper tilt angle?
+deviations in press depth and gripper tilt angle, the two design degrees
+of freedom most likely to be uncontrolled in real deployment?
 
 \section{Research Questions and Contributions}
 
@@ -75,12 +75,12 @@ conditions, and asks:
 \paragraph{Scope.} The evaluation deliberately isolates the \emph{contact}
 phase of cloth grasping, the interval between first gripper--cloth contact
 and a completed lift, and characterises it over a continuous depth--tilt
-parameter space. Downstream task-level evaluation (folding, placing, and
-dragging under the same policy) is future work
-(Chapter~\ref{ch:conclusion}). This narrowing is intentional: it is
-precisely because the contact phase is usually bundled inside end-to-end
-task pipelines that its mechanics have not previously been mapped as a
-function of gripper design.
+parameter space. Downstream task-level evaluation, meaning folding,
+placing, and dragging under the same policy, is future work
+(Chapter~\ref{ch:conclusion}). The narrowing is intentional. The contact
+phase is usually bundled inside end-to-end task pipelines, which is why
+its mechanics have not previously been mapped as a function of gripper
+design.
 
 \section{Thesis Organisation}
 

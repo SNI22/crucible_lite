@@ -7,9 +7,9 @@ proposed: rigid parallel-jaw fingers, which offer precise force control
 but narrow operational tolerance, and compliant finray-effect fingers,
 which trade force precision for a wider operational envelope. This
 thesis presents an experimental evaluation of that trade on the task of
-picking a single flat cloth off a surface, comparing six gripper
-variants (two rigid parallel-jaw configurations and four 3D-printed
-finray configurations) on a Franka Research 3 arm. Press depth and tilt
+picking a single flat cloth off a surface, comparing two rigid
+parallel-jaw configurations and four 3D-printed finray configurations,
+six gripper variants in all, on a Franka Research 3 arm. Press depth and tilt
 angle were chosen as the evaluation axes because they are the placement
 errors a deployed system cannot fully control: a low-accuracy or
 coarsely calibrated arm carries millimetre-scale surface-height error
@@ -18,14 +18,14 @@ Stationary contact force was the primary outcome and grasp success the
 secondary outcome.
 
 Across 845 analysed trials, the rigid jaws held cloth only within a
-$1.5$\,mm depth window ($2.5$\,mm with a compliant pad), bounded by a
+$1.5$\,mm depth window, or $2.5$\,mm with a compliant pad, bounded by a
 force safety limit, whereas every finray variant grasped across the
 full $10$\,mm calibrated analysis window at every orientation tested.
 Two depth-gated effects emerged. Finray contact force is strongly
 tilt-sensitive at the contact boundary but robust to tilt once pressed
 past the buckling knee, and the direction-dependent handedness about
-the finger's geometrically asymmetric axis (a factor of $2.36$ at
-boundary depth) vanishes at safe operating depths. Compliant grippers
+the finger's geometrically asymmetric axis, a factor of $2.36$ at
+boundary depth, vanishes at safe operating depths. Compliant grippers
 therefore achieve directional robustness only when pressed past a
 threshold depth; control policies that operate near the contact
 boundary for delicate fabric handling must model the gripper's

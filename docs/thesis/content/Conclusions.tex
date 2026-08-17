@@ -12,28 +12,29 @@ Chapter~\ref{ch:introduction}:
 \begin{enumerate}
   \item \emph{How does contact force vary with press depth for each finger
         design?} Every finray variant follows a single shared
-        rise--peak--valley--recovery curve (pairwise NMSE below $1\%$
-        over the full 10\,mm calibrated window), whereas the rigid
+        rise--peak--valley--recovery curve, with pairwise NMSE below $1\%$
+        over the full 10\,mm calibrated window, whereas the rigid
         parallel jaws ramp steeply toward the platform's excess-force
         limit within roughly 2\,mm of first contact.
   \item \emph{How much can the gripper be tilted before the grasp becomes
         unreliable?} The finrays grasp reliably across every orientation
-        tested ($\pm 2.5^{\circ}$ about both axes, plus a $5^{\circ}$
-        seat mount) over the full $\geq 10$\,mm window; the rigid jaws
+        tested, $\pm 2.5^{\circ}$ about both axes plus a $5^{\circ}$
+        seat mount, over the full $\geq 10$\,mm window; the rigid jaws
         never exceed 2.5\,mm, and two stock-jaw tilt conditions produced
         no successful grasp at any depth.
-  \item \emph{Does tilt tolerance depend on press depth?} Yes:
-        robustness is depth-gated; near the contact boundary, tilt
-        strongly modulates both force and success (including a
+  \item \emph{Does tilt tolerance depend on press depth?} Yes.
+        Robustness is depth-gated: near the contact boundary, tilt
+        strongly modulates both force and success, including a
         $2.4\times$ direction-dependent asymmetry about the geometrically
-        asymmetric axis), whereas past the buckling threshold the mean
+        asymmetric axis, whereas past the buckling threshold the mean
         across-orientation force spread shrinks to $1.3$--$2.4$\,N.
   \item \emph{What is the compliant finger's response under compression?}
-        Blade buckling: force peaks at buckling onset ($\approx 2$--$3$\,mm
-        past first successful grasp), dips as the blades buckle, then
-        recovers. The finray geometry (blade thickness, seat
-        angle, print instance) sets the force \emph{scale} (31--53\,N
-        knee peaks) but not the curve \emph{shape}.
+        Blade buckling. Force peaks at buckling onset,
+        $\approx 2$--$3$\,mm past first successful grasp, dips as the
+        blades buckle, then recovers. The finray geometry, that is,
+        blade thickness, seat angle, and print instance, sets the force
+        \emph{scale} but not the curve \emph{shape}, with knee peaks
+        spanning 31--53\,N.
 \end{enumerate}
 
 The depth-dependent tilt robustness identified here had not been
@@ -43,21 +44,23 @@ knowledge, and constitutes the principal empirical contribution.
 \section{Implications}
 
 With the robot, control policy, cloth, and environment held identical,
-a finger swap alone buys at least a $4\times$ wider press-depth tolerance than the best rigid
-configuration ($\geq 10$\,mm versus 2.5\,mm on the padded jaws, and
-roughly $7\times$ versus the stock jaws), at roughly half the grip force.
+a finger swap alone buys at least a $4\times$ wider press-depth
+tolerance than the best rigid configuration, $\geq 10$\,mm versus
+2.5\,mm on the padded jaws and roughly $7\times$ versus the stock jaws,
+at roughly half the grip force.
 Under tilt the advantage widens further, to $20\times$ or more against the
 stock jaws' surviving conditions; all of these ratios are lower bounds,
 because the finray ranges are right-censored at the analysis-window end.
-For the application domains that motivated this work (laundry and
+The application domains that motivated this work are laundry and
 textile handling, hospital bedding, assistive robotics, garment
-manufacturing, and soft-goods packaging), this means the flat-cloth
-pick, the step that currently keeps such systems human-started, becomes
-accessible to a standard arm running an unchanged policy, before any
-investment in cameras, tactile sensing, or learned control. The
-accompanying design rule is equally simple: press the compliant finger
-past its buckling peak ($\approx 2$--$3$\,mm beyond first contact), and
-the grasp becomes robust to both depth and tilt placement error.
+manufacturing, and soft-goods packaging. For all of them, this means
+the flat-cloth pick, the step that currently keeps such systems
+human-started, becomes accessible to a standard arm running an
+unchanged policy, before any investment in cameras, tactile sensing, or
+learned control. The design rule that follows is simple: press the
+compliant finger past its buckling peak, $\approx 2$--$3$\,mm beyond
+first contact, and the grasp becomes robust to both depth and tilt
+placement error.
 
 \section{Future Work}
 
@@ -65,19 +68,19 @@ the grasp becomes robust to both depth and tilt placement error.
   \item[Independent force-sensor cross-check.] All force measurements
         derive from the arm's joint-torque-based external-wrench
         estimate. Repeating a subset of the matrix with a dedicated
-        force/torque sensor at the wrist (or an instrumented surface)
-        would bound the estimator's pose-dependent bias directly.
-  \item[Task-level evaluation.] Downstream task-level evaluation
-        (folding a cloth diagonally from a corner grasp, dropping a
-        centre-grasped cloth onto a curved object, dragging between
-        positions under the same policy)
+        force/torque sensor at the wrist, or with an instrumented
+        surface, would bound the estimator's pose-dependent bias
+        directly.
+  \item[Task-level evaluation.] Folding a cloth diagonally from a
+        corner grasp, dropping a centre-grasped cloth onto a curved
+        object, and dragging between positions under the same policy
         would test whether the contact-phase advantage measured here
         translates into end-to-end task success, including under learned
         policies.
   \item[Task-level precision comparison.] Beyond success rates, a soft
-        versus rigid comparison of task-level \emph{precision} (placement
-        accuracy after fold or drop) would characterise the cost side of
-        compliance.
+        versus rigid comparison of task-level \emph{precision}, meaning
+        placement accuracy after fold or drop, would characterise the
+        cost side of compliance.
   \item[Dynamic and high-rate behaviour.] All trials here are
         quasi-static. The perturbation behaviour of compliant fingers
         under fast actuation and high-frequency control, where the

@@ -15,15 +15,15 @@ constitute the data corpus reported in Chapter~\ref{ch:results}.
 
 The gripper roster comprised six variants organised into two families:
 \begin{itemize}
-  \item \textbf{Finray family} (four variants):
-    \texttt{finray\_18}, \texttt{finray\_18\_model2} (second print of
-    the same CAD), \texttt{finray\_26} (larger blade), and
-    \texttt{finray\_26\_5deg} (\texttt{finray\_26} on a
-    $5^{\circ}$-inclined seat).
-  \item \textbf{Parallel-jaw family} (two variants):
-    \texttt{parallel\_jaw\_stock} (bare rigid jaws) and
-    \texttt{parallel\_jaw\_TPU} (rigid jaws with a $2$\,mm TPU $90$A
-    compliant pad).
+  \item \textbf{Finray family}, four variants: \texttt{finray\_18};
+    \texttt{finray\_18\_model2}, a second print of the same CAD;
+    \texttt{finray\_26}, with a larger blade; and
+    \texttt{finray\_26\_5deg}, which is \texttt{finray\_26} on a
+    $5^{\circ}$-inclined seat.
+  \item \textbf{Parallel-jaw family}, two variants:
+    \texttt{parallel\_jaw\_stock}, the bare rigid jaws, and
+    \texttt{parallel\_jaw\_TPU}, the same jaws with a $2$\,mm TPU $90$A
+    compliant pad.
 \end{itemize}
 
 The same fabric specimen (single-layer cotton) rested on the same
@@ -32,18 +32,19 @@ arm held the gripper in a fixed base orientation $R_0 = R_x(180^{\circ})$
 for Phase~1, and applied signed rotations
 $R_{\theta} = R_x(180^{\circ})\, R_y(\theta_y)\, R_x(\theta_x)$
 for Phase~2, with $(\theta_x, \theta_y) \in
-\{(\pm 2.5^{\circ}, 0), (0, \pm 2.5^{\circ})\}$ (the runtime arm tilts
-of Chapter~\ref{ch:methods}, Figure~\ref{fig:runtime-tilt}, distinct
-from the seat angle $\alpha$ of Figure~\ref{fig:seat-mount-params}).
+\{(\pm 2.5^{\circ}, 0), (0, \pm 2.5^{\circ})\}$. These are the runtime
+arm tilts of Chapter~\ref{ch:methods}, illustrated in
+Figure~\ref{fig:runtime-tilt}, and are distinct from the seat angle
+$\alpha$ of Figure~\ref{fig:seat-mount-params}.
 
 The perturbation magnitudes were chosen to represent the placement
 uncertainty of a deployment that cannot afford precise calibration: a
 low-accuracy or coarsely mounted robot arm may plausibly carry an
 orientation error of a few degrees and a surface-height error of
 several millimetres. The $\pm 2.5^{\circ}$ runtime tilt stands in for
-that orientation error, and the depth sweep (with its $10$\,mm
-calibrated analysis window, Chapter~\ref{ch:methods}) spans the
-corresponding height-error budget. A gripper that tolerates the full
+that orientation error, and the depth sweep, whose $10$\,mm
+calibrated analysis window is defined in Chapter~\ref{ch:methods},
+spans the corresponding height-error budget. A gripper that tolerates the full
 tested range therefore tolerates a deployment in which neither the
 mounting angle nor the surface height is precisely known.
 Table~\ref{tab:test-conditions} summarises the test conditions common
@@ -142,9 +143,9 @@ control-system errors.
 \section{Rotation Tracking Verification}
 \label{sec:rotation-verify}
 
-A natural concern is whether the Franka arm faithfully realises the
-commanded tilt orientation. The 30\,Hz session log records actual and
-commanded RPY at every sample, enabling a direct measurement of
+The tilt conditions assume that the Franka arm realises the commanded
+orientation faithfully. The 30\,Hz session log records actual and
+commanded RPY at every sample, giving a direct measurement of the
 orientation tracking error
 \begin{equation}
   \delta(t) = \| \mathrm{RPY}_{\text{actual}}(t) -
@@ -197,18 +198,18 @@ Section~\ref{sec:failure-mode-discussion}.
 
 Experiments 1 and 2 characterise the contact phase on a flat, levelled
 surface, with each variant calibrated against that surface. Experiment 3
-tests the deployment consequence those measurements predict: when the
-surface geometry departs from what the calibration assumed, does the
-compliant finger keep grasping where the rigid jaw fails, with no change
-to calibration, policy, or sensing?
+tests the deployment consequence those measurements predict: whether,
+when the surface geometry departs from what the calibration assumed,
+the compliant finger keeps grasping where the rigid jaw fails, with no
+change to calibration, policy, or sensing.
 
 The planned protocol mirrors Experiments 1 and 2 in every respect except
 the surface and the outcome metric. The acrylic test surface is mounted
-on a wedge (\texttt{SURFACE\_RISER}) whose CAD model specifies a top-surface
-incline of $\beta = 4.15^{\circ}$ (measured from the model geometry: the
-top face normal is $4.1467^{\circ}$ from vertical), with the slope aligned
-with the gripping direction; the as-built fixture will be verified against
-this nominal value before the session. Each variant is then calibrated \emph{blind}
+on a wedge, \texttt{SURFACE\_RISER}, whose CAD model specifies a
+top-surface incline of $\beta = 4.15^{\circ}$; measured from the model
+geometry, the top face normal is $4.1467^{\circ}$ from vertical. The
+slope is aligned with the gripping direction, and the as-built fixture
+will be verified against the nominal value before the session. Each variant is then calibrated \emph{blind}
 by the standard force touch-off of Section~\ref{sec:tcp-calib}, exactly
 as if the surface were flat and level: no tilt compensation is applied
 and the incline is treated as unknown to the calibration. Each trial
@@ -219,7 +220,8 @@ taxonomy of Section~\ref{sec:trial-protocol}. Contact force is logged
 but is not a reported metric for this experiment.
 
 The pilot covers all six gripper variants of
-Table~\ref{tab:variants}, at three attempts each ($18$ trials total).
+Table~\ref{tab:variants}, at three attempts each, giving $18$ trials
+in total.
 From the flat-surface working ranges of Chapter~\ref{ch:results}, the
 registered prediction is that all four finray variants grasp
 successfully at every attempt, while both rigid variants fail or are

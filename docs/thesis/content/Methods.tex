@@ -5,8 +5,8 @@
 
 \subsection{Robot Manipulator}
 
-A Franka Research 3 (FR3) 7-DOF cobot served as the manipulator throughout
-this work. The arm was operated through the Franka Control Interface (FCI)
+A Franka Research 3 (FR3) 7-DOF cobot was used as the manipulator
+throughout this work. The arm was operated through the Franka Control Interface (FCI)
 using \texttt{libfranka 0.18.1} and the ROS\,2 Humble control stack.
 Cartesian pose targets were streamed through libfranka's motion-generator
 interface by a custom \path{fr3_pose_controller} developed and
@@ -55,7 +55,7 @@ default layer height, default infill, PEI-textured build plate).
 \paragraph{Baseline inclined-seat mount.}
 We define $\alpha$ as the baseline seat-mount tilt angle, annotated in
 the front view of Figure~\ref{fig:seat-mount-params}: the fixed
-rotation about the gripper's local $y$ axis (the gripping direction)
+rotation about the gripper's local $y$ axis, the gripping direction,
 introduced by the 3D-printed seat adapter that carries every finray
 finger. The figure shows the mounting stack (flange $\to$ seat $\to$
 finger) and the $\alpha$ and $t$ design-parameter convention. All finray variants were mounted on the Franka Hand via this
@@ -77,7 +77,7 @@ full length during a successful grasp.
 The two blade thicknesses and the second seat angle were not arbitrary.
 The $26$\,mm blade matches the finger dimension of the handheld
 Universal Manipulation Interface (UMI) gripper~\cite{chi2024umi}, whose
-fin-ray-type soft fingers have become a de facto reference design for
+finray-type soft fingers have become a de facto reference design for
 learned manipulation, so results at $t = 26$\,mm transfer directly to
 that widely used hardware. The $18$\,mm blade matches the thickness of
 the stock Franka parallel jaw, giving a compliant finger and a rigid
@@ -105,10 +105,10 @@ Scale bars in cm.}
 
 \paragraph{Consequence for reported ``$0^{\circ}$'' cells.}
 Cells reported in Chapter~\ref{ch:results} as $0^{\circ}$ tilt denote that the
-robot arm is perpendicular to the surface ($\theta_x = \theta_y = 0$;
-the runtime tilt angles are illustrated in Figure~\ref{fig:runtime-tilt}).
+robot arm is perpendicular to the surface ($\theta_x = \theta_y = 0$).
 Runtime tilt values ($\pm 2.5^{\circ}$ about $x$ or $y$) tilt the arm
-away from this perpendicular pose.
+away from this perpendicular pose; the runtime tilt angles themselves
+are illustrated in Figure~\ref{fig:runtime-tilt}.
 
 \subsection{Cloth Specimen}
 \label{sec:cloth}
@@ -132,13 +132,13 @@ ruler for scale.}
 \subsection{Test Surface}
 \label{sec:test-surface}
 
-The cloth rested on a rigid, flat acrylic plate that served as the test
+The cloth rested on a rigid, flat acrylic plate that was the test
 surface for the entire campaign, fixed to the workbench so that its
 position and orientation were common to all variants and sessions. The
-surface height entering every trial was not assumed but measured: the
+surface height entering every trial was measured rather than assumed: the
 force touch-off of Section~\ref{sec:tcp-calib} re-detected the surface
-at each calibration, making the plate's absolute height a per-session
-measured quantity rather than a fixed constant.
+at each calibration, so the plate's absolute height was a per-session
+measured quantity, not a fixed constant.
 
 \TODO{insert photograph of the test bench in situ and short caption
 describing the table material, flatness, and cloth-edge orientation
@@ -195,8 +195,8 @@ The $z_{\text{TCP}}$ value differs by variant because different fingers
 attach to the same flange. To calibrate, each variant was driven to a
 common probe position $(x_0, y_0)$ on a known rigid table and a force-feedback
 touch-off was performed: the gripper descended slowly in $z$ until the
-external $z$ force exceeded $3$\,N in magnitude (debounced for three
-consecutive 50\,Hz samples). The flange $z$ at the latch moment was
+external $z$ force exceeded $3$\,N in magnitude, debounced for three
+consecutive 50\,Hz samples. The flange $z$ at the latch moment was
 recorded as $z_{\text{TCP}}^{\text{measured}}$.
 
 Taking the rigid \texttt{parallel\_jaw\_stock} variant as the URDF reference
@@ -232,9 +232,9 @@ Variant & $z_{\text{TCP}}^{\text{measured}}$ (mm) & $z_{\text{TCP}}^{(v)}$ (mm) 
 \end{table}
 
 The reproducibility of the touch-off was measured as the across-tap standard
-deviation $\sigma_{z,\text{tcp}}$ in mm (not to be confused with the
-per-cell force standard deviation $\sigma_{F_z}$ of
-Section~\ref{sec:stats}). For \texttt{finray\_26\_5deg},
+deviation $\sigma_{z,\text{tcp}}$ in mm; this quantity is distinct from
+the per-cell force standard deviation $\sigma_{F_z}$ of
+Section~\ref{sec:stats}. For \texttt{finray\_26\_5deg},
 $\sigma_{z,\text{tcp}} = 183$\,\textmu m owing to a wobble component
 introduced by the inclined seat; the other four variants had
 $\sigma_{z,\text{tcp}} \leq 102$\,\textmu m. The second print
@@ -276,17 +276,18 @@ onto the base orientation $R_0 = R_x(180^{\circ})$, and the flange position
 target is updated accordingly. The orientation is then held constant
 through all subsequent descent and grasp phases, so the tip XY remains at
 $(x_0, y_0)$ throughout the trial. Figure~\ref{fig:runtime-tilt}
-illustrates the two runtime tilt angles: $\theta_x$ rotates the gripper
-about the symmetric axis (front view, both fingers move together),
-while $\theta_y$ rotates it about the gripping axis (side view, the
-mirror-symmetric fingers overlap in projection). Both are shown here as
+illustrates the two runtime tilt angles. In the front view, $\theta_x$
+rotates the gripper about the symmetric axis and both fingers move
+together; in the side view, $\theta_y$ rotates it about the gripping
+axis and the mirror-symmetric fingers overlap in projection. Both are shown here as
 a general rotation from the world $z$ axis (``Ground''); the runtime
 sweep used in this study is $\theta_x, \theta_y \in
 \{-2.5^{\circ}, 0^{\circ}, +2.5^{\circ}\}$. These arm rotation angles
 are a separate quantity from the seat angle $\alpha$ of
-Section~\ref{sec:variants}: $\alpha$ is a fixed property of the gripper
-hardware (how the fingers meet the flange), while $\theta_x, \theta_y$
-describe how the arm is oriented relative to the surface. The two are
+Section~\ref{sec:variants}. The seat angle is a fixed property of the
+gripper hardware, namely how the fingers meet the flange, while
+$\theta_x, \theta_y$ describe how the arm is oriented relative to the
+surface. The two are
 reported independently throughout this thesis and are never summed.
 
 \begin{figure}[ht]
@@ -380,22 +381,21 @@ A single trial proceeded as follows:
 \begin{enumerate}
   \item[0.] Cloth reset: the operator flattened the cloth on the test
         surface, smoothing out any wrinkles or folds left by the previous
-        trial, so that every trial began from the flat-on-surface
-        configuration this thesis targets;
-  \item The gripper opened (Franka Hand or finray release width);
+        trial, restoring the flat-on-surface starting configuration;
+  \item The gripper opened to the Franka Hand or finray release width;
   \item Bulk descent: a smooth multi-waypoint trajectory carried the
         gripper from the lifted pose down to a fine clearance ($+5$\,mm
-        above surface), filtered to exclude any upward leg (preventing
-        direction reversals at zero-twist interior waypoints);
+        above surface), filtered to exclude any upward leg, preventing
+        direction reversals at zero-twist interior waypoints;
   \item Settle: a 2\,s pause at the fine-clearance pose;
   \item Final approach: a cosine-S-curve descent carried the gripper from
         the fine clearance to the press target $z_{\text{surf}} - d$,
         where $d$ is the trial press depth
         (Figure~\ref{fig:press-deform});
-  \item Grasp: a force-controlled close (Franka grasp action at 80\,N or
-        20\,N nominal, with $\pm 100$\,mm $\epsilon$ to disable the
+  \item Grasp: a force-controlled close using the Franka grasp action at
+        80\,N or 20\,N nominal, with $\pm 100$\,mm $\epsilon$ to disable the
         position-acceptance check that would otherwise cause auto-release
-        on a sub-spec final width);
+        on a sub-spec final width;
   \item Settle: a 1\,s pause;
   \item Stationary sample: 30 samples of $\mathbf{F}_{\text{ext}}$ were
         captured over 1\,s during the \path{grasp_stationary_sample}
@@ -430,11 +430,11 @@ All aggregate analyses are reported on a \emph{calibrated} depth axis
   d_{\text{cal}} = d - d_{\text{first success}},
   \label{eq:dcal}
 \end{equation}
-where $d_{\text{first success}}$ is, per trial series (each
-variant--tilt-condition pair, within a calibration epoch), the
-shallowest cell in which at least two-thirds of the valid completed
-trials succeed (the majority-success criterion); each series is zeroed
-at its own first majority-success cell. The reference is
+where $d_{\text{first success}}$ is the shallowest cell in which at
+least two-thirds of the valid completed trials succeed, the
+majority-success criterion. It is computed per trial series, one series
+being a variant--tilt-condition pair within a calibration epoch, and
+each series is zeroed at its own first majority-success cell. The reference is
 thus a directly measured physical event, the onset of reliable
 grasping, rather than the force-touch-off zero, which inherits
 cross-session bias drift and per-print geometry offsets
@@ -449,15 +449,15 @@ window but is excluded from the aggregate by convention, not because the
 gripper stopped working there. The bound also keeps every finray's
 peak--valley shape (Section~\ref{sec:zero-tilt-results}) fully
 contained within the window. A
-wider window (e.g.\ $12$\,mm) was evaluated and rejected: one finray
-variant's shape curve extended only to $10.5$\,mm of usable support at
-that width, breaking the uniform-censoring property. The rigid
+wider window (e.g.\ $12$\,mm) was evaluated and rejected because one
+finray variant's shape curve extended only to $10.5$\,mm of usable
+support at that width, breaking the uniform-censoring property. The rigid
 parallel-jaw variants' working ranges are unaffected by the window
 choice, as both lie entirely inside $[0,10]$\,mm and their ranges are
 therefore reported as closed measurements, not censored. This convention
-was adopted as Bill~0007 of the project's governance record (enacted
-2026-08-09; revised through 2026-08-10 to per-series zeroing, a
-majority-success cell criterion, and the final $10$\,mm window), on the
+was adopted as Bill~0007 of the project's governance record, enacted
+2026-08-09 and revised through 2026-08-10 to per-series zeroing, a
+majority-success cell criterion, and the final $10$\,mm window, on the
 evidence that first-success alignment collapses the
 two prints of the 18\,mm finger onto a common curve.
 
@@ -469,6 +469,6 @@ For each (variant, depth, tilt) cell, the contact force is reported as
   \sigma_{F_z} = \sqrt{\frac{1}{N}\sum (F_z^{(i)} - \bar{F}_z)^2},
 \end{equation}
 where $N$ is the total number of stationary samples pooled across all
-clean trials in the cell. Trials with null verdict (FCI crash) are
-excluded. Trial-to-trial variance is the dominant source of dispersion;
+clean trials in the cell. Trials with a null verdict, i.e.\ those ended
+by an FCI crash, are excluded. Trial-to-trial variance is the dominant source of dispersion;
 the within-trial sample variance ($\sim 0.1$\,N) is small compared to it.
