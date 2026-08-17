@@ -73,6 +73,22 @@ slit that would otherwise remain between the finger tips when the
 gripper is fully closed, and ensures firm contact along the fingers'
 full length during a successful grasp.
 
+\paragraph{Choice of design-parameter values.}
+The two blade thicknesses and the second seat angle were not arbitrary.
+The $26$\,mm blade matches the finger dimension of the handheld
+Universal Manipulation Interface (UMI) gripper~\cite{chi2024umi}, whose
+fin-ray-type soft fingers have become a de facto reference design for
+learned manipulation, so results at $t = 26$\,mm transfer directly to
+that widely used hardware. The $18$\,mm blade matches the thickness of
+the stock Franka parallel jaw, giving a compliant finger and a rigid
+finger of equal frontal dimension for the cross-class comparison. The
+$\alpha = +5.0^{\circ}$ seat was chosen to sit outside the
+$\pm 2.5^{\circ}$ runtime tilt range: with a seat at the baseline
+$+2.5^{\circ}$, a runtime tilt of $-2.5^{\circ}$ would exactly cancel
+the seat inclination and confound the two effects, whereas the
+$5.0^{\circ}$ seat keeps the fixed mount contribution distinct from
+every runtime tilt tested.
+
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.92\linewidth]{fr3_design_params_new.png}\\[6pt]
