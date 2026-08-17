@@ -4,82 +4,83 @@
 \section{Cloth Grasping in Robotics}
 
 Robotic manipulation of cloth and other deformable fabric is difficult
-because the object being manipulated lacks a fixed geometry:
-unlike a rigid part, a cloth's shape is itself part of the manipulation
-state, and it must typically be inferred from vision rather than assumed
-from a physical model. Early work in this space focused on perceiving that
-shape well enough to act on it. Kita et al.~\cite{kita2004deformablemodel}
-fit a deformable mass-spring model of a held garment to stereo-camera
-silhouette observations, using the best-matching simulated deformation to
-estimate the position of an unheld part of the garment for a second
-manipulator to grasp. This early result showed that a physics-informed
-shape prior, rather than raw image features, makes cloth state
-estimation tractable. Maitin-Shepard et
-al.~\cite{maitinshepard2010clothgrasp} took a complementary, model-light
-approach: a multiple-view geometric-cue detector locates cloth corners
-directly from silhouettes, in a manner robust to texture and colour variation, letting
-a general-purpose PR2 manipulator pick and fold towels of varying material
+because the object being manipulated lacks a fixed geometry. Unlike a
+rigid part, a cloth's shape is itself part of the manipulation state.
+Although the geometry of a rigid part can be assumed from a physical
+model, the shape of a cloth must typically be inferred from vision.
+Early work in this space focused on perceiving that shape well enough to
+act on it. Kita et al.~\cite{kita2004deformablemodel} fit a deformable
+mass-spring model of a held garment to stereo-camera silhouette
+observations, and use the best-matching simulated deformation to estimate
+the position of an unheld part of the garment for a second manipulator to
+grasp. Maitin-Shepard et al.~\cite{maitinshepard2010clothgrasp} adopt a
+complementary, model-light approach in which a multiple-view
+geometric-cue detector locates cloth corners directly from silhouettes,
+in a manner robust to texture and colour variation, letting a
+general-purpose PR2 manipulator pick and fold towels of varying material
 and appearance without a specialised end-effector. Miller et
-al.~\cite{miller2012geometric} generalised this line of work with a
+al.~\cite{miller2012geometric} generalise this line of work with a
 polygonal-approximation geometric model that tracks a garment's silhouette
 through an entire folding sequence, allowing one parameterised folding
 strategy to transfer across previously unseen towels, pants, and shirts.
-Li et al.~\cite{li2015regrasping} pushed the physical modelling further
-still, using a predictive thin-shell simulation fit to RGB-D observations
-to plan regrasp actions that unfold and flatten a crumpled garment
-by selecting the grasp points expected to maximise resulting flatness.
+Li et al.~\cite{li2015regrasping} employ a predictive thin-shell
+simulation fit to RGB-D observations to plan regrasp actions that unfold
+and flatten a crumpled garment, selecting the grasp points expected to
+maximise resulting flatness. In all of these results, cloth state
+estimation is made tractable by a physics-informed or geometric shape
+prior, and not by raw image features.
 
 More recent work has moved from hand-designed geometric priors toward
 learned policies and richer sensing. Saxena and
-Shibata~\cite{saxena2019garment} trained convolutional classifiers to
+Shibata~\cite{saxena2019garment} train convolutional classifiers to
 recognise garment type and locate hem/waistline grasp points directly from
 images, as the perception front-end of a robotic dressing-assistance
-pipeline. Wu et al.~\cite{wu2020learning} showed that a model-free visual
+pipeline. Wu et al.~\cite{wu2020learning} show that a model-free visual
 reinforcement-learning policy for cloth and rope manipulation can be
 learned an order of magnitude faster than a jointly-learned pick-and-place
-policy by conditioning only on the \emph{placing} action and selecting
+policy, by conditioning only on the \emph{placing} action and selecting
 picks that maximise the value of the resulting placement, entirely without
-human demonstrations. Of these, the work of Tirumala et
-al.~\cite{tirumala2022singulate} is nearest in spirit to the
-force-sensing emphasis of this thesis: they mounted a tactile
-sensor on a Franka gripper fingertip and trained a classifier on the
-resulting tactile signal to determine how many layers of cloth had been
-grasped, using that signal to re-grasp until exactly one or two layers were
-singulated from a stack. This is direct evidence that certain cloth-grasp ambiguities
-cannot be resolved by vision alone. For a comprehensive treatment of the field beyond these
-representative examples, Longhini et
-al.~\cite{longhini2025unfolding} provide a recent survey spanning
-perception, dynamics modelling, benchmarking, and control specifically for
-textile manipulation.
+human demonstrations. Tirumala et al.~\cite{tirumala2022singulate} mount a
+tactile sensor on a Franka gripper fingertip and train a classifier on the
+resulting tactile signal to determine how many layers of cloth have been
+grasped, re-grasping until exactly one or two layers are singulated from a
+stack. Longhini et al.~\cite{longhini2025unfolding} survey the field
+beyond these representative examples, spanning perception, dynamics
+modelling, benchmarking, and control specifically for textile
+manipulation. The tactile result is direct evidence that certain
+cloth-grasp ambiguities cannot be resolved by vision alone. However, the
+force signal is used there to classify a grasp that has already been made,
+and how contact force develops while the grasp is being acquired still
+remains unclear.
 
 \section{Strategies for Acquiring the First Grasp}
 \label{sec:first-grasp-strategies}
 
 Because a flat cloth on a surface presents no protruding feature for a
-conventional pinch grasp, the literature has developed two broad families
-of workarounds: manipulating the \emph{environment or cloth state} until a
-graspable feature exists, and replacing the \emph{end-effector} with a
-mechanism that does not require one.
+conventional pinch grasp, two broad families of workaround have been
+developed in the literature. The first manipulates the \emph{environment
+or cloth state} until a graspable feature exists. The second replaces the
+\emph{end-effector} with a mechanism that does not require one.
 
 \subsection{Environment-Assisted and State-Changing Actions}
 
 The first family keeps a standard gripper and instead spends actions
 creating a graspable feature before the pick: a fold, a wrinkle, or a
-free edge. Ramisa et al.~\cite{ramisa2012wrinkled} detected and ranked
+free edge. Ramisa et al.~\cite{ramisa2012wrinkled} detect and rank
 wrinkles in depth images of crumpled laundry, directing a standard
-gripper to the most graspable bump on the cloth rather than to a flat
-region. Qian et al.~\cite{qian2020clothregion} segmented cloth edges
+gripper to the most graspable bump on the cloth instead of to a flat
+region. Qian et al.~\cite{qian2020clothregion} segment cloth edges
 and corners, as distinct from wrinkles and folds, in depth images and
-coupled the segmentation to a sliding grasp policy that approaches along
+couple the segmentation to a sliding grasp policy that approaches along
 the estimated grasp direction. At the dynamic extreme, Ha and
-Song's FlingBot~\cite{ha2021flingbot} showed that a high-velocity fling
-primitive can unfold a crumpled cloth in a few actions; here the
+Song's FlingBot~\cite{ha2021flingbot} shows that a high-velocity fling
+primitive can unfold a crumpled cloth in a few actions. There the
 environment interaction resets the cloth to a flatter, more predictable
-state rather than creating a pinchable feature. These strategies are
+state, and no pinchable feature is created. These strategies are
 effective, but each spends additional actions and sensing before the
-grasp itself, and their reliability degrades in the flat-cloth-on-surface
-configuration this thesis targets, where there is no wrinkle to find and
-no free edge to slide against.
+grasp itself. In addition, their reliability degrades in the
+flat-cloth-on-surface configuration targeted in this work, where there is
+no wrinkle to find and no free edge to slide against.
 
 \subsection{Specialised End-Effectors}
 
@@ -98,53 +99,58 @@ radial airflow film. More recently, variable-friction fingertips have
 blurred the line between gripper and manipulation policy. Jiang et
 al.~\cite{jiang2022variablefriction} switch fingertip surfaces between
 high- and low-friction states to slide, pinch, and unfold fabric in-hand.
-These end-effectors trade generality for capability: needles risk damaging
-fine textiles, electroadhesion and airflow devices require dedicated
-power/pneumatic infrastructure and are largely single-purpose, and all of
-them abandon the ubiquitous two-jaw form factor that general-purpose
-robot platforms, the Franka Hand used here among them, provide.
+These end-effectors trade generality for capability. Needles risk damaging
+fine textiles, and electroadhesion and airflow devices require dedicated
+power or pneumatic infrastructure and are largely single-purpose.
+Although each of them is effective within its own material class, all of
+them abandon the ubiquitous two-jaw form factor provided by
+general-purpose robot platforms, the Franka Hand used in this work among
+them.
 
 \subsection{The Gap: the Gripper as an Experimental Variable}
 
-Across both families, the gripper hardware is treated as \emph{fixed} and
-the innovation budget is spent on perception, policy, or a task-specific
-mechanism. Direct comparisons between compliant and rigid jaw-type
-grippers exist; Li et al.~\cite{li2025scopingreview} systematically
-review soft--rigid hybrid grippers against industrial parallel-jaw
-grippers across payload, adaptability, and precision metrics. Such
-comparisons, however, are conducted on rigid or quasi-rigid workpieces,
-not on cloth, and report capability envelopes rather than parametric contact
-behaviour.
+Across both families, the gripper hardware is treated as \emph{fixed},
+and the innovation budget is spent on perception, policy, or a
+task-specific mechanism. Direct comparisons between compliant and rigid
+jaw-type grippers do exist. Li et al.~\cite{li2025scopingreview}
+systematically review soft--rigid hybrid grippers against industrial
+parallel-jaw grippers across payload, adaptability, and precision
+metrics. However, such comparisons are conducted on rigid or quasi-rigid
+workpieces and not on cloth, and they report capability envelopes, not
+parametric contact behaviour.
 
-The closest precedent to this thesis is the household-clothing benchmark
-of Clark et al.~\cite{clark2023household}, who evaluated several
-commercial end-effectors on four cloth-specific benchmarks: edge-drag
-accuracy, edge-grasp resilience, crumpled-object encapsulation, and fold
+The nearest precedent is the household-clothing benchmark of Clark et
+al.~\cite{clark2023household}. Several commercial end-effectors are
+evaluated there on four cloth-specific benchmarks: edge-drag accuracy,
+edge-grasp resilience, crumpled-object encapsulation, and fold
 generation. The end-effectors included finray-style compliant fingers
 mounted on a Franka Emika Hand, the standard Franka Hand, a Robotiq
 2F-140, and the OpenHand Model T42. Their results establish empirically
 that end-effector selection materially changes cloth-manipulation
-outcomes, and their inclusion of finray fingers on the same robot
-platform used here makes the comparison direct. The evaluation, however,
-is scored at the \emph{task} level; each benchmark reports success or
-accuracy of a completed manoeuvre, with the approach pose fixed per task.
-What it does not measure is how the grasp itself degrades as the
-approach conditions vary, the continuous dependence of contact force
-and grasp outcome on press depth and gripper tilt that any deployed
-system experiences as positioning error.
+outcomes, and finray fingers are evaluated there on the same robot
+platform used in this work. The evaluation is scored at the \emph{task}
+level, and each benchmark reports the success or accuracy of a completed
+manoeuvre with the approach pose fixed per task. Although end-effector
+selection is shown to matter, how the grasp itself degrades as the
+approach conditions vary is not measured, and the continuous dependence
+of contact force and grasp outcome on press depth and gripper tilt, which
+any deployed system experiences as positioning error, still remains
+unclear.
 
-None of the work above, therefore, addresses the specific question this
-thesis investigates. The cloth-manipulation literature treats grasp
-\emph{success} as an outcome to be predicted or achieved at a fixed
-operating point; it does not treat success as a function of a continuous
-physical parameter space of press depth and gripper tilt whose boundary
-can be mapped and compared across gripper geometries.
-The evaluation in this thesis is deliberately narrower in manipulation scope
-than folding or dressing pipelines, but correspondingly more quantitative
-about the mechanics of the grasp itself: it keeps the two-jaw form factor
-fixed, varies only the finger design $(t, \alpha)$ (defined in Figure~\ref{fig:seat-mount-params}), and maps the resulting
-contact-force landscape under the positional and angular uncertainty
-$(d, \theta_x, \theta_y)$ that any deployed system must tolerate.
+Therefore, none of the work above addresses the specific question
+investigated in this work. Grasp \emph{success} is treated in the
+cloth-manipulation literature as an outcome to be predicted or achieved
+at a fixed operating point. It is not treated as a function of a
+continuous physical parameter space of press depth and gripper tilt,
+whose boundary can be mapped and compared across gripper geometries.
+The evaluation reported here is deliberately narrower in manipulation
+scope than a folding or dressing pipeline, and correspondingly more
+quantitative about the mechanics of the grasp itself. The two-jaw form
+factor is kept fixed, only the finger design $(t, \alpha)$ (defined in
+Figure~\ref{fig:seat-mount-params}) is varied, and the resulting
+contact-force landscape is mapped under the positional and angular
+uncertainty $(d, \theta_x, \theta_y)$ that any deployed system must
+tolerate.
 
 \section{Compliant Gripper Designs}
 

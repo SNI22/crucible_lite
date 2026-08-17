@@ -4,23 +4,24 @@
 The empirical campaign was organised into two sequential phases on a
 single experimental apparatus. Phase~1 established the contact-force
 versus press-depth relationship for each gripper variant at nominal
-zero-tilt orientation, and Phase~2 perturbed the same measurement with
+zero-tilt orientation. Phase~2 then perturbed the same measurement with
 $\pm 2.5^{\circ}$ tilts about the two orthogonal Cartesian axes.
 Together the two phases define a three-dimensional
-(depth, tilt-axis, tilt-sign) cell grid whose per-cell measurements
-constitute the data corpus reported in Chapter~\ref{ch:results}.
+(depth, tilt-axis, tilt-sign) cell grid. The per-cell measurements of
+that grid constitute the data corpus reported in
+Chapter~\ref{ch:results}.
 
 \section{Study Design}
 \label{sec:study-design}
 
-The gripper roster comprised six variants organised into two families:
+The gripper roster comprised six variants, organised into two families.
 \begin{itemize}
-  \item \textbf{Finray family}, four variants: \texttt{finray\_18};
-    \texttt{finray\_18\_model2}, a second print of the same CAD;
-    \texttt{finray\_26}, with a larger blade; and
+  \item \textbf{Finray family}, four variants. The family comprises
+    \texttt{finray\_18}; \texttt{finray\_18\_model2}, a second print of
+    the same CAD; \texttt{finray\_26}, with a larger blade; and
     \texttt{finray\_26\_5deg}, which is \texttt{finray\_26} on a
     $5^{\circ}$-inclined seat.
-  \item \textbf{Parallel-jaw family}, two variants:
+  \item \textbf{Parallel-jaw family}, two variants. These are
     \texttt{parallel\_jaw\_stock}, the bare rigid jaws, and
     \texttt{parallel\_jaw\_TPU}, the same jaws with a $2$\,mm TPU $90$A
     compliant pad.
@@ -29,25 +30,26 @@ The gripper roster comprised six variants organised into two families:
 The same fabric specimen (single-layer cotton) rested on the same
 acrylic table surface throughout the campaign. The Franka FR3
 arm held the gripper in a fixed base orientation $R_0 = R_x(180^{\circ})$
-for Phase~1, and applied signed rotations
+for Phase~1. For Phase~2, signed rotations
 $R_{\theta} = R_x(180^{\circ})\, R_y(\theta_y)\, R_x(\theta_x)$
-for Phase~2, with $(\theta_x, \theta_y) \in
+were applied, with $(\theta_x, \theta_y) \in
 \{(\pm 2.5^{\circ}, 0), (0, \pm 2.5^{\circ})\}$. These are the runtime
 arm tilts of Chapter~\ref{ch:methods}, illustrated in
-Figure~\ref{fig:runtime-tilt}, and are distinct from the seat angle
+Figure~\ref{fig:runtime-tilt}. They are distinct from the seat angle
 $\alpha$ of Figure~\ref{fig:seat-mount-params}.
 
 The perturbation magnitudes were chosen to represent the placement
-uncertainty of a deployment that cannot afford precise calibration: a
+uncertainty of a deployment that cannot afford precise calibration. A
 low-accuracy or coarsely mounted robot arm may plausibly carry an
 orientation error of a few degrees and a surface-height error of
 several millimetres. The $\pm 2.5^{\circ}$ runtime tilt stands in for
-that orientation error, and the depth sweep, whose $10$\,mm
-calibrated analysis window is defined in Chapter~\ref{ch:methods},
-spans the corresponding height-error budget. A gripper that tolerates the full
-tested range therefore tolerates a deployment in which neither the
-mounting angle nor the surface height is precisely known.
-Table~\ref{tab:test-conditions} summarises the test conditions common
+that orientation error. The depth sweep spans the corresponding
+height-error budget, and its $10$\,mm calibrated analysis window is
+defined in Chapter~\ref{ch:methods}. Therefore, a gripper that
+tolerates the full tested range also tolerates a deployment in which
+neither the mounting angle nor the surface height is precisely known.
+
+Table~\ref{tab:test-conditions} lists the test conditions common
 to both phases.
 
 \begin{table}[ht]
@@ -79,7 +81,7 @@ Repeats & Trials per (variant, depth, tilt) cell & 3 \\
 The depth axis is defined relative to the per-session detected cloth
 surface via the \texttt{ground\_truth\_finder} touch-off procedure
 described in Chapter~\ref{ch:methods}. The depth grid was chosen
-adaptively per gripper family:
+adaptively for each gripper family.
 \begin{itemize}
   \item For the rigid parallel jaws, depths were spaced at $0.25$--$0.5$\,mm
         intervals over $-1$ to $+4$\,mm, close to the narrow
@@ -90,8 +92,8 @@ adaptively per gripper family:
         Chapter~\ref{ch:results}.
 \end{itemize}
 
-Per (variant, depth, tilt) cell, three trials were collected. Boundary
-depths were routinely retested when within-cell standard deviation
+Three trials were collected per (variant, depth, tilt) cell. Boundary
+depths were routinely retested when the within-cell standard deviation
 exceeded $1$\,N, up to a maximum of two additional trials per
 (depth, tilt) combination.
 
@@ -124,20 +126,20 @@ $+10.0$\,mm  & $-2.5^{\circ}$ y & $(-4.14, +0.00)$ & $(-2.93, -0.29)$ & $1.24$\,
 \end{tabular}
 \end{table}
 
-At boundary depth, the residual was $\leq 0.21$\,mm, essentially the
-lateral positioning noise of the arm under light load. At safe depth,
-both positive and negative tilts exhibited a $+1.2$\,mm common-mode
-offset in the same $+x$ direction, regardless of tilt sign. We
-interpret this common-mode offset as evidence of finger compliance
-under load: the $\sim 36$\,N axial press deflects the soft finray blade
-laterally by approximately $1.2$\,mm in a structurally preferred
-direction. The differential offset (between $+y$ and $-y$ tilts)
-remains correctly predicted by the geometric model in both depth
+At boundary depth, the residual was $\leq 0.21$\,mm, which is
+approximately the lateral positioning noise of the arm under light
+load. At safe depth, both positive and negative tilts exhibited a
+$+1.2$\,mm common-mode offset in the same $+x$ direction, regardless of
+tilt sign. This common-mode offset is interpreted as evidence of finger
+compliance under load. The $\sim 36$\,N axial press deflects the soft
+finray blade laterally by approximately $1.2$\,mm in a structurally
+preferred direction. The differential offset (between $+y$ and $-y$
+tilts) remains correctly predicted by the geometric model in both depth
 conditions.
 
 This verification confirms that the control-frame implementation of the
-tilt-aware TCP tracker is correct, and any asymmetries observed in the
-contact force reflect physical gripper behaviour rather than
+tilt-aware TCP tracker is correct. Any asymmetries observed in the
+contact force therefore reflect physical gripper behaviour instead of
 control-system errors.
 
 \section{Rotation Tracking Verification}
@@ -155,24 +157,25 @@ Across five representative sessions, the mean steady-state $\delta$
 was $0.05^{\circ}$ with a worst-case $0.13^{\circ}$. Transient
 excursions up to $\sim 5^{\circ}$ occur exclusively within the
 \path{orientation_lock} stage at session start, before any descent
-or grasp, and are filtered out of trial-level analyses.
+or grasp. Such excursions are filtered out of trial-level analyses.
 
 A $2.5^{\circ}$ commanded tilt is therefore $50\times$ the noise floor
-of the arm's rotation tracking; the observed force differences cannot
+of the arm's rotation tracking. The observed force differences cannot
 be attributed to arm rotation error.
 
 \section{Trial Protocol and Outcome Classification}
 \label{sec:trial-protocol}
 
 Each trial followed the fixed stage sequence detailed in
-Section~\ref{sec:trial-procedure}: set the commanded pose above the
-target, descend to the pre-contact height, contact and press to the
-target depth, grasp with the gripper's default close command, lift by a
-fixed clearance, and record the operator's held/not-held verdict. A
-stationary-sample window of $1$\,s (30 samples) during the
+Section~\ref{sec:trial-procedure}. The commanded pose was set above the
+target, and the arm descended to the pre-contact height. The gripper
+then contacted the cloth and pressed to the target depth, closed with
+its default close command, and lifted by a fixed clearance. The
+operator's held/not-held verdict was recorded at the end of the trial.
+A stationary-sample window of $1$\,s (30 samples) during the
 grasped-and-pressed stage provided the force measurement.
 
-Trial outcomes were classified into three categories:
+Trial outcomes were classified into three categories.
 \begin{description}
   \item[\textbf{Success}:] the trial executed to completion, contact
         force was sampled cleanly during the stationary window, and the
@@ -189,35 +192,37 @@ Trial outcomes were classified into three categories:
         from analyses.
 \end{description}
 
-The rationale for this three-way taxonomy, rather than a binary
-success/failure classification, is discussed in
-Section~\ref{sec:failure-mode-discussion}.
+Section~\ref{sec:failure-mode-discussion} discusses why this three-way
+taxonomy was adopted in place of a binary success/failure
+classification.
 
 \section{Experiment 3: Inclined-Surface Demonstration (Pilot)}
 \label{sec:experiment3}
 
 Experiments 1 and 2 characterise the contact phase on a flat, levelled
-surface, with each variant calibrated against that surface. Experiment 3
-tests the deployment consequence those measurements predict: whether,
-when the surface geometry departs from what the calibration assumed,
-the compliant finger keeps grasping where the rigid jaw fails, with no
-change to calibration, policy, or sensing.
+surface, and each variant is calibrated against that surface.
+Experiment 3 tests the deployment consequence that those measurements
+predict. In this experiment the surface geometry departs from what the
+calibration assumed, while the calibration, the control policy and the
+sensing are left unchanged. The question is whether the compliant
+finger keeps grasping under that departure where the rigid jaw fails.
 
 The planned protocol mirrors Experiments 1 and 2 in every respect except
 the surface and the outcome metric. The acrylic test surface is mounted
 on a wedge, \texttt{SURFACE\_RISER}, whose CAD model specifies a
-top-surface incline of $\beta = 4.15^{\circ}$; measured from the model
+top-surface incline of $\beta = 4.15^{\circ}$. Measured from the model
 geometry, the top face normal is $4.1467^{\circ}$ from vertical. The
 slope is aligned with the gripping direction, and the as-built fixture
-will be verified against the nominal value before the session. Each variant is then calibrated \emph{blind}
-by the standard force touch-off of Section~\ref{sec:tcp-calib}, exactly
-as if the surface were flat and level: no tilt compensation is applied
-and the incline is treated as unknown to the calibration. Each trial
-presses to the calibrated touch-off depth plus $0.5$\,mm, the shallowest
-depth at which every variant grasped successfully on the flat surface,
-and the outcome is recorded as a binary grasp verdict under the outcome
-taxonomy of Section~\ref{sec:trial-protocol}. Contact force is logged
-but is not a reported metric for this experiment.
+will be verified against the nominal value before the session. Each
+variant is then calibrated \emph{blind} by the standard force touch-off
+of Section~\ref{sec:tcp-calib}, exactly as if the surface were flat and
+level. No tilt compensation is applied, and the incline is treated as
+unknown to the calibration. Each trial presses to the calibrated
+touch-off depth plus $0.5$\,mm, which is the shallowest depth at which
+every variant grasped successfully on the flat surface. The outcome is
+recorded as a binary grasp verdict under the outcome taxonomy of
+Section~\ref{sec:trial-protocol}. Contact force is logged, although it
+is not a reported metric for this experiment.
 
 The pilot covers all six gripper variants of
 Table~\ref{tab:variants}, at three attempts each, giving $18$ trials
@@ -225,12 +230,13 @@ in total.
 From the flat-surface working ranges of Chapter~\ref{ch:results}, the
 registered prediction is that all four finray variants grasp
 successfully at every attempt, while both rigid variants fail or are
-marginal: a $4.15^{\circ}$ surface-relative misalignment exceeds the
+marginal. A $4.15^{\circ}$ surface-relative misalignment exceeds the
 largest runtime tilt at which the rigid jaws retained a usable window
-($2.5^{\circ}$), and that window had already narrowed to between $0.5$
-and $2.5$\,mm under that tilt, with one \texttt{parallel\_jaw\_stock}
-tilt condition reduced to a single successful depth and two producing
-no success at all (Section~\ref{sec:pj-vs-finray-results}).
+($2.5^{\circ}$). Under that tilt the window had already narrowed to
+between $0.5$ and $2.5$\,mm. In addition, one
+\texttt{parallel\_jaw\_stock} tilt condition was reduced to a single
+successful depth, and two produced no success at all
+(Section~\ref{sec:pj-vs-finray-results}).
 
 \begin{figure}[ht]
 \centering

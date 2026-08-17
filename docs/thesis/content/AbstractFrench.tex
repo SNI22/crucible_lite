@@ -6,19 +6,19 @@ probl\`eme ouvert en automatisation industrielle. Deux g\'eom\'etries de
 pr\'ehenseur sont couramment propos\'ees~: les doigts rigides \`a
 m\^achoires parall\`eles, qui offrent un contr\^ole de force pr\'ecis
 mais une tol\'erance op\'erationnelle \'etroite, et les doigts souples
-\`a effet finray, qui \'echangent la pr\'ecision de force contre une
-enveloppe op\'erationnelle plus large. Cette th\`ese pr\'esente une
-\'evaluation exp\'erimentale de ce compromis sur la t\^ache de saisir un
+de type finray, qui r\'eduisent la pr\'ecision de force pour une
+enveloppe op\'erationnelle plus large. [Cette th\`ese pr\'esente une
+\'evaluation exp\'erimentale de ce compromis pour saisir un
 tissu plat pos\'e sur une surface, en comparant deux configurations
 rigides \`a m\^achoires parall\`eles et quatre configurations finray
 imprim\'ees en 3D, soit six variantes de pr\'ehenseur, sur un bras
-Franka Research 3. La profondeur d'appui et l'angle d'inclinaison ont \'et\'e
+Franka Research 3.] La profondeur d'appui et l'angle d'inclinaison ont \'et\'e
 choisis comme axes d'\'evaluation parce qu'ils repr\'esentent les
 erreurs de placement qu'un syst\`eme d\'eploy\'e ne peut pas totalement
-contr\^oler~: un bras peu pr\'ecis ou grossi\`erement calibr\'e porte
+\'evaluer: un bras peu pr\'ecis ou grossi\`erement calibr\'e porte
 une erreur de hauteur de surface \`a l'\'echelle millim\'etrique et une
 erreur d'orientation \`a l'\'echelle du degr\'e, que le pr\'ehenseur
-doit absorber. La force de contact stationnaire a servi de variable de
+doit mitiger. La force de contact stationnaire a servi de variable de
 r\'esultat principale et la r\'eussite de la prise de r\'esultat
 secondaire.
 
@@ -26,18 +26,21 @@ Sur 845 essais analys\'es, les m\^achoires rigides n'ont tenu le tissu
 que dans une fen\^etre de profondeur de $1{,}5$\,mm, ou de $2{,}5$\,mm
 avec un coussinet souple, born\'ee par une limite de s\'ecurit\'e en force,
 alors que chaque variante finray a saisi sur toute la fen\^etre
-d'analyse calibr\'ee de $10$\,mm \`a chaque orientation test\'ee. Deux
-effets d\'ependants de la profondeur ont \'emerg\'e. La force de contact
-du finray est fortement sensible \`a l'inclinaison pr\`es de la limite
-de contact mais robuste \`a l'inclinaison au-del\`a du coude de
-flambement, et la r\'eponse directionnelle (\guillemotleft~chiralit\'e~\guillemotright)
-autour de l'axe g\'eom\'etriquement asym\'etrique du doigt, un facteur
-de $2{,}36$ \`a la profondeur limite, dispara\^it aux profondeurs
-d'op\'eration s\^ures. Les pr\'ehenseurs souples n'atteignent donc une
-robustesse directionnelle qu'au-del\`a d'un seuil de profondeur~; les
-politiques de commande op\'erant pr\`es de la limite de contact pour
-des tissus d\'elicats doivent mod\'eliser explicitement l'asym\'etrie
-directionnelle du pr\'ehenseur.
+d'analyse calibr\'ee de $10$\,mm \`a chaque orientation test\'ee. En
+outre, les quatre variantes finray suivent une seule courbe
+force-profondeur une fois normalis\'ee par leur propre force maximale,
+avec une erreur moyenne par paire inf\'erieure \`a $1\%$. La g\'eom\'etrie
+du doigt fixe donc l'\'echelle de la force de contact, bien qu'elle ne
+change pas la forme de la r\'eponse. La r\'eponse \`a l'inclinaison
+d\'epend elle-m\^eme de la profondeur. La force de contact du finray est
+fortement sensible \`a l'inclinaison pr\`es de la limite de contact,
+cependant elle devient robuste \`a l'inclinaison au-del\`a du coude de
+flambement, o\`u l'\'ecart de force entre toutes les orientations
+test\'ees tombe entre $1{,}3$ et $2{,}4$\,N pour des pics au coude de
+$31$ \`a $53$\,N. Les pr\'ehenseurs souples n'obtiennent donc cette
+robustesse qu'au-del\`a d'un seuil de profondeur, et une politique de
+commande op\'erant pr\`es de la limite de contact pour des tissus
+d\'elicats devrait tenir compte de la sensibilit\'e qui y subsiste.
 
 \TODO{Faire v\'erifier cette traduction par un coll\`egue francophone
 avant le d\'ep\^ot final (exigence de qualit\'e, non de conformit\'e~:

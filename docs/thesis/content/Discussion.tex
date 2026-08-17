@@ -1,13 +1,13 @@
 \chapter{\rm\bfseries Discussion}
 \label{ch:discussion}
 
-This chapter interprets the results in the order Chapter~\ref{ch:results}
-reported them: the error structure of the measurements, the working
-range at zero tilt, the effect of tilting, the similarity of the finray
-responses across orientation and depth, and finally the shared
-force-depth profile and the buckling mechanics behind it. The
-limitations bounding these claims close the chapter
-(Section~\ref{sec:limitations}).
+In this chapter, the results are interpreted in the order in which
+Chapter~\ref{ch:results} reported them, beginning with the error
+structure of the measurements, followed by the working range at zero
+tilt, the effect of tilting, the similarity of the finray responses
+across orientation and depth, and finally the shared force-depth profile
+and the buckling mechanics behind it. The limitations bounding these
+claims close the chapter (Section~\ref{sec:limitations}).
 
 \section{Measurement and Manufacturing Error}
 \label{sec:error-discussion}
@@ -18,17 +18,18 @@ is also the error budget for the whole dataset, and its central
 finding is a noise hierarchy. Same-session print-to-print variability,
 a mean offset of $4.6$\,N with RMSE $5.4$\,N, proved \emph{smaller}
 than the $7$--$10$\,N cross-session drift measured on the same print
-at knee depths. Time, not manufacturing, is the dominant nuisance
-variable. Candidate contributors include cloth conditioning, TPU
+at knee depths. Therefore, the dominant nuisance variable in this
+dataset is the elapsed time between sessions.
+Candidate contributors include cloth conditioning, TPU
 viscoelastic recovery, and drift in the FCI external-wrench estimate,
-which is a model-based estimate rather than a load-cell
+which is a model-based estimate instead of a load-cell
 reading~\cite{petrea2021interaction}. Any
 cross-variant force claim with an effect size below the $5$\,N
 print-to-print offset is unlikely to reproduce across physical
 instances of the same CAD, and should be treated as tentative until
 replicated across prints. Likewise, any campaign that pools data across days
 must either report cross-day drift as a separate variance component or
-restrict its headline claims to same-session pairs; in this thesis,
+restrict its headline claims to same-session pairs; in this work,
 all bias values are same-session unless labelled otherwise, and
 cross-day comparisons are used only for shape consistency.
 Table~\ref{tab:error-budget} collects the error terms on a common
@@ -62,14 +63,14 @@ Cross-variant shape (NMSE, worst) & $0.79\%$ & $-21.0$\,dB & Table~\ref{tab:shap
 \end{tabular}
 \end{table}
 
-The table exposes the central asymmetry of the dataset. Every
+A central asymmetry of the dataset is visible in the table. Every
 force-magnitude term sits between $1$ and $10$\,N, one
 to two orders of magnitude above the shape terms, which are below
-$1\%$ normalised error. Absolute forces in this campaign are therefore
-uncertain at the several-newton level, while the \emph{shape} of the
-force-depth response is reproducible to a fraction of a percent. This
-is why the thesis leans on shape agreement and depth locations for its
-headline claims and treats absolute force comparisons as
+$1\%$ normalised error. Therefore, absolute forces in this campaign are
+uncertain at the several-newton level, although the \emph{shape} of the
+force-depth response is reproducible to a fraction of a percent. For
+this reason, shape agreement and depth locations are used in this work
+for the headline claims, and absolute force comparisons are treated as
 session-bounded.
 
 The x-axis bias sign difference between the two prints, deferred here
@@ -83,21 +84,23 @@ remains on one side throughout. The offset lives entirely on the
 secondary, off-axis force component and leaves the \emph{shape} of the
 dominant $F_z$ response essentially unchanged at $0.41\%$ NMSE; the
 $+4.6$\,N magnitude offset is a separate, primary-axis quantity,
-already counted in the noise hierarchy above. Two candidate mechanisms
-are consistent with the data: small print-instance differences in
-rib-wall thickness or infill density manifesting as a
-direction-dependent buckling offset, or a small, direction-dependent
-bias in the $F_z$-dominant external-wrench estimate
-(Section~\ref{sec:frames}), which would naturally be largest where the
-signal is weakest, at the boundary, and vanish where it is strongest,
-in the plateau. Distinguishing them requires post-hoc CT scanning of the two
-prints or the independent force-sensor cross-check identified as
-future work (Chapter~\ref{ch:conclusion}); until then, the finding is
-a bound on secondary-axis force uncertainty, not evidence that the two
-prints respond differently to tilt.
+already counted in the noise hierarchy above. The data are consistent
+with more than one mechanism. Small print-instance differences in
+rib-wall thickness or infill density may manifest as a
+direction-dependent buckling offset. Alternatively, a small,
+direction-dependent bias in the $F_z$-dominant external-wrench estimate
+(Section~\ref{sec:frames}) may be responsible, which would naturally be
+largest where the signal is weakest, at the boundary, and vanish where
+it is strongest, in the plateau. Distinguishing between them would
+require post-hoc CT scanning of the two prints or the independent
+force-sensor cross-check identified as future work
+(Chapter~\ref{ch:conclusion}); until such a measurement is made, the
+finding should be read as a bound on secondary-axis force uncertainty,
+and whether the two prints respond differently to tilt still remains
+unclear.
 
-The measurement design also shapes what counts as valid data. The
-trial-outcome taxonomy of success, no-grasp, and failed trial
+In addition, the measurement design shapes what counts as valid data.
+The trial-outcome taxonomy of success, no-grasp, and failed trial
 (Section~\ref{sec:trial-protocol}) is deliberately three-valued
 because the categories map to physically distinct regimes. Treating
 no-grasp trials as failures would delete clean force measurements from
@@ -113,15 +116,15 @@ was successful'' from ``the trial was invalid.''
 \label{sec:working-range-discussion}
 \label{sec:failure-mode-discussion}
 
-At zero tilt the two gripper classes occupy different regimes of the
-same axis: closed windows of $1.5$ and $2.5$\,mm for the rigid jaws
-against censored windows of at least $10$\,mm for every finray
-(Section~\ref{sec:working-range-zero}). The failure behaviour differs
-as sharply as the widths. The parallel jaws auto-failed
+At zero tilt, the two gripper classes occupy different regimes of the
+same axis. Closed windows of $1.5$ and $2.5$\,mm were measured for the
+rigid jaws, against censored windows of at least $10$\,mm for every
+finray (Section~\ref{sec:working-range-zero}). The failure behaviour
+differs as sharply as the window widths do. The parallel jaws auto-failed
 on the $-60$\,N excess-force reflex within $1$--$1.5$\,mm of their
-window edge, while the finrays never triggered the reflex anywhere in
-the tested $-2$ to $+16$\,mm range. Compliance therefore flattens the
-map from position error to force spike, a property that may matter
+window edge. However, the finrays never triggered the reflex anywhere in
+the tested $-2$ to $+16$\,mm range. Therefore, compliance flattens the
+map from position error to force spike, and this property may matter
 more than the success rate itself in collaborative deployment.
 
 For deployment, this means finray-based systems can run
@@ -133,11 +136,11 @@ window edge, leaving little margin for command error. Any
 cloth-handling system whose depth uncertainty exceeds roughly half the
 rigid-jaw window should default to a finray-class gripper. The
 no-grasp regime at the window's shallow edge is also where a grasp
-controller could in principle intervene productively: the pre-lift
+controller could in principle intervene productively. The pre-lift
 press force is measured and the depth is known, so a marginal
 engagement could be flagged before the lift begins, and the controller
-could deepen the press or abort rather than drop the cloth outside the
-pick zone.
+could then deepen the press or abort before the cloth is dropped
+outside the pick zone.
 
 \section{Effect of Tilting}
 \label{sec:tilt-discussion}
@@ -145,10 +148,10 @@ pick zone.
 \label{sec:cross-axis-mechanism}
 \label{sec:depth-gating-mechanism}
 
-Tilting the arm degraded the two classes asymmetrically: the rigid
+Tilting the arm degraded the two classes asymmetrically. The rigid
 windows shrank to $0.5$--$2.5$\,mm, with one stock-jaw condition
 reduced to a single successful depth and two producing no success at
-all, while every finray variant kept its full window at every
+all. However, every finray variant kept its full window at every
 orientation (Section~\ref{sec:pj-vs-finray-results}). Within the
 finrays, the tilt effect is depth-gated. Section~\ref{sec:bipolar-bias-results}
 reported a strong signed asymmetry at boundary depths that attenuates
@@ -162,56 +165,59 @@ buckling knee, the blades wrap the surface and the contact becomes an
 extended line along each blade; the same orientation change then only
 slightly redistributes load along an already-engaged contact. The
 bias attenuates at raw $d = +4$\,mm, about $+4.5$\,mm calibrated for
-this series, just past the knee-peak region. Wrap-around engagement,
-not press depth itself, is thus the quantity that confers tilt
-robustness. This is
+this series, just past the knee-peak region. Therefore, the quantity
+that confers tilt robustness is the wrap-around engagement of the
+blades, and press depth acts only through the engagement it produces.
+This is
 the mechanism behind the depth-gated tilt robustness identified as the
-principal empirical contribution of this thesis
-(Chapter~\ref{ch:conclusion}). Compliance does not remove tilt
-sensitivity; it relocates it to the contact-boundary regime that a
-sufficiently deep press avoids.
+principal empirical contribution of this work
+(Chapter~\ref{ch:conclusion}). Although compliance does not remove tilt
+sensitivity, it relocates the sensitivity to the contact-boundary
+regime, which a sufficiently deep press avoids.
 
 Comparing the raw-axis bias curves with the per-series calibrated
 view of Section~\ref{sec:tilt-similarity-results} implies that the raw-axis
 asymmetry is, to first order, an orientation-dependent shift in
 engagement onset seen through the local slope of the bell curve,
-rather than a change in the force law itself. This inference is not
-circular: the per-series zero is defined by grasp success, not by any
-feature of the force curve, so the collapse of the calibrated curves
-is evidence that the success onset and the force-curve position shift
-together under tilt. The reading is quantitatively self-consistent.
-Dividing the $+5.40$\,N boundary bias by the boundary-region slope of
+while the force law itself appears unchanged. This inference is not
+circular, because the per-series zero is defined by grasp success and
+is independent of any feature of the force curve, so the collapse of
+the calibrated curves is evidence that the success onset and the
+force-curve position shift together under tilt. The reading is also
+quantitatively self-consistent, since dividing the $+5.40$\,N boundary
+bias by the boundary-region slope of
 $5$--$10$\,N/mm implies an onset shift of $0.5$--$1$\,mm, at or below
-the cell spacing. It also organises the bipolar trajectory. The bias
-is large where the curve is steep, and it reverses sign as the curve
+the cell spacing. In addition, it organises the bipolar trajectory. The
+bias is large where the curve is steep, and it reverses sign as the curve
 tops out approaching the knee; the measured crossing between
 $d = -0.5$ and $+1.5$\,mm precedes the raw-axis knee peak near
 $+2$\,mm by about a millimetre, consistent with the knee flattening
 ahead of its peak cell. At depth the bias attenuates faster than the
-local slope alone would predict, indicating that the onset shift
-itself collapses as the blades wrap. Two caveats bound the claim.
-The $1.3$--$2.4$\,N residual spreads set the floor above which bias
+local slope alone would predict, which suggests that the onset shift
+itself collapses as the blades wrap. It is worth noting that the
+$1.3$--$2.4$\,N residual spreads set the floor above which bias
 structure can be resolved, so only the boundary magnitude and the
-sign reversal are established above that floor. And the asymmetry
-remains operationally decisive whatever its mechanism, because a
+sign reversal are established above that floor. In addition, the
+asymmetry remains operationally decisive whatever its mechanism, because a
 deployed system calibrates once, blind to its own tilt error, and
 therefore operates on the raw axis.
 
 The sign structure of the asymmetries separates their origins. The
-y-axis bias is intrinsic to the finger: the gripper is
+y-axis bias is intrinsic to the finger. The gripper is
 mirror-symmetric about the $xz$ plane (Section~\ref{sec:frames}), so
 rotation about $x$, the symmetric axis, is sign-equivalent by
-construction, while rotation about $y$, the gripping direction, is
-not; a $+2.5^{\circ}$ rotation about the gripping axis loads the two
-fingers differently and produces a signed force difference. The
-x-axis bias should vanish by that same symmetry. Its nonzero value,
-with sign opposite to the y-bias
-(Section~\ref{sec:cross-axis-results}), therefore indicates an
-additional symmetry-breaking contribution. Two hypotheses
-remain live. The cloth may carry an anisotropic warp--weft axis
+construction. However, rotation about $y$, the gripping direction, is
+not sign-equivalent, and a $+2.5^{\circ}$ rotation about the gripping
+axis loads the two fingers differently and produces a signed force
+difference. The
+x-axis bias should vanish by that same symmetry. However, its nonzero
+value, with sign opposite to the y-bias
+(Section~\ref{sec:cross-axis-results}), indicates an
+additional symmetry-breaking contribution, whose origin still remains
+unclear. The cloth may carry an anisotropic warp--weft axis
 misaligned with the gripper's mirror plane, coupling through the
-whole-hand contact into a signed force difference. Alternatively the
-asymmetry may sit on the finger or fixture side after all: the
+whole-hand contact into a signed force difference. Alternatively, the
+asymmetry may sit on the finger or fixture side after all. The
 tilt-geometry verification (Table~\ref{tab:tilt-geometry}) already
 established a sign-independent $+1.2$\,mm common-mode deflection in
 $+x$ under $\sim 36$\,N press, and a fixed structural lean of this
@@ -221,9 +227,9 @@ $-2.5^{\circ}$ tilt opposes it. The reproducibility of the x-bias
 across two variants does not discriminate, because both share the same
 seat design, printer, and process. Rotating the cloth specimen
 $90^{\circ}$ in the lab frame is the discriminating experiment. A
-cloth-side origin flips the x-bias sign, a finger-side origin leaves
-it unchanged, and the y-bias should be approximately unchanged in
-either case.
+cloth-side origin would flip the x-bias sign, while a finger-side
+origin would leave it unchanged, and the y-bias should be approximately
+unchanged in either case.
 
 \section{Similarity Across Orientation and Depth}
 \label{sec:similarity-discussion}
@@ -234,8 +240,8 @@ the five orientation curves of every finray variant nearly coincide,
 with mean spreads of only $1.3$--$2.4$\,N against knee peaks of
 $31$--$53$\,N (Section~\ref{sec:tilt-similarity-results}).
 Orientation moves the engagement onset but barely perturbs the force
-law that follows it. The per-series calibration of
-Section~\ref{sec:dcal} is consequently more than a convenience: its
+law that follows it. Therefore, the per-series calibration of
+Section~\ref{sec:dcal} is more than a convenience. Its
 success in collapsing the orientations, and the two prints, is itself
 evidence that engagement onset is the physically meaningful origin for
 this contact problem.
@@ -253,13 +259,14 @@ $L\left[\sin(5^{\circ}) - \sin(2.5^{\circ})\right] = 0.0436 L$, and
 setting this equal to the observed shift gives
 $L_{\mathrm{eff}} \approx 26$\,mm, near the mid-length of the
 $\sim 50$\,mm finger, consistent with load distributed along the
-finray's curved contact surface rather than concentrated at the distal
-tip. The axis-independence rules out any mechanism in which the
+finray's curved contact surface instead of being concentrated at the
+distal tip. The axis-independence rules out any mechanism in which the
 pre-tilt produces a different effective load-bearing length on the two
-axes: the seat-angle increment acts as a strictly rigid translation of
-the operating point in depth, shifting the envelope by $1.13$\,mm for
-a $2.5^{\circ}$ increment at the cost of a $\sim 3$\,N vertical force
-offset, without altering the underlying force-depth sensitivity.
+axes. Therefore, the seat-angle increment acts as a strictly rigid
+translation of the operating point in depth, shifting the envelope by
+$1.13$\,mm for a $2.5^{\circ}$ increment at the cost of a $\sim 3$\,N
+vertical force offset, without altering the underlying force-depth
+sensitivity.
 
 \section{One Shared Profile: Peak, Valley, Recovery, and Buckling}
 \label{sec:shape-discussion}
@@ -274,46 +281,47 @@ regimes. In the boundary regime, only the distal tip contacts the
 cloth and force rises roughly linearly as contact area grows. At the
 knee, the full blade section is engaged and the finger resists
 compression through its rib structure, producing the peak. Past the
-peak, the ribs partially buckle and the finger folds back on itself:
-contact area increases but effective stiffness drops, producing the
-valley. At recovery depths the finger has fully wrapped, and further
-penetration is resisted by structural compression through the finger
-base. That the four features, boundary, knee peak, valley, and
+peak, the ribs partially buckle and the finger folds back on itself,
+so that contact area increases while effective stiffness drops,
+producing the valley. At recovery depths the finger has fully wrapped,
+and further penetration is resisted by structural compression through
+the finger base. The four features, boundary, knee peak, valley, and
 recovery, occur at the same calibrated depths to within about
-$\pm 1.5$\,mm across all variants indicates the three-regime response is a geometric property
-of the finray shape, not sensitive to blade thickness or seat angle:
-force magnitudes scale with contact area, but the transition depths do
-not.
+$\pm 1.5$\,mm across all variants, which indicates that the
+three-regime response is a geometric property of the finray shape and
+is insensitive to blade thickness or seat angle. Force magnitudes scale
+with contact area, although the transition depths do not.
 
-Read as structural mechanics, the curve is a buckling signature. An
-operator reasoning from rigid contact expects force to grow
-monotonically with press depth, and here it does not.
+Read as structural mechanics, the curve is a buckling signature.
+Although force would be expected to grow monotonically with press depth
+under rigid contact, it does not do so here.
 The boundary rise is elastic pre-buckling
 loading of the straight blades; the knee peak is the limit point at
 which the blades reach their tip-load (buckling) limit; the valley is
 the post-buckling softening branch, in which the buckled blades carry
 less force even as displacement continues, the load drop
 characteristic of an elastic structure past a limit point; and the
-recovery is post-buckling re-stiffening: the inward-buckled blades
-come into extended contact with the surface, as shown in
+recovery is post-buckling re-stiffening, in which the inward-buckled
+blades come into extended contact with the surface, as shown in
 Figure~\ref{fig:press-deform}, and further load transfers into
-structural compression through the finger base. This reading explains
-why the transition depths are geometry-set while the forces are not. A
+structural compression through the finger base. This reading also
+explains why the transition depths are set by geometry, although the
+force magnitudes are not. A
 buckling limit is a property of the blade's shape and material, so
 geometrically similar blades place the peak and valley at the same
-depths while the critical load scales with blade section. This is
-the scale-not-shape separation of
+depths while the critical load scales with blade section. This
+corresponds to the scale-not-shape separation reported in
 Section~\ref{sec:shape-results}. No published finray model covers this
 axial post-buckling regime (Chapter~\ref{ch:background}); the
 analytical model identified in future work
 (Chapter~\ref{ch:conclusion}) would connect it to the
 continuum-mechanics literature on post-buckling contact.
 
-One design implication follows from the profile. The valley may be
-the preferred operating setpoint rather than just an acceptable one.
-It retains the full tilt insensitivity of the post-buckling regime
+In addition, one design implication follows from the profile. The
+valley may be the preferred operating setpoint. It retains the full
+tilt insensitivity of the post-buckling regime
 while applying $20$ to $30$ percent less force than the knee peak
-(Table~\ref{tab:zero-tilt-summary}), a margin that matters for
+(Table~\ref{tab:zero-tilt-summary}), and this margin matters for
 delicate or loosely woven fabrics.
 
 \section{Limitations}
@@ -322,8 +330,9 @@ delicate or loosely woven fabrics.
 
 \textbf{Single cloth specimen and single surface.} The reported working
 ranges and cloth-fixture asymmetries were measured on one cotton cloth
-specimen on one acrylic table surface. The absolute numbers will shift
-with cloth thickness, weave direction, friction, and surface compliance.
+specimen on one acrylic table surface. The absolute numbers are expected
+to shift with cloth thickness, weave direction, friction, and surface
+compliance.
 The cross-axis sign reversal discussed in
 Section~\ref{sec:tilt-discussion} requires the $90^{\circ}$-rotated
 cloth control to separate the cloth contribution from the finger and
@@ -335,17 +344,19 @@ same specimen is the dominant noise source in this dataset; cross-day
 claims are qualified throughout.
 
 \textbf{Tilt range censoring.} No finray failure was observed at any
-tested orientation, so the finray tilt windows are censored in angle
-just as the depth windows are censored at $10$\,mm: the data
+tested orientation, so the finray tilt windows are censored in angle,
+just as the depth windows are censored at $10$\,mm. Therefore, the data
 establish a floor of $2.5^{\circ}$ runtime tilt, with $5^{\circ}$ of
-seat inclination also tolerated, not an envelope edge. The angle at
-which finray grasping degrades is unmeasured; Experiment~3's
-$4.15^{\circ}$ incline probes only one point beyond the tested range.
+seat inclination also tolerated, although the envelope edge itself was
+not reached. The angle at which finray grasping degrades still remains
+unclear, and Experiment~3's $4.15^{\circ}$ incline probes only one point
+beyond the tested range.
 
 \textbf{Parallel-jaw x-axis coverage.} The parallel-jaw variants were
 not swept across the x-axis tilt sign; the parallel-jaw bias values
 are restricted to the y-axis. Whether the x-axis bipolar bias observed
-on the finrays has an analogue on the rigid grippers is untested.
+on the finrays has an analogue on the rigid grippers still remains
+unclear.
 
 \textbf{Boundary-depth sample sizes.} Boundary-depth cells frequently
 have $n=3$, and boundary cells routinely triggered the $>1$\,N

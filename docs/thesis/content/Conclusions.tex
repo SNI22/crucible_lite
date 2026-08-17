@@ -3,38 +3,41 @@
 
 \section{Answers to the Research Questions}
 
-This thesis presented a controlled experimental evaluation of six gripper variants on a
-single platform (Franka FR3), measuring stationary contact force and grasp
-outcome as a function of press depth and tilt angle over 845 analysed
-trials. Returning to the four research questions posed in
-Chapter~\ref{ch:introduction}:
+In this work, a controlled experimental evaluation of six gripper variants
+was presented on a single platform (Franka FR3), measuring stationary
+contact force and grasp outcome as a function of press depth and tilt angle
+over 845 analysed trials. The four research questions posed in
+Chapter~\ref{ch:introduction} are revisited below.
 
 \begin{enumerate}
   \item \emph{How does contact force vary with press depth for each finger
         design?} Every finray variant follows a single shared
         rise--peak--valley--recovery curve, with pairwise NMSE below $1\%$
-        over the full 10\,mm calibrated window, whereas the rigid
+        over the full 10\,mm calibrated window. However, the rigid
         parallel jaws ramp steeply toward the platform's excess-force
         limit within roughly 2\,mm of first contact.
   \item \emph{How much can the gripper be tilted before the grasp becomes
         unreliable?} The finrays grasp reliably across every orientation
         tested, $\pm 2.5^{\circ}$ about both axes plus a $5^{\circ}$
-        seat mount, over the full $\geq 10$\,mm window; the rigid jaws
-        never exceed 2.5\,mm, and two stock-jaw tilt conditions produced
-        no successful grasp at any depth.
-  \item \emph{Does tilt tolerance depend on press depth?} Yes.
-        Robustness is depth-gated: near the contact boundary, tilt
-        strongly modulates both force and success, including a
-        $2.4\times$ direction-dependent asymmetry about the geometrically
-        asymmetric axis, whereas past the buckling threshold the mean
-        across-orientation force spread shrinks to $1.3$--$2.4$\,N.
+        seat mount, over the full $\geq 10$\,mm window. However, the
+        rigid jaws never exceed 2.5\,mm, and two stock-jaw tilt
+        conditions produced no successful grasp at any depth.
+  \item \emph{Does tilt tolerance depend on press depth?} Yes. The
+        robustness proved to be depth-gated. Near the contact boundary,
+        tilt strongly modulates both the contact force and the grasp
+        success. However, past the buckling threshold the mean
+        across-orientation force spread shrinks to $1.3$--$2.4$\,N,
+        against knee peaks of $31$--$53$\,N. A direction-dependent
+        asymmetry about the geometrically asymmetric axis was also
+        observed at the boundary, although it is supported by a small
+        number of cells and disappears at the safe operating depths.
   \item \emph{What is the compliant finger's response under compression?}
         Blade buckling. Force peaks at buckling onset,
         $\approx 2$--$3$\,mm past first successful grasp, dips as the
-        blades buckle, then recovers. The finray geometry, that is,
-        blade thickness, seat angle, and print instance, sets the force
-        \emph{scale} but not the curve \emph{shape}, with knee peaks
-        spanning 31--53\,N.
+        blades buckle, then recovers. Although the finray geometry, that
+        is, blade thickness, seat angle, and print instance, sets the
+        force \emph{scale}, the curve \emph{shape} is left unchanged,
+        with knee peaks spanning 31--53\,N.
 \end{enumerate}
 
 The depth-dependent tilt robustness identified here had not been

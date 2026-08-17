@@ -7,8 +7,8 @@ Fabric-handling automation is a long-standing open problem in industrial
 robotics, with applications spanning apparel manufacturing and textile
 logistics, laundry processing and folding, hospital bedding management,
 assistive robotics for elderly or disabled individuals, and the packaging
-of soft goods. Yet a striking fraction of published robot-manipulation
-demonstrations sidesteps the hardest step entirely: the object is handed
+of soft goods. Yet, a striking fraction of published robot-manipulation
+demonstrations sidesteps the hardest step entirely. The object is handed
 to the robot's gripper by a human operator, and the demonstrated
 autonomy begins only after the grasp already
 exists.\footnote{One prominent recent example is a widely circulated
@@ -20,31 +20,32 @@ directly off a surface, remains the bottleneck that limits how
 autonomous these systems can truly be. Cloth is uniquely difficult to
 grasp robustly. It deforms continuously under contact, exhibits no fixed
 graspable feature, and has a near-zero bending stiffness that allows it to slip
-out of a poorly placed gripper. Conventional rigid-jaw grippers, designed for
-sturdy objects with well-defined geometry, perform poorly on cloth without
-elaborate tactile sensing or human-tuned approach trajectories.
+out of a poorly placed gripper. Although conventional rigid-jaw grippers are
+designed for sturdy objects with well-defined geometry, they perform poorly on
+cloth without elaborate tactile sensing or human-tuned approach trajectories.
 
 A class of compliant grippers based on the finray effect, a passive
 bending mechanism inspired by fish-fin anatomy, has been proposed as a
 solution. Finray fingers passively wrap around the contact surface, increasing
-contact area and gripping force without requiring active force control. This
-compliance, however, comes at the cost of force-modelling difficulty: the
-finger geometry deforms under load, the contact point shifts, and tilt-induced
-asymmetries arise that have no analogue in the rigid-jaw case.
+contact area and gripping force without requiring active force control.
+However, this compliance comes at the cost of force-modelling difficulty.
+The finger geometry deforms under load, the contact point shifts, and
+tilt-induced asymmetries arise that have no analogue in the rigid-jaw case.
 
-The central question of this thesis is: \emph{to what extent does the finray's
-compliance trade single-axis force precision for multi-axis operational
-robustness?} Specifically, how does the finray's contact force respond to
-deviations in press depth and gripper tilt angle, the two design degrees
-of freedom most likely to be uncontrolled in real deployment?
+\emph{To what extent does the finray's compliance trade single-axis force
+precision for multi-axis operational robustness?} This is the central
+question addressed in this work. Specifically, it is aimed to assess how
+the finray's contact force responds to deviations in press depth and
+gripper tilt angle, which are the two design degrees of freedom most
+likely to be uncontrolled in real deployment.
 
 \section{Research Questions and Contributions}
 
-This thesis answers the following research questions through a controlled
-experimental evaluation on a Franka FR3 collaborative robot. The
-evaluation treats the gripper itself as the experimental variable, holding the
-robot, control policy, cloth, and environment identical across all
-conditions, and asks:
+The following research questions are answered in this work through a
+controlled experimental evaluation on a Franka FR3 collaborative robot. In
+the evaluation, the gripper itself is treated as the experimental variable,
+while the robot, control policy, cloth, and environment are held identical
+across all conditions.
 \begin{enumerate}
   \item How does the contact force vary with press depth, for each finger
         design?
@@ -54,13 +55,13 @@ conditions, and asks:
   \item What is the soft gripper's response under compression?
 \end{enumerate}
 
-\noindent The contributions of this work are:
+\noindent The contributions of this work are summarised as follows.
 \begin{itemize}
   \item A reproducible evaluation protocol for cloth-grasp force characterisation
         on a Franka FR3, with full source code published alongside this thesis.
   \item A two-dimensional depth--tilt experimental matrix sampling six
-        gripper variants: two rigid parallel-jaw configurations and four
-        finray prints spanning blade thickness, seat angle, and print
+        gripper variants, namely two rigid parallel-jaw configurations and
+        four finray prints spanning blade thickness, seat angle, and print
         instance.
   \item Empirical evidence of a depth-dependent tilt robustness transition
         in finray grippers, with quantitative characterisation of the
@@ -77,10 +78,10 @@ phase of cloth grasping, the interval between first gripper--cloth contact
 and a completed lift, and characterises it over a continuous depth--tilt
 parameter space. Downstream task-level evaluation, meaning folding,
 placing, and dragging under the same policy, is future work
-(Chapter~\ref{ch:conclusion}). The narrowing is intentional. The contact
-phase is usually bundled inside end-to-end task pipelines, which is why
-its mechanics have not previously been mapped as a function of gripper
-design.
+(Chapter~\ref{ch:conclusion}). This narrowing is intentional, since the
+contact phase is usually bundled inside end-to-end task pipelines, and
+its mechanics have therefore not previously been mapped as a function of
+gripper design.
 
 \section{Thesis Organisation}
 
@@ -88,11 +89,11 @@ Chapter~\ref{ch:background} reviews the literature on cloth grasping,
 compliant grippers, and force-controlled approach strategies.
 Chapter~\ref{ch:methods} describes the experimental hardware, the kinematic
 calibration procedure, and the data-acquisition pipeline.
-Chapter~\ref{ch:experiments} presents the two experimental campaigns: the
-depth-sweep characterisation (Experiment~1) across all six gripper
-variants at zero tilt, the tilt-sweep characterisation (Experiment~2)
-at boundary and safe depths, and the planned inclined-surface pilot
-demonstration (Experiment~3).
+Chapter~\ref{ch:experiments} presents the two experimental campaigns,
+which are the depth-sweep characterisation (Experiment~1) across all six
+gripper variants at zero tilt, the tilt-sweep characterisation
+(Experiment~2) at boundary and safe depths, and the planned
+inclined-surface pilot demonstration (Experiment~3).
 Chapter~\ref{ch:results} reports the resulting force--depth--tilt
 characterisation.
 Chapter~\ref{ch:discussion} synthesises the findings into a model of

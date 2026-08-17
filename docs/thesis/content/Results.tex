@@ -2,35 +2,35 @@
 \label{ch:results}
 
 This chapter reports the empirical findings across all six gripper
-variants: \path{finray_18}, \path{finray_18_model2},
+variants, namely \path{finray_18}, \path{finray_18_model2},
 \path{finray_26}, \path{finray_26_5deg},
 \path{parallel_jaw_stock}, and \path{parallel_jaw_TPU}. The findings
 are organised around the primary measurement, the contact force $F_z$,
 at swept command depths and $\pm 2.5^{\circ}$ tilts about the $x$ and
 $y$ axes. All values
 were $F_z$-bias-corrected using the per-session Franka $F_{\mathrm{ext}}$ zero-load
-reading and pooled across trials with matching command depths and tilts
-unless otherwise noted. Interpretation is deferred to
-Chapter~\ref{ch:discussion}.
+reading. The corrected values were then pooled across trials with
+matching command depths and tilts unless otherwise noted.
+Interpretation is deferred to Chapter~\ref{ch:discussion}.
 
 \section{Print-to-Print Manufacturing Variability}
 \label{sec:manufacturing-results}
 
 Figure~\ref{fig:m1-vs-m2} compares two independent prints of the same
-\texttt{finray\_18} CAD geometry directly on the calibrated depth axis.
-Each zeroed at its own first majority-success cell
-(Section~\ref{sec:dcal}), the two prints differed by a $+4.6$\,N mean force
-offset, the second print being the stiffer, with RMSE $5.4$\,N over the 10\,mm window;
-removing the constant offset left a residual RMSE of $2.9$\,N. This
-$\approx 5$\,N offset was adopted as the canonical same-session
-print-to-print variability, approximately $15\%$ of the knee peak
-force.
+\texttt{finray\_18} CAD geometry on the calibrated depth axis. Each
+print was zeroed at its own first majority-success cell
+(Section~\ref{sec:dcal}). The two prints differed by a $+4.6$\,N mean
+force offset, with the second print being the stiffer, and the RMSE
+over the 10\,mm window was $5.4$\,N. Removing the constant offset left
+a residual RMSE of $2.9$\,N. This $\approx 5$\,N offset was adopted as
+the canonical same-session print-to-print variability, approximately
+$15\%$ of the knee peak force.
 
-Cross-session drift on the \emph{same} print, measured by comparing
+Cross-session drift on the \emph{same} print was measured by comparing
 \texttt{finray\_18} data collected on separate days approximately three
-weeks apart, was approximately $7$--$10$\,N at knee and knee-adjacent
-depths. Drift across sessions on a single specimen was therefore larger
-than same-session print-to-print variability.
+weeks apart. That drift was approximately $7$--$10$\,N at knee and
+knee-adjacent depths. Therefore, drift across sessions on a single
+specimen was larger than same-session print-to-print variability.
 
 \begin{figure}[ht]
 \centering
@@ -44,30 +44,31 @@ is smaller than the marker.}
 \end{figure}
 
 The two prints' primary force-depth response was otherwise nearly
-identical (pairwise shape NMSE $0.41\%$, Table~\ref{tab:shape-nmse}),
-and even their secondary x-axis bias shared the same depth-gated
-envelope as the rest of this thesis's bias measurements
-(Section~\ref{sec:bipolar-bias-results}): largest near the boundary and
-relaxing toward zero at depth. The two prints differed only in where
-that shared envelope sat relative to zero. \texttt{finray\_18}'s bias
-crossed zero, running negative at the boundary, briefly positive
-through the knee, and negative again at depth, while
-\texttt{finray\_18\_model2}'s stayed negative throughout the full
-measured range; the gap between the two was itself depth-gated, at
-$2$--$3.5$\,N near the boundary and shrinking to $<1$\,N by
-$d=+10$\,mm. The attribution of this offset is
+identical (pairwise shape NMSE $0.41\%$, Table~\ref{tab:shape-nmse}).
+Their secondary x-axis bias also shared the same depth-gated envelope
+as the other bias measurements in this work
+(Section~\ref{sec:bipolar-bias-results}), being largest near the
+boundary and relaxing toward zero at depth. The two prints differed
+only in where that shared envelope sat relative to zero. The bias of
+\texttt{finray\_18} crossed zero, running negative at the boundary,
+briefly positive through the knee, and negative again at depth.
+However, the bias of \texttt{finray\_18\_model2} stayed negative
+throughout the full measured range. The gap between the two was itself
+depth-gated, at $2$--$3.5$\,N near the boundary and shrinking to
+$<1$\,N by $d=+10$\,mm. The attribution of this offset is
 deferred to Section~\ref{sec:error-discussion}.
 
 \section{Working Range at Zero Tilt}
 \label{sec:working-range-zero}
 
-On the calibrated depth axis (Section~\ref{sec:dcal}), at $0^{\circ}$
-tilt the parallel-jaw variants exhibited closed successful-grasp
-windows of $1.5$\,mm (\texttt{parallel\_jaw\_stock}) and $2.5$\,mm
-(\texttt{parallel\_jaw\_TPU}), while all four finray variants spanned
-the full $\geq 10$\,mm analysis window (Figure~\ref{fig:working-range-hist});
-their ranges were right-censored at the window end, and the underlying
-record extends beyond it.
+Figure~\ref{fig:working-range-hist} displays the successful-grasp
+working range of each variant at zero tilt, on the calibrated depth
+axis of Section~\ref{sec:dcal}. The parallel-jaw variants exhibited
+closed windows of $1.5$\,mm (\texttt{parallel\_jaw\_stock}) and
+$2.5$\,mm (\texttt{parallel\_jaw\_TPU}). In contrast, all four finray
+variants spanned the full $\geq 10$\,mm analysis window. Their ranges
+were right-censored at the window end, and the underlying record
+extends beyond it.
 
 \begin{figure}[ht]
 \centering
@@ -81,15 +82,16 @@ right-censored at the $10$\,mm analysis-window end (Section~\ref{sec:dcal}).}
 \section{Working Range Under Tilt}
 \label{sec:pj-vs-finray-results}
 
-Extending the comparison to every tested orientation narrowed the
-parallel-jaw windows further, to $0.5$--$2.5$\,mm, with one stock-jaw
-tilt condition reduced to a single successful depth ($0$\,mm span) and
-two others producing no successful grasp at any depth
-(Figure~\ref{fig:working-range-tilt}). Five orientations were tested
-per finray variant and four per parallel-jaw variant, whose
-$\theta_x = -2.5^{\circ}$ condition is covered by mirror symmetry
-rather than by separate cells. Every finray variant
-retained its full $\geq 10$\,mm window under every orientation tested.
+Figure~\ref{fig:working-range-tilt} displays the same working ranges
+over every tested orientation. Extending the comparison in this way
+narrowed the parallel-jaw windows further, to $0.5$--$2.5$\,mm. One
+stock-jaw tilt condition was reduced to a single successful depth
+($0$\,mm span), and two others produced no successful grasp at any
+depth. Five orientations were tested per finray variant and four per
+parallel-jaw variant, whose $\theta_x = -2.5^{\circ}$ condition is
+covered by mirror symmetry instead of by separate cells. Every finray
+variant retained its full $\geq 10$\,mm window under every orientation
+tested.
 
 \begin{figure}[ht]
 \centering
@@ -101,24 +103,24 @@ depth. Hatched bars are right-censored at the analysis-window end.}
 \label{fig:working-range-tilt}
 \end{figure}
 
-The parallel jaws auto-failed on the Franka excess-force safety
-monitor, which triggers at $-60$\,N in $F_z$,
-at depths only $1$--$1.5$\,mm beyond their successful-grasp window; the
-finrays never triggered the safety monitor within the tested $-2$ to
-$+16$\,mm range on any variant.
+The parallel jaws auto-failed on the Franka excess-force safety monitor
+at depths only $1$--$1.5$\,mm beyond their successful-grasp window.
+That monitor triggers at $-60$\,N in $F_z$. However, the finrays never
+triggered the safety monitor within the tested $-2$ to $+16$\,mm range
+on any variant.
 
 \section{Tilt-Aligned Response Comparison}
 \label{sec:tilt-similarity-results}
 
-Plotting each finray variant's five tilt-condition curves together on
-the calibrated depth axis (Figure~\ref{fig:tilt-similarity}) shows how
-tightly the orientations track one another within a variant. The mean
-spread across the five orientations, averaged over the calibrated
-window, was $1.3$--$2.4$\,N depending on variant, small relative to
-the $31$--$53$\,N knee peaks reported in
-Table~\ref{tab:zero-tilt-summary}, and consistent with the depth-gated
-tilt robustness reported in Section~\ref{sec:bipolar-bias-results}: the
-curves separated near the boundary and converged in the plateau.
+Figure~\ref{fig:tilt-similarity} displays the five tilt-condition
+curves of each finray variant together on the calibrated depth axis.
+Within each variant, the orientations tracked one another closely. The
+mean spread across the five orientations, averaged over the calibrated
+window, was $1.3$--$2.4$\,N depending on variant, which is small
+relative to the $31$--$53$\,N knee peaks reported in
+Table~\ref{tab:zero-tilt-summary}. The curves separated near the
+boundary and converged in the plateau, consistent with the depth-gated
+tilt robustness reported in Section~\ref{sec:bipolar-bias-results}.
 
 \begin{figure}[ht]
 \centering
@@ -135,15 +137,15 @@ each panel the five curves nearly coincide.}
 \label{sec:zero-tilt-results}
 
 Under zero tilt, all four finray variants exhibited a stereotyped
-\emph{bell-plus-valley} force-depth response with four regions:
-(i)~a boundary regime where contact force rose steeply with press depth,
-(ii)~a knee peak at calibrated depths of $+2.5$ to $+4.5$\,mm,
-(iii)~a valley trough near $+6$ to $+8.5$\,mm, and (iv)~a recovery regime
-toward the window end. Table~\ref{tab:zero-tilt-summary} summarises the
-key features; the four features lay within $\approx \pm 1.5$\,mm of the same
-depth locations across all four variants, and the absolute force
-magnitudes scaled approximately with the frontal contact area of the
-finger.
+\emph{bell-plus-valley} force-depth response with four regions. These
+were (i)~a boundary regime where contact force rose steeply with press
+depth, (ii)~a knee peak at calibrated depths of $+2.5$ to $+4.5$\,mm,
+(iii)~a valley trough near $+6$ to $+8.5$\,mm, and (iv)~a recovery
+regime toward the window end. Table~\ref{tab:zero-tilt-summary} lists
+the key features for each variant. The four features lay within
+$\approx \pm 1.5$\,mm of the same depth locations across all four
+variants, and the absolute force magnitudes scaled approximately with
+the frontal contact area of the finger.
 
 \begin{table}[ht]
 \centering
@@ -272,15 +274,16 @@ $= +4.49 \pm 0.47$\,N), demonstrating that the effect was not specific to
 the $5^{\circ}$ mount condition.
 
 In absolute terms, the boundary y-axis asymmetry corresponds to a
-$2.36\times$ force ratio between the two tilt signs: on
+$2.36\times$ force ratio between the two tilt signs. On
 \texttt{finray\_26} at $d=-1.0$\,mm, the mean stationary force was
-$8.00$\,N under $+2.5^{\circ}$ versus $3.39$\,N under $-2.5^{\circ}$
-(Table~\ref{tab:tilt-geometry}); at $d=+10.0$\,mm the same pair differed
-by under $1\%$ ($36.26$ versus $35.95$\,N). This ratio is the source of
-the handedness figure quoted in the abstract, and its collapse from
-$2.36\times$ to $1.01\times$ between boundary and plateau is the
-per-cell view of the depth gating reported in
-Section~\ref{sec:bipolar-bias-results}.
+$8.00$\,N under $+2.5^{\circ}$ against $3.39$\,N under $-2.5^{\circ}$,
+while at $d=+10.0$\,mm the same pair differed by under $1\%$, at
+$36.26$\,N against $35.95$\,N. It is worth noting that these values
+come from the four cells of the tilt-geometry verification
+(Table~\ref{tab:tilt-geometry}), which cover one variant on one axis,
+so the ratio should be read as an illustration of the depth gating
+reported in Section~\ref{sec:bipolar-bias-results} and not as a
+separately established quantity.
 
 \section{Mount-Tilt Alignment: $5^{\circ}$ Mount as a Depth Shift}
 \label{sec:mount-tilt-results}
